@@ -780,7 +780,45 @@ def extract_wsdl_operations(wsdl_path):
             for operation_name in operation_names:
                 operations.add(operation_name)  # Agregamos el nombre de la operación al conjunto
     return list(operations)  # Convertimos el conjunto de vuelta a lista antes de devolverlo
-  
+
+def extraer_operaciones_expuestas_http(project_path)
+    wsdl_operations_map = {}
+    for root, dirs, files in os.walk(project_path):
+        if os.path.basename(root) == "Proxies":
+            ##st.success(f"✅ Proxies {elementos_xsd}")
+            for file in files:
+                if file.endswith('.ProxyService'):
+                    osb_file_path = os.path.join(root, file)
+                    #st.success(f"✅ osb_file_path {osb_file_path}")
+                    project_name = extract_project_name_from_proxy(osb_file_path)
+                    
+                    if project_name is None:
+                        continue 
+                    pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, project_path)
+                    ##st.success(f"✅ pipeline_path {pipeline_path}")
+                    with open(osb_file_path, 'r', encoding="utf-8") as f:
+                        content = f.read()
+                        if has_http_provider_id(content):
+                            service_name = os.path.splitext(file)[0]
+                            st.success(f"✅ project_name {project_name}")
+                            st.success(f"✅ service_name {service_name}")
+                            service_url = extract_service_url(content)
+                            st.success(f"✅ service_url {service_url}")
+                            wsdl_relative_path = extract_wsdl_relative_path(content)
+                            if wsdl_relative_path:
+                                wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
+                                capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
+                                print_with_line_number("")
+                                st.success(f"capa_proyecto: {capa_proyecto}")
+                                print_with_line_number("")
+                                st.success(f"wsdl_path: {wsdl_path}")
+                                operations = extract_wsdl_operations(wsdl_path)
+                                wsdl_operations_map[wsdl_path] = (
+                                    operations, project_name, service_name, service_url, capa_proyecto
+                                )
+    st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
+    return wsdl_operations_map
+
 def extract_osb_services_with_http_provider_id(project_path,operacion_a_documentar):
 
     osb_services = []
