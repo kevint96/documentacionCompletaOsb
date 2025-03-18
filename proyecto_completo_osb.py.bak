@@ -912,6 +912,8 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     
                         #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #st.success(f"elementos_xsd: {elementos_xsd}")
+                        branches = recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations)
+                        st.success(f"branches: {branches}")
                         #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
                         osb_services.append(elementos_xsd)
                     
@@ -924,6 +926,27 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     #st.success(f"osb_services: {osb_services}")
     return osb_services
 
+def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations):
+    """
+    Lee el archivo .Pipeline y extrae todos los nombres de las ramas (branch) que existen.
+    
+    Args:
+        operacion_a_documentar (str): Nombre de la operación a documentar.
+        pipeline_path (str): Ruta del archivo .Pipeline.
+        operations (list): Lista de operaciones ya existentes.
+    
+    Returns:
+        list: Lista con los nombres de los branches encontrados.
+    """
+    branches = []
+    try:
+        with open(pipeline_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+            branches = re.findall(r'<con:branch name="(.*?)"', content)
+    except Exception as e:
+        print(f"Error al leer el archivo {pipeline_path}: {e}")
+    
+    return branches   
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""

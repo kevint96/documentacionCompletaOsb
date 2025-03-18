@@ -25,6 +25,8 @@ import difflib
 import glob
 import base64
 import sys
+import xml.etree.ElementTree as ET
+from collections import defaultdict
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
@@ -912,8 +914,8 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     
                         #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #st.success(f"elementos_xsd: {elementos_xsd}")
-                        branches = recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations)
-                        st.success(f"branches: {branches}")
+                        services_for_operations = recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations)
+                        st.success(f"services_for_operations: {services_for_operations}")
                         #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
                         osb_services.append(elementos_xsd)
                     
@@ -927,26 +929,77 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     return osb_services
 
 def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations):
-    """
-    Lee el archivo .Pipeline y extrae todos los nombres de las ramas (branch) que existen.
+    """ Extrae servicios para operaciones en un archivo .pipeline """
+
+    if not (pipeline_path.endswith('.pipeline')):
+        print_with_line_number("Archivo no válido.")
+        return {}
+
+    services_for_operations = defaultdict(list)
     
-    Args:
-        operacion_a_documentar (str): Nombre de la operación a documentar.
-        pipeline_path (str): Ruta del archivo .Pipeline.
-        operations (list): Lista de operaciones ya existentes.
-    
-    Returns:
-        list: Lista con los nombres de los branches encontrados.
-    """
-    branches = []
-    try:
-        with open(pipeline_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-            branches = re.findall(r'<con:branch name="(.*?)"', content)
-    except Exception as e:
-        print(f"Error al leer el archivo {pipeline_path}: {e}")
-    
-    return branches   
+    namespaces = {
+        'con': 'http://www.bea.com/wli/sb/pipeline/config', 
+        'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+        'con2': 'http://www.bea.com/wli/sb/stages/config',
+        'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+        'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+        'ref': 'http://www.bea.com/wli/sb/reference',
+        'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+    }
+    # Cargar el XML
+    tree = ET.parse(pipeline_path)
+    root = tree.getroot()
+
+    def buscar_service_y_agregar(element, operation_name):
+        """ Busca elementos <service> y agrega la información a services_for_operations """
+        service_element = element.find(".//con1:service", namespaces)
+        if service_element is not None:
+            service_ref = service_element.attrib.get('ref', '')
+            services_for_operations[operation_name].append((service_ref))
+            print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+            return True
+        return False
+
+    # Procesar <branch>
+    for branch in root.findall(".//con:branch", namespaces):
+        operation_name = branch.attrib.get('name', '')
+        if operation_name in operations:
+            if buscar_service_y_agregar(branch, operation_name):
+                continue
+
+    # Procesar <flow>
+    for flow in root.findall(".//con:flow", namespaces):
+        service_elements = flow.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces)
+        for service_element in service_elements:
+            service_ref = service_element.attrib.get('ref', '')
+            operation_elements = flow.findall(".//con1:operation", namespaces)
+            for operation_element in operation_elements:
+                operation_name = operation_element.text.strip()
+                if operation_name in operations:
+                    services_for_operations[operation_name].append((service_ref))
+
+    # Procesar <route-node>
+    for route in root.findall(".//con:route-node", namespaces):
+        operation_element = route.find(".//con1:operation", namespaces)
+        if operation_element is not None:
+            operation_name = operation_element.text.strip()
+            if operation_name in operations:
+                buscar_service_y_agregar(route, operation_name)
+
+    # Procesar <wsCallout>
+    for callout in root.iter():
+        if callout.tag.endswith('wsCallout'):
+            operation_element = callout.find(".//con3:operation", namespaces)
+            service_element = callout.find(".//con3:service", namespaces)
+            if operation_element is not None and service_element is not None:
+                operation_name = operation_element.text.strip()
+                service_ref = service_element.attrib.get('ref', '')
+                services_for_operations[operation_name].append((service_ref))
+
+    print_with_line_number(f"SERVICES FOR OPERATIONS: {services_for_operations}")
+    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS *********************************************\n")
+
+    return services_for_operations
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
