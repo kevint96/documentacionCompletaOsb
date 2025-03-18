@@ -849,6 +849,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
         # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
         wsdl_relative_base = os.path.relpath(wsdl_path, "extraccion_jar")
         #st.success(f"wsdl_relative_base: {wsdl_relative_base}")
+        operacion_business = ""
         # 🔹 Obtener la carpeta donde está el WSDL
         wsdl_dir = os.path.dirname(wsdl_relative_base)
         #st.success(f"wsdl_dir: {wsdl_dir}")
