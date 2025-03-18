@@ -843,7 +843,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
 
         imports = extract_xsd_import_paths(wsdl_path)
         #st.success(f"wsdl_path: {wsdl_path}")
-        #st.success(f"imports: {imports}")
+        st.success(f"imports: {imports}")
         
         #st.success(f"project_path: {project_path}")
         # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
@@ -861,7 +861,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
                 imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
         
-        #st.success(f"imports despues: {imports}")
+        st.success(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             for operation in operations:
@@ -880,7 +880,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
                             operation_to_xsd[operation] = None  # No se encontró una coincidencia
                     
             
-            #st.success(f"operation_to_xsd: {operation_to_xsd}")
+            st.success(f"operation_to_xsd: {operation_to_xsd}")
             
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -904,7 +904,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #print_with_line_number("")
                         #print_with_line_number("")
-                        #st.success(f"xsd: {xsd}")
+                        st.success(f"xsd: {xsd}")
                     
                         elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #st.success(f"elementos_xsd: {elementos_xsd}")
