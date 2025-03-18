@@ -996,6 +996,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operation
         try:
             tree = ET.parse(pipeline_path)
             root = tree.getroot()
+            st.success(f"pipeline_path: {pipeline_path}")
             st.success(f"tree: {tree}")
             namespace = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
                           'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
