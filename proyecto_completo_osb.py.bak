@@ -968,6 +968,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
     st.success(f"project_path: {project_path}")
     st.success(f"pipeline_path: {pipeline_path}")
     services_for_operations = defaultdict(list)
+    st.success(f"services_for_operations: {services_for_operations}")
     
     namespaces = {
         'con': 'http://www.bea.com/wli/sb/pipeline/config', 
@@ -994,6 +995,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         if service_element is not None:
             service_ref = service_element.attrib.get('ref', '')
             services_for_operations[operation_name].append(service_ref)
+            st.success(f"services_for_operations: {services_for_operations}")
             return service_ref
         return None
 
@@ -1014,6 +1016,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
                         services_for_operations.update(
                             recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                         )
+                        st.success(f"services_for_operations: {services_for_operations}")
                     else:
                         st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
@@ -1039,6 +1042,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
                                 services_for_operations.update(
                                     recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                                 )
+                                st.success(f"services_for_operations: {services_for_operations}")
                             else:
                                 st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
@@ -1062,6 +1066,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
                             services_for_operations.update(
                                 recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                             )
+                            st.success(f"services_for_operations: {services_for_operations}")
                         else:
                             st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
@@ -1088,6 +1093,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
                             services_for_operations.update(
                                 recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                             )
+                            st.success(f"services_for_operations: {services_for_operations}")
                         else:
                             st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
