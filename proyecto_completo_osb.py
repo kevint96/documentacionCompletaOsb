@@ -935,7 +935,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
         st.error("Archivo no válido.")
         return {}
 
-    services_for_operations = {}
+    services_for_operations = defaultdict(list)
     
     namespaces = {
         'con': 'http://www.bea.com/wli/sb/pipeline/config', 
@@ -995,9 +995,6 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                 operation_name = operation_element.text.strip()
                 service_ref = service_element.attrib.get('ref', '')
                 services_for_operations[operation_name].append((service_ref))
-
-    print_with_line_number(f"SERVICES FOR OPERATIONS: {services_for_operations}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS *********************************************\n")
 
     return services_for_operations
 
