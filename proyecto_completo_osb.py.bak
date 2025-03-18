@@ -820,7 +820,8 @@ def extraer_operaciones_expuestas_http(project_path)
     return wsdl_operations_map
 
 def extract_osb_services_with_http_provider_id(project_path,operacion_a_documentar):
-
+    
+    lista_operaciones_expuestas = extraer_operaciones_expuestas_http(project_path)
     osb_services = []
     elementos_xsd = []
     operations =[]

@@ -781,7 +781,7 @@ def extract_wsdl_operations(wsdl_path):
                 operations.add(operation_name)  # Agregamos el nombre de la operación al conjunto
     return list(operations)  # Convertimos el conjunto de vuelta a lista antes de devolverlo
 
-def extraer_operaciones_expuestas_http(project_path)
+def extraer_operaciones_expuestas_http(project_path):
     wsdl_operations_map = {}
     for root, dirs, files in os.walk(project_path):
         if os.path.basename(root) == "Proxies":
