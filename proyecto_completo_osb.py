@@ -827,7 +827,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
     operation_to_xsd = {}
     found = False  # Variable para rastrear si se encuentra la operación
     
-    wsdl_operations_map = extraer_operaciones_expuestas_http(carpeta_destino)
+    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
