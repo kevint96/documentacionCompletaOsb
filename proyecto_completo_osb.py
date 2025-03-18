@@ -954,7 +954,7 @@ def extract_services_recursively(proxy_path, project_path, services_for_operatio
     
     # Extraer el pipeline asociado al proxy
     pipeline_path = extract_pipeline_path_from_proxy(proxy_path, project_path)
-    if not pipeline_path or not os.path.exists(pipeline_path):
+    if not pipeline_path:
         return
     
     # Parsear el XML del pipeline

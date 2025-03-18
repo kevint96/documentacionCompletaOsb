@@ -918,11 +918,19 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #st.success(f"elementos_xsd: {elementos_xsd}")
                         services_for_operations = recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations)
                         visited_proxies = set()
-                        initial_proxy_path = os.path.join(project_path, "EXP/Proxies/MainService.ProxyService")
-
-                        extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
-                        
                         st.success(f"services_for_operations: {services_for_operations}")
+                        
+                        for operation, services in services_for_operations.items():
+                            st.success(f"operation: {operation}")
+                            for service in services:
+                                st.success(f"service: {operation}")
+                                initial_proxy_path = service + ".ProxyService"
+                                st.success(f"initial_proxy_path: {initial_proxy_path}")
+                                initial_proxy_path = os.path.join(project_path, initial_proxy_path)
+                                
+                                datos = extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
+                                st.success(f"datos: {datos}")
+                        
                         #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
                         osb_services.append(elementos_xsd)
                     
