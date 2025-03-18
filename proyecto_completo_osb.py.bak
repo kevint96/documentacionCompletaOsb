@@ -819,7 +819,7 @@ def extraer_operaciones_expuestas_http(project_path):
     st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
     return wsdl_operations_map
 
-def extract_osb_services_with_http_provider_id(project_path,operacion_a_documentar):
+def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
     
     osb_services = []
     elementos_xsd = []
@@ -843,7 +843,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
 
         imports = extract_xsd_import_paths(wsdl_path)
         #st.success(f"wsdl_path: {wsdl_path}")
-        st.success(f"imports: {imports}")
+        #st.success(f"imports: {imports}")
         
         #st.success(f"project_path: {project_path}")
         # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
@@ -861,26 +861,29 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
                 imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
         
-        st.success(f"imports despues: {imports}")
+        #st.success(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             for operation in operations:
                 for xsd in imports:
-                    if operation.lower() in os.path.basename(xsd).lower():
-                        operation_to_xsd[operation] = xsd
-                        break
-                    else:
-                        xsd_names = [os.path.basename(xsd) for xsd in imports]  # Obtener solo los nombres de archivos XSD
-                        closest_match = difflib.get_close_matches(operation, xsd_names, n=1, cutoff=0.5)  # Buscar el más similar
+                    xsd_filename = os.path.basename(xsd).lower()  # Obtener solo el nombre del archivo XSD
 
-                        if closest_match:
-                            matched_xsd = next(xsd for xsd in imports if os.path.basename(xsd) == closest_match[0])
-                            operation_to_xsd[operation] = matched_xsd
-                        else:
-                            operation_to_xsd[operation] = None  # No se encontró una coincidencia
-                    
+                    # 🔹 Buscar coincidencia exacta con el nombre del XSD
+                    if xsd_filename == operation.lower() + ".xsd":
+                        operation_to_xsd[operation] = xsd
+                        break  # Detener la búsqueda cuando encuentra la coincidencia exacta
+
+                else:  # Solo ejecuta este bloque si el `for xsd in imports` no encontró nada
+                    xsd_names = [os.path.basename(x).lower() for x in imports]  # Lista de nombres de archivos XSD
+                    closest_match = difflib.get_close_matches(operation.lower() + ".xsd", xsd_names, n=1, cutoff=0.7)
+
+                    if closest_match:
+                        matched_xsd = next(x for x in imports if os.path.basename(x).lower() == closest_match[0])
+                        operation_to_xsd[operation] = matched_xsd
+                    else:
+                        operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
-            st.success(f"operation_to_xsd: {operation_to_xsd}")
+            #st.success(f"operation_to_xsd: {operation_to_xsd}")
             
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -904,7 +907,7 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #print_with_line_number("")
                         #print_with_line_number("")
-                        st.success(f"xsd: {xsd}")
+                        #st.success(f"xsd: {xsd}")
                     
                         elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #st.success(f"elementos_xsd: {elementos_xsd}")
@@ -956,7 +959,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         #st.success(f"📂 Carpeta temporal creada: {temp_dir}")
     
     # Llamar a la función principal de tu script
-    services_with_data = extract_osb_services_with_http_provider_id(jdeveloper_projects_dir,operacion_a_documentar)
+    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
     sys.stdout.write(f"✅ services_with_data {services_with_data}")
     
