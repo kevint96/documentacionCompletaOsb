@@ -932,7 +932,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
     """ Extrae servicios para operaciones en un archivo .pipeline """
 
     if not (pipeline_path.endswith('.pipeline')):
-        print_with_line_number("Archivo no válido.")
+        st.error("Archivo no válido.")
         return {}
 
     services_for_operations = defaultdict(list)
@@ -948,6 +948,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
     }
     # Cargar el XML
     tree = ET.parse(pipeline_path)
+    st.success(f"tree: {tree}")
     root = tree.getroot()
 
     def buscar_service_y_agregar(element, operation_name):
