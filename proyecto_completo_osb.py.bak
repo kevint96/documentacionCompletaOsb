@@ -836,7 +836,12 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
     
     st.success("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
         
-    if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
+    if not os.path.exists(pipeline_path):
+        st.error(f"El archivo no existe: {pipeline_path}")
+    elif not os.path.isfile(pipeline_path):
+        st.error(f"No es un archivo válido: {pipeline_path}")
+    
+    if pipeline_path.endswith('.pipeline') and os.path.isfile(pipeline_path):
         st.success(f"pipeline_path: {pipeline_path}")
         with open(pipeline_path, 'r', encoding="utf-8") as f:
             pipeline_content = f.read()
