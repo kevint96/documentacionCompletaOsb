@@ -998,6 +998,8 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operation
             root = tree.getroot()
             st.success(f"pipeline_path: {pipeline_path}")
             st.success(f"tree: {tree}")
+            for elem in root.iter():
+                st.success(f"Tag: {elem.tag}, Atributos: {elem.attrib}")
             namespace = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
                           'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
                           'con2': 'http://www.bea.com/wli/sb/stages/config',
@@ -1006,7 +1008,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operation
                           'ref': 'http://www.bea.com/wli/sb/reference',
                           'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
             
-            for service in root.findall(".//*[@xsi:type='ref']", namespaces=namespace):
+            for service in root.findall(".//*[@{http://www.w3.org/2001/XMLSchema-instance}type='ref']", namespaces=namespace):
                 ref_service = service.get('ref')
                 st.success(f"ref_service: {ref_service}")
                 if ref_service and ref_service not in services_found:
