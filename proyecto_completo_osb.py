@@ -791,8 +791,8 @@ def extraer_operaciones_expuestas_http(project_path):
             for file in files:
                 if file.endswith('.ProxyService'):
                     osb_file_path = os.path.join(root, file)
-                    st.success(f"✅ file {file}")
-                    st.success(f"✅ osb_file_path {osb_file_path}")
+                    #st.success(f"✅ file {file}")
+                    #st.success(f"✅ osb_file_path {osb_file_path}")
                     project_name = extract_project_name_from_proxy(osb_file_path)
                     
                     if project_name is None:
@@ -817,7 +817,7 @@ def extraer_operaciones_expuestas_http(project_path):
                                 st.success(f"wsdl_path: {wsdl_path}")
                                 operations = extract_wsdl_operations(wsdl_path)
                                 wsdl_operations_map[wsdl_path] = (
-                                    operations, project_name, service_name, pipeline_path, service_url, capa_proyecto
+                                    operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                 )
     st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
     return wsdl_operations_map
@@ -835,12 +835,13 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
         # Desempaquetar la tupla
-        operations, project_name, service_name, pipeline_path, service_url, capa_proyecto = data
+        operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
         st.success(f"wsdl_path: {wsdl_path}")
         st.success(f"operations: {operations}")
         st.success(f"project_name: {project_name}")
         st.success(f"service_name: {service_name}")
+        st.success(f"osb_file_path: {osb_file_path}")
         st.success(f"pipeline_path: {pipeline_path}")
         st.success(f"service_url: {service_url}")
         st.success(f"capa_proyecto: {capa_proyecto}")
@@ -916,6 +917,11 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #st.success(f"elementos_xsd: {elementos_xsd}")
                         services_for_operations = recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations)
+                        visited_proxies = set()
+                        initial_proxy_path = os.path.join(project_path, "EXP/Proxies/MainService.ProxyService")
+
+                        extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
+                        
                         st.success(f"services_for_operations: {services_for_operations}")
                         #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
                         osb_services.append(elementos_xsd)
@@ -974,13 +980,7 @@ def extract_services_recursively(proxy_path, project_path, services_for_operatio
     
     return services_for_operations
 
-    # Uso de la función:
-    services_for_operations = defaultdict(list)
-    visited_proxies = set()
-    project_path = "C:/Users/ktorres/Desktop/BCS/BUS/Prueba2"
-    initial_proxy_path = os.path.join(project_path, "EXP/Proxies/MainService.ProxyService")
-
-    extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
+    
     st.success(f"✅ services_for_operations {services_for_operations}")
 
 

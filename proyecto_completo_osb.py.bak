@@ -791,7 +791,8 @@ def extraer_operaciones_expuestas_http(project_path):
             for file in files:
                 if file.endswith('.ProxyService'):
                     osb_file_path = os.path.join(root, file)
-                    #st.success(f"✅ osb_file_path {osb_file_path}")
+                    st.success(f"✅ file {file}")
+                    st.success(f"✅ osb_file_path {osb_file_path}")
                     project_name = extract_project_name_from_proxy(osb_file_path)
                     
                     if project_name is None:
@@ -927,6 +928,61 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
 
     #st.success(f"osb_services: {osb_services}")
     return osb_services
+
+def extract_services_recursively(proxy_path, project_path, services_for_operations, visited_proxies):
+    """
+    Extrae recursivamente los servicios desde un ProxyService hasta llegar a BusinessService.
+    """
+    if proxy_path in visited_proxies:
+        return  # Evita ciclos en la búsqueda recursiva
+    
+    visited_proxies.add(proxy_path)
+    
+    # Extraer el pipeline asociado al proxy
+    pipeline_path = extract_pipeline_path_from_proxy(proxy_path, project_path)
+    if not pipeline_path or not os.path.exists(pipeline_path):
+        return
+    
+    # Parsear el XML del pipeline
+    tree = ET.parse(pipeline_path)
+    root = tree.getroot()
+    namespaces = {'con': 'http://www.bea.com/wli/config/pipeline',
+                  'con1': 'http://www.bea.com/wli/sb/stages',
+                  'con3': 'http://www.bea.com/wli/sb/services'}
+    
+    def buscar_service_y_agregar(element, operation_name):
+        service_element = element.find(".//con1:service", namespaces)
+        if service_element is not None:
+            service_ref = service_element.attrib.get('ref', '')
+            services_for_operations[operation_name].append(service_ref)
+            return service_ref
+        return None
+
+    # Revisar distintos tipos de nodos que invocan servicios
+    for tag in [".//con:branch", ".//con:flow", ".//con:route-node", "wsCallout"]:
+        for element in root.findall(tag, namespaces):
+            operation_element = element.find(".//con1:operation", namespaces)
+            if operation_element is not None:
+                operation_name = operation_element.text.strip()
+                service_ref = buscar_service_y_agregar(element, operation_name)
+                
+                # Si el servicio invocado es un nuevo ProxyService, seguir el proceso
+                if service_ref and "Proxies" in service_ref:
+                    next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                    if os.path.exists(next_proxy_path):
+                        extract_services_recursively(next_proxy_path, project_path, services_for_operations, visited_proxies)
+    
+    return services_for_operations
+
+    # Uso de la función:
+    services_for_operations = defaultdict(list)
+    visited_proxies = set()
+    project_path = "C:/Users/ktorres/Desktop/BCS/BUS/Prueba2"
+    initial_proxy_path = os.path.join(project_path, "EXP/Proxies/MainService.ProxyService")
+
+    extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
+    st.success(f"✅ services_for_operations {services_for_operations}")
+
 
 def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations):
     """ Extrae servicios para operaciones en un archivo .pipeline """
