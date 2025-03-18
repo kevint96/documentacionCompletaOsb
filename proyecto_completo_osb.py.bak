@@ -996,9 +996,6 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                 service_ref = service_element.attrib.get('ref', '')
                 services_for_operations[operation_name].append((service_ref))
 
-    print_with_line_number(f"SERVICES FOR OPERATIONS: {services_for_operations}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS *********************************************\n")
-
     return services_for_operations
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
