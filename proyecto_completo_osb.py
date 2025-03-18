@@ -996,8 +996,13 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operation
         try:
             tree = ET.parse(pipeline_path)
             root = tree.getroot()
-            namespace = {'con': 'http://www.bea.com/wli/sb/stages/transform/config',
-                         'con1': 'http://www.bea.com/wli/sb/stages/common/config'}
+            namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
+                          'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+                          'con2': 'http://www.bea.com/wli/sb/stages/config',
+                          'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+                          'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+                          'ref': 'http://www.bea.com/wli/sb/reference',
+                          'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
             
             for service in root.findall(".//*[@xsi:type='ref']", namespaces=namespace):
                 ref_service = service.get('ref')

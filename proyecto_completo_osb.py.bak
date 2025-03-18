@@ -984,49 +984,48 @@ def extract_services_recursively(proxy_path, project_path, services_for_operatio
     st.success(f"✅ services_for_operations {services_for_operations}")
 
 
-def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations):
-    """ Extrae servicios para operaciones en un archivo .pipeline """
-
-    if not (pipeline_path.endswith('.Pipeline')):
-        st.error("Archivo no válido.")
-        return {}
+def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operations):
+    services_found = []
+    processed_pipelines = set()
     
-    namespaces = {
-        'con': 'http://www.bea.com/wli/sb/pipeline/config', 
-        'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
-        'con2': 'http://www.bea.com/wli/sb/stages/config',
-        'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
-        'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
-        'ref': 'http://www.bea.com/wli/sb/reference',
-        'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
-    }
-    services_for_operations = defaultdict(list)
-    
-    try:
-        tree = ET.parse(pipeline_path)
-        root = tree.getroot()
+    def process_pipeline(pipeline_path, parent_service):
+        if pipeline_path in processed_pipelines:
+            return
+        processed_pipelines.add(pipeline_path)
         
-        # Buscar todos los elementos que tienen xsi:type="ref:*"
-        for service_element in root.findall(".//*[@xsi:type]", namespaces):
-            xsi_type = service_element.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type", "")
+        try:
+            tree = ET.parse(pipeline_path)
+            root = tree.getroot()
+            namespace = {'con': 'http://www.bea.com/wli/sb/stages/transform/config',
+                         'con1': 'http://www.bea.com/wli/sb/stages/common/config'}
             
-            if xsi_type.startswith("ref:"):
-                service_ref = service_element.attrib.get("ref", "")
-                
-                # Buscar la operación asociada dentro del mismo bloque
-                parent = service_element.find("../con1:operation", namespaces) or \
-                         service_element.find("../con2:operation", namespaces) or \
-                         service_element.find("../con3:operation", namespaces) or \
-                         service_element.find("../con4:operation", namespaces)
-                
-                if parent is not None and parent.text.strip() in operations:
-                    operation_name = parent.text.strip()
-                    services_for_operations[operation_name].append(service_ref)
-                    
-    except Exception as e:
-        print(f"Error procesando el archivo {pipeline_path}: {e}")
+            for service in root.findall(".//*[@xsi:type='ref']", namespaces=namespace):
+                ref_service = service.get('ref')
+                if ref_service and ref_service not in services_found:
+                    services_found.append(ref_service)
+                    if ref_service.endswith('.Pipeline'):
+                        process_pipeline(ref_service, parent_service)
+            
+            for branch in root.findall(".//con:branch", namespaces=namespace):
+                operation = branch.get('operation')
+                if operation:
+                    services_found.append(f"{parent_service} -> {operation}")
+            
+            for request in root.findall(".//con:request", namespaces=namespace):
+                operation = request.get('operation')
+                if operation:
+                    services_found.append(f"{parent_service} -> {operation}")
+            
+            for op in root.findall(".//con1:operation", namespaces=namespace):
+                method = op.get('method')
+                if method:
+                    services_found.append(f"{parent_service} -> {method}")
+        
+        except ET.ParseError:
+            print(f"Error parsing XML file: {pipeline_path}")
     
-    return services_for_operations
+    process_pipeline(file_path, file_path)
+    return services_found
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
