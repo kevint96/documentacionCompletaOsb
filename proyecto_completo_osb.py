@@ -927,6 +927,10 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                                 initial_proxy_path = service + ".ProxyService"
                                 st.success(f"initial_proxy_path: {initial_proxy_path}")
                                 initial_proxy_path = os.path.join(project_path, initial_proxy_path)
+                                st.success(f"initial_proxy_path2: {initial_proxy_path}")
+                                
+                                pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, project_path)
+                                st.success(f"pipeline_path: {pipeline_path}")
                                 
                                 datos = extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
                                 st.success(f"datos: {datos}")
