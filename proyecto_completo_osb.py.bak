@@ -1008,8 +1008,8 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                         services_for_operations.update(
                             recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                         )
-else:
-    st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
+                    else:
+                        st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
     # Procesar <flow>
     for flow in root.findall(".//con:flow", namespaces):
@@ -1030,6 +1030,8 @@ else:
                                 services_for_operations.update(
                                     recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                                 )
+                            else:
+                                st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
     # Procesar <route-node>
     for route in root.findall(".//con:route-node", namespaces):
@@ -1047,6 +1049,8 @@ else:
                             services_for_operations.update(
                                 recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                             )
+                        else:
+                            st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
     # Procesar <wsCallout>
     for callout in root.iter():
@@ -1066,6 +1070,8 @@ else:
                             services_for_operations.update(
                                 recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                             )
+                        else:
+                            st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
     return services_for_operations
 
