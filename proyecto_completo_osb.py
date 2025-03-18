@@ -866,19 +866,22 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
         if operacion_a_documentar in operations or not operacion_a_documentar:
             for operation in operations:
                 for xsd in imports:
-                    if operation.lower() in os.path.basename(xsd).lower():
-                        operation_to_xsd[operation] = xsd
-                        break
-                    else:
-                        xsd_names = [os.path.basename(xsd) for xsd in imports]  # Obtener solo los nombres de archivos XSD
-                        closest_match = difflib.get_close_matches(operation, xsd_names, n=1, cutoff=0.5)  # Buscar el más similar
+                    xsd_filename = os.path.basename(xsd).lower()  # Obtener solo el nombre del archivo XSD
 
-                        if closest_match:
-                            matched_xsd = next(xsd for xsd in imports if os.path.basename(xsd) == closest_match[0])
-                            operation_to_xsd[operation] = matched_xsd
-                        else:
-                            operation_to_xsd[operation] = None  # No se encontró una coincidencia
-                    
+                    # 🔹 Buscar coincidencia exacta con el nombre del XSD
+                    if xsd_filename == operation.lower() + ".xsd":
+                        operation_to_xsd[operation] = xsd
+                        break  # Detener la búsqueda cuando encuentra la coincidencia exacta
+
+                else:  # Solo ejecuta este bloque si el `for xsd in imports` no encontró nada
+                    xsd_names = [os.path.basename(x).lower() for x in imports]  # Lista de nombres de archivos XSD
+                    closest_match = difflib.get_close_matches(operation.lower() + ".xsd", xsd_names, n=1, cutoff=0.7)
+
+                    if closest_match:
+                        matched_xsd = next(x for x in imports if os.path.basename(x).lower() == closest_match[0])
+                        operation_to_xsd[operation] = matched_xsd
+                    else:
+                        operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
             st.success(f"operation_to_xsd: {operation_to_xsd}")
             
