@@ -26,7 +26,7 @@ import glob
 import base64
 import sys
 
-def print_with_line_number(msg):
+def st.success(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
     print(f"Linea {line_number}: {msg}")
@@ -144,12 +144,12 @@ def replace_text_in_paragraph(paragraph, replacements):
 def print_element_content(element, element_name):
     #st.success(f"Contenido del {element_name}:")
     for paragraph in element.paragraphs:
-        print_with_line_number(paragraph.text)
+        st.success(paragraph.text)
     for table in element.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    print_with_line_number(paragraph.text)
+                    st.success(paragraph.text)
 
 def replace_text_in_element(element, replacements):
     for paragraph in element.paragraphs:
@@ -183,7 +183,7 @@ def replace_text_in_doc(doc, replacements):
                 for row in table.rows:
                     for cell in row.cells:
                         for paragraph in cell.paragraphs:
-                            print_with_line_number(paragraph.text)
+                            st.success(paragraph.text)
             for table in section.header.tables:
                 for row in table.rows:
                     for cell in row.cells:
@@ -226,9 +226,9 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                 servicios.add(service_ref)
 
         # Imprimir los servicios encontrados
-        print_with_line_number("Servicios encontrados:")
+        st.success("Servicios encontrados:")
         for service in servicios:
-            print_with_line_number(service)
+            st.success(service)
             
              # Si el elemento contiene '/BusinessServices/', salir del bucle
             if '/BusinessServices/' in service:
@@ -249,9 +249,9 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                         elementos_ref.add(invoke_ref)
 
                     # Imprimir los elementos ref encontrados
-                    print_with_line_number("Elementos ref encontrados en {}: ".format(service))
+                    st.success("Elementos ref encontrados en {}: ".format(service))
                     for elemento in elementos_ref:
-                        print_with_line_number(elemento)
+                        st.success(elemento)
                 return elemento
 
             # Construir la ruta del archivo proxy
@@ -275,9 +275,9 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                     elementos_ref.add(invoke_ref)
 
                 # Imprimir los elementos ref encontrados
-                print_with_line_number("Elementos ref encontrados en {}: ".format(service))
+                st.success("Elementos ref encontrados en {}: ".format(service))
                 for elemento in elementos_ref:
-                    print_with_line_number(elemento)
+                    st.success(elemento)
 
                     # Si el elemento contiene '/BusinessServices/', salir del bucle
                     if '/BusinessServices/' in elemento:
@@ -287,7 +287,7 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                         pipeline_path = os.path.join(project_path, elemento + '.pipeline')
                        
             else:
-                print_with_line_number("El archivo proxy {} no existe.".format(proxy_path))
+                st.success("El archivo proxy {} no existe.".format(proxy_path))
                 break
 
     return elemento
@@ -634,7 +634,7 @@ def leer_xsd_file(xsd_file_path, complexType_name):
             namespaces = {'xs': 'http://www.w3.org/2001/XMLSchema'}
             
             #st.success(f"xsd_file_path: {xsd_file_path}")
-            print_with_line_number("")
+            st.success("")
 
             # Función para detectar y eliminar repeticiones cíclicas en los nombres de los elementos
             def remove_repetitions(element_name):
@@ -677,11 +677,11 @@ def leer_xsd_file(xsd_file_path, complexType_name):
 
             complex_type_element = root.find(f".//xs:complexType[@name='{complexType_name}']", namespaces)
             if complex_type_element is not None:
-                print_with_line_number("")
+                st.success("")
                 #st.success(f"complex_type_name: {complexType_name}")
-                print_with_line_number("")
+                st.success("")
                 #st.success(f"complex_type_element: {complex_type_element}")
-                print_with_line_number("")
+                st.success("")
                 
                 visited = set()
                 get_elements(complex_type_element, complexType_name, visited)
@@ -786,7 +786,7 @@ def buscar_definicion_audibpel(branch_element, operation_name, namespaces, root)
     valor_nombre_flujo= operation_name
     if response_element is not None:
         response_value = response_element.text
-        print_with_line_number(f"El valor del elemento <con:response> dentro de branch_element es: {response_value}")
+        st.success(f"El valor del elemento <con:response> dentro de branch_element es: {response_value}")
 
         pipelines = root.findall(".//con:pipeline[@name='" + response_value + "']", namespaces)
 
@@ -794,16 +794,16 @@ def buscar_definicion_audibpel(branch_element, operation_name, namespaces, root)
             print("Se encontró un pipeline con name igual a '{}':".format(response_value))
             
             service_elements = pipeline.findall(".//con2:xqueryTransform", namespaces)
-            print_with_line_number(f"service_elements: {service_elements}")
+            st.success(f"service_elements: {service_elements}")
 
             for service_element in service_elements:
             
                 param_element = service_element.find(".//con2:param[@name='nombreFlujo']", namespaces)
-                print_with_line_number(f"param_element: {param_element}")
+                st.success(f"param_element: {param_element}")
 
                 if param_element is not None:
                     valor_nombre_flujo = param_element.find("./con2:path", namespaces).text
-                    print_with_line_number(valor_nombre_flujo)
+                    st.success(valor_nombre_flujo)
                     
                     valor_nombre_flujo = valor_nombre_flujo.replace('"', '')
                     
@@ -827,17 +827,17 @@ def buscar_definicion_audibpel(branch_element, operation_name, namespaces, root)
                     for variable in variables_a_reemplazar:
                         valor_nombre_flujo = valor_nombre_flujo.replace(variable, operation_name)
             
-    print_with_line_number(valor_nombre_flujo)
+    st.success(valor_nombre_flujo)
     return valor_nombre_flujo
 
 def extract_service_for_operations_audibpel(pipeline_path, operations):
     services_for_operations = {}
     seguir = True
-    print_with_line_number("")
-    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+    st.success("")
+    st.success("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
         
     if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
+        st.success(f"pipeline_path: {pipeline_path}")
         with open(pipeline_path, 'r', encoding="utf-8") as f:
             pipeline_content = f.read()
             root = ET.fromstring(pipeline_content)
@@ -850,7 +850,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                           'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
                           
 
-            print_with_line_number(f"LEYENDO ROOT OPERATIONS AUDIBPEL: {root}")
+            st.success(f"LEYENDO ROOT OPERATIONS AUDIBPEL: {root}")
             # Parsea el archivo .pipeline
             tree = ET.parse(pipeline_path)
             root = tree.getroot()
@@ -858,40 +858,40 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
             branch_elements = root.findall(".//con:branch", namespaces)
             if branch_elements:
                 for branch_element in branch_elements:
-                    print_with_line_number("")
+                    st.success("")
                     operation_name = branch_element.attrib.get('name', '')
-                    print_with_line_number("")
-                    print_with_line_number(f"Operation Name Branch Elements: {operation_name}")
+                    st.success("")
+                    st.success(f"Operation Name Branch Elements: {operation_name}")
                     if operation_name in operations:
                         service_element = branch_element.find(".//con1:service", namespaces)
-                        print_with_line_number(f"service_element: {service_element}")
+                        st.success(f"service_element: {service_element}")
                         
                                     
                         if service_element is not None:                            
                             #Consulta audibpel:
-                            print_with_line_number("buscar_definicion_audibpel")
+                            st.success("buscar_definicion_audibpel")
                             nombre_audibpel = buscar_definicion_audibpel(branch_element,operation_name,namespaces,root)
-                            print_with_line_number(f"nombre_audibpel: {nombre_audibpel}")
+                            st.success(f"nombre_audibpel: {nombre_audibpel}")
                             
                             service_ref = service_element.attrib.get('ref', '')
                             services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
-                            print_with_line_number("branch_elements")
-                            print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}, nombre_audibpel: {nombre_audibpel}")
-                            print_with_line_number("")
-                            print_with_line_number(services_for_operations)
-                            print_with_line_number("")
+                            st.success("branch_elements")
+                            st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}, nombre_audibpel: {nombre_audibpel}")
+                            st.success("")
+                            st.success(services_for_operations)
+                            st.success("")
                             seguir = False
                             continue
                         else:
                             seguir = True
                             #Consulta audibpel:
-                            print_with_line_number("buscar_definicion_audibpel")
+                            st.success("buscar_definicion_audibpel")
                             nombre_audibpel = buscar_definicion_audibpel(branch_element,operation_name,namespaces,root)
-                            print_with_line_number(f"nombre_audibpel: {nombre_audibpel}")
+                            st.success(f"nombre_audibpel: {nombre_audibpel}")
                             
                             # Si service_element es None, buscar el elemento <con:request> dentro de branch_element
                             request_element = branch_element.find(".//con:request", namespaces)
-                            print_with_line_number(f"request_element: {request_element}")
+                            st.success(f"request_element: {request_element}")
                             if request_element is not None:
                                 request_value = request_element.text
                                 print("El valor del elemento <con:request> dentro de branch_element es:", request_value)
@@ -923,16 +923,16 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                     
 
                                     ws_callouts = pipeline.findall(".//con1:wsCallout", namespaces=ns_stage_transform_config)
-                                    #print_with_line_number(f"ws_callouts: {ws_callouts}")
+                                    #st.success(f"ws_callouts: {ws_callouts}")
                                     java_callouts = pipeline.findall(".//con1:javaCallout", namespaces=ns_stage_transform_config)
-                                    #print_with_line_number(f"java_callouts: {java_callouts}")
+                                    #st.success(f"java_callouts: {java_callouts}")
                                     routes = pipeline.findall(".//con1:route", namespaces=ns_stage_publish_config)
-                                    #print_with_line_number(f"routes: {routes}")
+                                    #st.success(f"routes: {routes}")
                                     routes2 = pipeline.findall(".//con1:route", namespaces=ns_stage_routing_config)
-                                    #print_with_line_number(f"routes2: {routes2}")
+                                    #st.success(f"routes2: {routes2}")
                                     flow_elements = pipeline.findall(".//con:flow", ns_stage_pipeline_config)
-                                    #print_with_line_number(f"flow_elements: {flow_elements}")
-                                    print_with_line_number("")
+                                    #st.success(f"flow_elements: {flow_elements}")
+                                    st.success("")
                                     
                                     for ws_callout in ws_callouts:
                                         service_element = ws_callout.find(".//con1:service", namespaces=ns_stage_transform_config)
@@ -940,7 +940,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
-                                            print_with_line_number(f"services_for_operations ws_callouts: {services_for_operations}")
+                                            st.success(f"services_for_operations ws_callouts: {services_for_operations}")
                                             seguir = False
                                             continue
                                     
@@ -953,7 +953,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                             if service_element is not None:
                                                 service_ref = service_element.attrib.get('ref', '')
                                                 services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
-                                                print_with_line_number(f"services_for_operations java_callouts: {services_for_operations}")
+                                                st.success(f"services_for_operations java_callouts: {services_for_operations}")
                                                 seguir = False
                                                 continue
 
@@ -963,7 +963,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
-                                            print_with_line_number(f"services_for_operations routes: {services_for_operations}")
+                                            st.success(f"services_for_operations routes: {services_for_operations}")
                                             seguir = False
                                             continue
                                     
@@ -973,7 +973,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
-                                            print_with_line_number(f"services_for_operations routes2: {services_for_operations}")
+                                            st.success(f"services_for_operations routes2: {services_for_operations}")
                                             seguir = False
                                             continue
                                             
@@ -1004,8 +1004,8 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                             seguir = False
                                             continue
                                                     
-                            print_with_line_number(services_for_operations)
-                            print_with_line_number("")
+                            st.success(services_for_operations)
+                            st.success("")
 
 
 
@@ -1024,23 +1024,23 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                         operation_elements = flow_element.findall(".//con1:operation", namespaces)
                         for operation_element in operation_elements:
                             operation_name = operation_element.text.strip()
-                            print_with_line_number(f"Operation Name: {operation_name}")
-                            print_with_line_number(f"len(operations): {len(operations)}")
+                            st.success(f"Operation Name: {operation_name}")
+                            st.success(f"len(operations): {len(operations)}")
                             
                             if len(operations) == 1:
                                 operation_name = operations[0]
                                 
-                            print_with_line_number(f"Operation Name: {operation_name}")
+                            st.success(f"Operation Name: {operation_name}")
                             
                             if operation_name in operations:
                                 #Consulta audibpel:
-                                print_with_line_number("buscar_definicion_audibpel")
+                                st.success("buscar_definicion_audibpel")
                                 nombre_audibpel = buscar_definicion_audibpel(flow_element,operation_name,namespaces,root)
-                                print_with_line_number(f"nombre_audibpel: {nombre_audibpel}")
+                                st.success(f"nombre_audibpel: {nombre_audibpel}")
                                 services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
-                                print_with_line_number("flow_element")
-                                print_with_line_number(f"Operation Name: {operation_name}")
-                                print_with_line_number("")
+                                st.success("flow_element")
+                                st.success(f"Operation Name: {operation_name}")
+                                st.success("")
                                 seguir = False
                                 continue
                     
@@ -1050,23 +1050,23 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                         for operation_element in operation_elements:
                             
                             operation_name = operation_element.text.strip()
-                            print_with_line_number(f"Operation Name: {operation_name}")
-                            print_with_line_number(f"len(operations): {len(operations)}")
+                            st.success(f"Operation Name: {operation_name}")
+                            st.success(f"len(operations): {len(operations)}")
                             
                             if len(operations) == 1:
                                 operation_name = operations[0]
                                 
-                            print_with_line_number(f"Operation Name: {operation_name}")
+                            st.success(f"Operation Name: {operation_name}")
                             
                             if operation_name in operations:
                                 #Consulta audibpel:
-                                print_with_line_number("buscar_definicion_audibpel")
+                                st.success("buscar_definicion_audibpel")
                                 nombre_audibpel = buscar_definicion_audibpel(flow_element,operation_name,namespaces,root)
-                                print_with_line_number(f"nombre_audibpel: {nombre_audibpel}")
+                                st.success(f"nombre_audibpel: {nombre_audibpel}")
                                 services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
-                                print_with_line_number("flow_element")
-                                print_with_line_number(f"Operation Name: {operation_name}")
-                                print_with_line_number("")
+                                st.success("flow_element")
+                                st.success(f"Operation Name: {operation_name}")
+                                st.success("")
                                 seguir = False
                                 continue
                             
@@ -1082,9 +1082,9 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                             if service_element is not None:
                                 service_ref = service_element.attrib.get('ref', '')
                                 services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
-                                print_with_line_number("route_elements")
-                                print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                                print_with_line_number("")
+                                st.success("route_elements")
+                                st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                                st.success("")
                                 seguir = False
                                 continue
                                 
@@ -1103,15 +1103,15 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                         service_ref = service_element.attrib.get('ref', '')
                     if operation_name and service_ref:
                         services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
-                        print_with_line_number("callout_element")
-                        print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                        print_with_line_number("")
+                        st.success("callout_element")
+                        st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                        st.success("")
                         seguir = False
                         continue
                                 
-    print_with_line_number(f"SERVICES FOR: {services_for_operations}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
-    print_with_line_number("")
+    st.success(f"SERVICES FOR: {services_for_operations}")
+    st.success("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+    st.success("")
     return services_for_operations
 
 def extraer_operaciones_expuestas_http(project_path):
@@ -1141,9 +1141,9 @@ def extraer_operaciones_expuestas_http(project_path):
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
                                 capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
-                                print_with_line_number("")
+                                st.success("")
                                 st.success(f"capa_proyecto: {capa_proyecto}")
-                                print_with_line_number("")
+                                st.success("")
                                 st.success(f"wsdl_path: {wsdl_path}")
                                 operations = extract_wsdl_operations(wsdl_path)
                                 wsdl_operations_map[wsdl_path] = (
@@ -1226,7 +1226,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 found = True  # La operación se encontró en este archivo
                 # Iterar sobre el diccionario y realizar la llamada a parse_xsd_file
                 for operation_name, xsd in operation_to_xsd.items():
-                    #print_with_line_number("")
+                    #st.success("")
                     operation_actual = operation_name
                     #st.success(f"operation_actual: {operation_actual}")
                     #st.success(f"operacion_a_documentar: {operacion_a_documentar}")
@@ -1239,8 +1239,8 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #st.success(f"capa_proyecto: {capa_proyecto}")
                         #st.success(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                        #print_with_line_number("")
-                        #print_with_line_number("")
+                        #st.success("")
+                        #st.success("")
                         #st.success(f"xsd: {xsd}")
                     
                         elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
@@ -1325,14 +1325,14 @@ def extract_service_refs_from_pipeline(pipeline_path):
 
 def extract_service_for_operations(pipeline_path, operations):
     services_for_operations = {}
-    print_with_line_number("")
-    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+    st.success("")
+    st.success("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
     if pipeline_path.endswith('.pipeline') and os.path.isfile(pipeline_path):
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
+        st.success(f"pipeline_path: {pipeline_path}")
         with open(pipeline_path, 'r', encoding="utf-8") as f:
             pipeline_content = f.read()
             
-            print_with_line_number(pipeline_content)  # Imprime los primeros 500 caracteres
+            st.success(pipeline_content)  # Imprime los primeros 500 caracteres
             root = ET.fromstring(pipeline_content)
             namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
                           'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
@@ -1343,7 +1343,7 @@ def extract_service_for_operations(pipeline_path, operations):
                           'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
                           
 
-            print_with_line_number(f"LEYENDO ROOT: {root}")
+            st.success(f"LEYENDO ROOT: {root}")
             # Parsea el archivo .pipeline
             tree = ET.parse(pipeline_path)
             root = tree.getroot()
@@ -1367,9 +1367,9 @@ def extract_service_for_operations(pipeline_path, operations):
                     for operation_element in operation_elements:
                         operation_name = operation_element.text.strip()
                         services_for_operations[operation_name] = (service_ref)
-                        print_with_line_number("flow_element")
-                        print_with_line_number(f"Operation Name: {operation_name}")
-                        print_with_line_number("")
+                        st.success("flow_element")
+                        st.success(f"Operation Name: {operation_name}")
+                        st.success("")
                 
                 for proxy_element in proxy_elements:
                     service_ref = proxy_element.attrib.get('ref', '')
@@ -1380,26 +1380,26 @@ def extract_service_for_operations(pipeline_path, operations):
                                                                                                                                                   
                         services_for_operations[operation_name] = service_ref
                                                                                 
-                        print_with_line_number("flow_element")
-                        print_with_line_number(f"Operation Name: {operation_name}")
-                        print_with_line_number("")
+                        st.success("flow_element")
+                        st.success(f"Operation Name: {operation_name}")
+                        st.success("")
                 
             branch_elements = root.findall(".//con:branch", namespaces)
             if branch_elements:
                 for branch_element in branch_elements:
-                    print_with_line_number("")
+                    st.success("")
                     operation_name = branch_element.attrib.get('name', '')
-                    print_with_line_number("")
-                    print_with_line_number(f"Operation Name Branch Elements: {operation_name}")
+                    st.success("")
+                    st.success(f"Operation Name Branch Elements: {operation_name}")
                     if operation_name in operations:
                         service_element = branch_element.find(".//con1:service", namespaces)
   
                         if service_element is not None:
                             service_ref = service_element.attrib.get('ref', '')
                             services_for_operations[operation_name] = service_ref
-                            print_with_line_number("branch_elements")
-                            print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                            print_with_line_number("")
+                            st.success("branch_elements")
+                            st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                            st.success("")
                         else:
 
                             # Si service_element es None, buscar el elemento <con:request> dentro de branch_element
@@ -1435,16 +1435,16 @@ def extract_service_for_operations(pipeline_path, operations):
                                     
 
                                     ws_callouts = pipeline.findall(".//con1:wsCallout", namespaces=ns_stage_transform_config)
-                                    #print_with_line_number(f"ws_callouts: {ws_callouts}")
+                                    #st.success(f"ws_callouts: {ws_callouts}")
                                     java_callouts = pipeline.findall(".//con1:javaCallout", namespaces=ns_stage_transform_config)
-                                    #print_with_line_number(f"java_callouts: {java_callouts}")
+                                    #st.success(f"java_callouts: {java_callouts}")
                                     routes = pipeline.findall(".//con1:route", namespaces=ns_stage_publish_config)
-                                    #print_with_line_number(f"routes: {routes}")
+                                    #st.success(f"routes: {routes}")
                                     routes2 = pipeline.findall(".//con1:route", namespaces=ns_stage_routing_config)
-                                    #print_with_line_number(f"routes2: {routes2}")
+                                    #st.success(f"routes2: {routes2}")
                                     flow_elements = pipeline.findall(".//con:flow", ns_stage_pipeline_config)
-                                    print_with_line_number(f"flow_elements: {flow_elements}")
-                                    print_with_line_number("")
+                                    st.success(f"flow_elements: {flow_elements}")
+                                    st.success("")
                                     
                                     for java_callout in java_callouts:
                                         method_element = java_callout.find(".//con1:method", namespaces=ns_stage_transform_config)
@@ -1454,7 +1454,7 @@ def extract_service_for_operations(pipeline_path, operations):
                                             if service_element is not None:
                                                 service_ref = service_element.attrib.get('ref', '')
                                                 services_for_operations[operation_name] = service_ref
-                                                print_with_line_number(f"services_for_operations java_callouts: {services_for_operations}")
+                                                st.success(f"services_for_operations java_callouts: {services_for_operations}")
                                     
                                     for ws_callout in ws_callouts:
                                         service_element = ws_callout.find(".//con1:service", namespaces=ns_stage_transform_config)
@@ -1462,7 +1462,7 @@ def extract_service_for_operations(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations[operation_name] = service_ref
-                                            print_with_line_number(f"services_for_operations ws_callouts: {services_for_operations}")
+                                            st.success(f"services_for_operations ws_callouts: {services_for_operations}")
                                     
                                     
                                     for route in routes:
@@ -1471,7 +1471,7 @@ def extract_service_for_operations(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations[operation_name] = service_ref
-                                            print_with_line_number(f"services_for_operations routes: {services_for_operations}")
+                                            st.success(f"services_for_operations routes: {services_for_operations}")
                                     
                                     for route in routes2:
                                         service_element = route.find(" .//con1:service", namespaces=ns_stage_routing_config)
@@ -1479,7 +1479,7 @@ def extract_service_for_operations(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations[operation_name] = service_ref
-                                            print_with_line_number(f"services_for_operations routes2: {services_for_operations}")
+                                            st.success(f"services_for_operations routes2: {services_for_operations}")
                                             
                                      
                                      # Itera sobre cada elemento <con:flow> encontrado
@@ -1529,9 +1529,9 @@ def extract_service_for_operations(pipeline_path, operations):
                                 services_for_operations[new_operation_name] = service_ref
                                 
                                 
-                                print_with_line_number("route_elements")
-                                print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                                print_with_line_number("")
+                                st.success("route_elements")
+                                st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                                st.success("")
                                  
                 # Encuentra todos los elementos <wsCallout> sin importar el prefijo del namespace
                 callout_elements = [element for element in root.iter() if element.tag.endswith('wsCallout')]
@@ -1557,9 +1557,9 @@ def extract_service_for_operations(pipeline_path, operations):
 
                         # Asignar el service_ref con el nuevo nombre de operación
                         services_for_operations[new_operation_name] = service_ref
-                        print_with_line_number("callout_element")
-                        print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                        print_with_line_number("")
+                        st.success("callout_element")
+                        st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                        st.success("")
                         
                 
                 # Encuentro el nombre de la operación y el servicio con un filtro más específico por 'varName'
@@ -1570,7 +1570,7 @@ def extract_service_for_operations(pipeline_path, operations):
                     service_ref = service_node[0].attrib['ref']
                 else:
                     validacion_service_node = False
-                    print_with_line_number("No se encontró el nodo con la operación")
+                    st.success("No se encontró el nodo con la operación")
 
                 # Filtramos por varName="NOMBRE_SERVICIO_TUXEDO" para obtener la expresión correcta
                 assign_node = root.findall(".//con1:assign[@varName='NOMBRE_SERVICIO_TUXEDO']", namespaces={"con1": "http://www.bea.com/wli/sb/stages/transform/config"})
@@ -1581,7 +1581,7 @@ def extract_service_for_operations(pipeline_path, operations):
                     validacion_assign_node = True
                 else:
                     validacion_assign_node = False
-                    print_with_line_number("No se encontró el nodo assign con varName='NOMBRE_SERVICIO_TUXEDO'")
+                    st.success("No se encontró el nodo assign con varName='NOMBRE_SERVICIO_TUXEDO'")
                     
                     assign_node = root.findall(".//con1:operation", namespaces={"con1": "http://www.bea.com/wli/sb/stages/routing/config"})
                     if assign_node:
@@ -1591,7 +1591,7 @@ def extract_service_for_operations(pipeline_path, operations):
                 # Asigno al diccionario
                 if validacion_service_node and not validacion_assign_node:
                     operation_name = service_ref.split("/")[-1]
-                    print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                    st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
                     
                     # Verificar si la operación ya existe en el diccionario
                     new_operation_name = operation_name
@@ -1605,7 +1605,7 @@ def extract_service_for_operations(pipeline_path, operations):
                     
                 # Asigno al diccionario
                 if validacion_service_node and validacion_assign_node:
-                    print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                    st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
                     
                     # Verificar si la operación ya existe en el diccionario
                     new_operation_name = operation_name
@@ -1617,15 +1617,15 @@ def extract_service_for_operations(pipeline_path, operations):
                     # Asignar el service_ref con el nuevo nombre de operación
                     services_for_operations[new_operation_name] = service_ref
                                 
-    print_with_line_number(f"SERVICES FOR: {services_for_operations}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
-    print_with_line_number("")
+    st.success(f"SERVICES FOR: {services_for_operations}")
+    st.success("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+    st.success("")
     return services_for_operations
 
 def definir_operaciones_internas_pipeline(pipeline_path):
     service_refs = set()
     services_for_operations = {}
-    #print_with_line_number("ENTRO A OPERACIONES INTERNAS PIPELINE")
+    #st.success("ENTRO A OPERACIONES INTERNAS PIPELINE")
     try:
         with open(pipeline_path, 'r', encoding="utf-8") as f:
             pipeline_content = f.read()
@@ -1648,19 +1648,19 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                                             'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
             
             ws_callouts = root.findall(".//con1:wsCallout", namespaces=ns_stage_transform_config)
-            #print_with_line_number(f"ws_callouts: {ws_callouts}")
+            #st.success(f"ws_callouts: {ws_callouts}")
             
             ws_callouts2 = root.findall(".//con1:wsCallout", namespaces=ns_stage_config)
             
             java_callouts = root.findall(".//con1:javaCallout", namespaces=ns_stage_transform_config)
-            #print_with_line_number(f"java_callouts: {java_callouts}")
+            #st.success(f"java_callouts: {java_callouts}")
             routes = root.findall(".//con1:route", namespaces=ns_stage_publish_config)
-            #print_with_line_number(f"routes: {routes}")
+            #st.success(f"routes: {routes}")
             routes2 = root.findall(".//con1:route", namespaces=ns_stage_routing_config)
-            #print_with_line_number(f"routes2: {routes2}")
+            #st.success(f"routes2: {routes2}")
             flow_elements = root.findall(".//con:flow", ns_stage_pipeline_config)
-            print_with_line_number(f"flow_elements: {flow_elements}")
-            print_with_line_number("")
+            st.success(f"flow_elements: {flow_elements}")
+            st.success("")
             
             for java_callout in java_callouts:
                 method_element = java_callout.find(".//con1:method", namespaces=ns_stage_transform_config)
@@ -1682,7 +1682,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                         # Asignar el service_ref con el nuevo nombre de operación
                         services_for_operations[new_operation_name] = service_ref
                         
-                        print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                        st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
             
             for ws_callout in ws_callouts:
                 service_element = ws_callout.find(".//con1:service", namespaces=ns_stage_transform_config)
@@ -1702,7 +1702,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                     # Asignar el service_ref con el nuevo nombre de operación
                     services_for_operations[new_operation_name] = service_ref
                     
-                    print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                    st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
             
             for element in root.iter():
                 if element.tag.endswith('wsCallout'):
@@ -1723,7 +1723,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                         # Asignar el service_ref con el nuevo nombre de operación
                         services_for_operations[new_operation_name] = service_ref
                         
-                        print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                        st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
                       
                         
             #2 Forma de encontrar ws_callouts:
@@ -1746,7 +1746,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                     # Asignar el service_ref con el nuevo nombre de operación
                     services_for_operations[new_operation_name] = service_ref
                     
-                    print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                    st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
             
             for element in root.iter():
                 if element.tag.endswith('wsCallout'):
@@ -1767,7 +1767,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                         # Asignar el service_ref con el nuevo nombre de operación
                         services_for_operations[new_operation_name] = service_ref
                         
-                        print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                        st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
                         
             for route in routes:
                 service_element = route.find(".//con1:service", namespaces=ns_stage_publish_config)
@@ -1787,7 +1787,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                     # Asignar el service_ref con el nuevo nombre de operación
                     services_for_operations[new_operation_name] = service_ref
                     
-                    print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                    st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
             
             #2 Forma de encontrar routes2:
             
@@ -1795,14 +1795,14 @@ def definir_operaciones_internas_pipeline(pipeline_path):
 
             # Encuentra todos los elementos 'con2:route' dentro de 'con:flow'
             route_elements = root.findall(".//con2:route", namespaces=ns_con2)
-            print_with_line_number(f"route_elements final : {route_elements}")
+            st.success(f"route_elements final : {route_elements}")
 
             # Itera sobre cada elemento 'con2:route' encontrado
             for route in route_elements:
                 # Encuentra el elemento 'con2:service' dentro de 'con2:route'
                 service_element = route.find(".//con2:service", namespaces=ns_con2)
                 
-                print_with_line_number(f"route_elements final : {service_element}")
+                st.success(f"route_elements final : {service_element}")
                 
                 # Encuentra el elemento 'con2:operation' dentro de 'con2:route'
                 operation_element = route.find(".//con2:operation", namespaces=ns_con2)
@@ -1828,7 +1828,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                     # Asignar el service_ref con el nuevo nombre de operación
                     services_for_operations[new_operation_name] = service_ref
                     
-                    print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                    st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
                             
              
              # Itera sobre cada elemento <con:flow> encontrado
@@ -1866,10 +1866,10 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                     # Asignar el service_ref con el nuevo nombre de operación
                     services_for_operations[new_operation_name] = service_ref
                     
-                    print_with_line_number(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
+                    st.success(f"service_ref: {service_ref} - operation_name: {new_operation_name}")
             
-            print_with_line_number(f"service_refs: {service_refs}")
-            print_with_line_number(f"Flow Elements Services: {services_for_operations}")
+            st.success(f"service_refs: {service_refs}")
+            st.success(f"Flow Elements Services: {services_for_operations}")
 
                    
 
@@ -1881,68 +1881,68 @@ def extract_osb_services_with_given_path_dict(jdeveloper_projects_dir, services_
     osb_services = []
     for service_dict in services_for_operations:
         for service_path, path2 in service_dict.items():
-            #print_with_line_number("")
-            #print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-            #print_with_line_number("")
-            #print_with_line_number(f"path2: {path2}")
+            #st.success("")
+            #st.success("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+            #st.success("")
+            #st.success(f"path2: {path2}")
             proxy_name = path2.split('/')[-1]
             if 'Proxies' in path2:    
                 osb_file_path = os.path.join(jdeveloper_projects_dir, path2 + ".ProxyService")
-                #print_with_line_number(f"osb_file_path: {osb_file_path}")
-                #print_with_line_number("")
+                #st.success(f"osb_file_path: {osb_file_path}")
+                #st.success("")
                 project_name = extract_project_name_from_proxy(osb_file_path)
-                #print_with_line_number(f"project_name: {project_name}")
-                #print_with_line_number("")
+                #st.success(f"project_name: {project_name}")
+                #st.success("")
                 if project_name is None:
                     osb_services.append((service_path, proxy_name, 'N/A'))
                     continue  # Salta este registro y continúa con el siguiente
                 pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                #print_with_line_number(f"pipeline_path: {pipeline_path}")
-                #print_with_line_number("")
+                #st.success(f"pipeline_path: {pipeline_path}")
+                #st.success("")
                 with open(osb_file_path, 'r', encoding="utf-8") as f:
                     content = f.read()
                     service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
                     wsdl_relative_path = extract_wsdl_relative_path(content)
-                    #print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-                    #print_with_line_number("")
-                    #print_with_line_number(f"service_name: {service_name}")
-                    #print_with_line_number(f"wsdl_relative_path: {wsdl_relative_path}")
-                    #print_with_line_number("")
+                    #st.success("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+                    #st.success("")
+                    #st.success(f"service_name: {service_name}")
+                    #st.success(f"wsdl_relative_path: {wsdl_relative_path}")
+                    #st.success("")
                     if wsdl_relative_path:
                         wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
-                        #print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-                        #print_with_line_number("")
-                        #print_with_line_number(f"wsdl_path: {wsdl_path}")
-                        #print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-                        #print_with_line_number("")
+                        #st.success("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+                        #st.success("")
+                        #st.success(f"wsdl_path: {wsdl_path}")
+                        #st.success("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+                        #st.success("")
                         operations = extract_wsdl_operations(wsdl_path)
-                        #print_with_line_number(f"operations: {operations}")
-                        #print_with_line_number("")
-                        #print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-                        #print_with_line_number("")
+                        #st.success(f"operations: {operations}")
+                        #st.success("")
+                        #st.success("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+                        #st.success("")
                         #Se comenta linea para revisar como se hace:
                         #service_for_operations = extract_service_for_operations(pipeline_path, operations)
                         
                         service_for_operations = ""
-                        #print_with_line_number(f"service_for_operations: {service_for_operations}")
-                        #print_with_line_number("")
+                        #st.success(f"service_for_operations: {service_for_operations}")
+                        #st.success("")
                         if not service_for_operations:
                             service_refs = extract_service_refs_from_pipeline(pipeline_path)
-                            #print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-                            #print_with_line_number("")
-                            #print_with_line_number(f"service_refs: {service_refs}")
-                            #print_with_line_number("")
+                            #st.success("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+                            #st.success("")
+                            #st.success(f"service_refs: {service_refs}")
+                            #st.success("")
                             for service_ref in service_refs:
                                 osb_services.append((service_path, proxy_name, service_ref))
                             if not service_refs:
                                 osb_services.append((service_path, proxy_name, 'N/A'))
                         else:
-                            #print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-                            #print_with_line_number("")
+                            #st.success("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+                            #st.success("")
                             business_service = list(service_for_operations.values())[0]
                             osb_services.append((service_path, proxy_name, business_service))
-                            #print_with_line_number(f"osb_services: {osb_services}")
-                            #print_with_line_number("")
+                            #st.success(f"osb_services: {osb_services}")
+                            #st.success("")
             
             #elif 'BusinessServices' in path2:
                             
@@ -1950,8 +1950,8 @@ def extract_osb_services_with_given_path_dict(jdeveloper_projects_dir, services_
             else:
                 osb_services.append((service_path, proxy_name, 'N/A'))
                 continue
-    #print_with_line_number("*****************************FIN EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
-    #print_with_line_number("")
+    #st.success("*****************************FIN EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH DICT*********************************************")
+    #st.success("")
     return osb_services
 
 def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_operations):
@@ -1959,45 +1959,45 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
     es_ebs = False
     service_ref = ""
     
-    print_with_line_number("Entro a extract_osb_services_references_abc2")
-    print_with_line_number("")
-    print_with_line_number(f"jdeveloper_projects_dir : {jdeveloper_projects_dir}")
-    print_with_line_number("")
+    st.success("Entro a extract_osb_services_references_abc2")
+    st.success("")
+    st.success(f"jdeveloper_projects_dir : {jdeveloper_projects_dir}")
+    st.success("")
     
     if services_for_operations is not None:
         for operacion, proxy_ebs1, referencia, operacion_legado in services_for_operations:
-            print_with_line_number(f"operacion: {operacion}")
-            print_with_line_number(f"proxy_ebs1: {proxy_ebs1}")
+            st.success(f"operacion: {operacion}")
+            st.success(f"proxy_ebs1: {proxy_ebs1}")
             proxy_ebs2 = proxy_ebs1
             proxy_ebs3 = proxy_ebs1
-            print_with_line_number(f"referencia: {referencia}")
-            print_with_line_number(f"operacion_legado: {operacion_legado}")
-            print_with_line_number("")
+            st.success(f"referencia: {referencia}")
+            st.success(f"operacion_legado: {operacion_legado}")
+            st.success("")
             palabras_invalidas = ['ComponentesComunes/Proxies/PS_ManejadorGenericoErroresV1.0', 'N/A', 'Resources/Jars']
             if referencia not in palabras_invalidas:
                 if 'EBS' in referencia: #Saber si es un EBS
                     es_ebs = True
-                    print_with_line_number("Es EBS")
+                    st.success("Es EBS")
                     
                     if 'Proxies' in referencia:
-                        print_with_line_number(f"Proxies esta en referencia : {referencia}")
-                        print_with_line_number("")
+                        st.success(f"Proxies esta en referencia : {referencia}")
+                        st.success("")
                         osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
-                        print_with_line_number(f"osb_file_path : {osb_file_path}")
-                        print_with_line_number("")
+                        st.success(f"osb_file_path : {osb_file_path}")
+                        st.success("")
                         project_name = extract_project_name_from_proxy(osb_file_path)
                         if project_name is None:
                             osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, 'N/A', 'N/A'))
-                            print_with_line_number(f"project_name es 'None' : {project_name}")
-                            print_with_line_number("")
-                            print_with_line_number("")
-                            print_with_line_number(f"osb_services: {osb_services}")
-                            print_with_line_number("")
+                            st.success(f"project_name es 'None' : {project_name}")
+                            st.success("")
+                            st.success("")
+                            st.success(f"osb_services: {osb_services}")
+                            st.success("")
                             continue
 
                         pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                        print_with_line_number(f"pipeline_path: {pipeline_path}")
-                        print_with_line_number("")
+                        st.success(f"pipeline_path: {pipeline_path}")
+                        st.success("")
                         with open(osb_file_path, 'r', encoding="utf-8") as f:
                             content = f.read()
                             service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
@@ -2005,41 +2005,41 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
 
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
-                                print_with_line_number(f"wsdl_path: {wsdl_path}")
-                                print_with_line_number("")
+                                st.success(f"wsdl_path: {wsdl_path}")
+                                st.success("")
                                 operations = extract_wsdl_operations(wsdl_path)
-                                print_with_line_number(f"operations: {operations}")
-                                print_with_line_number("")
+                                st.success(f"operations: {operations}")
+                                st.success("")
                                 service_for_operations = extract_service_for_operations(pipeline_path, operacion_legado)
-                                print_with_line_number(f"service_for_operations: {service_for_operations}")
-                                print_with_line_number("")
+                                st.success(f"service_for_operations: {service_for_operations}")
+                                st.success("")
 
                                 if not service_for_operations:
                                     service_refs = extract_service_refs_from_pipeline(pipeline_path)
-                                    print_with_line_number(f"service_for_operations 2: {service_for_operations}")
-                                    print_with_line_number("")
+                                    st.success(f"service_for_operations 2: {service_for_operations}")
+                                    st.success("")
 
                                     for service_ref in service_refs:
                                         osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, service_ref, operacion_legado))
-                                        print_with_line_number(f"operacion {operacion}")
-                                        print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                        print_with_line_number(f"referencia {referencia}")
-                                        print_with_line_number(f"operacion_legado {operacion_legado}")
-                                        print_with_line_number(f"service_ref {service_ref}")
-                                        print_with_line_number(f"operacion_legado {operacion_legado}")
-                                        print_with_line_number("")
-                                        print_with_line_number("")
-                                        print_with_line_number(f"osb_services: {osb_services}")
-                                        print_with_line_number("")
+                                        st.success(f"operacion {operacion}")
+                                        st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                        st.success(f"referencia {referencia}")
+                                        st.success(f"operacion_legado {operacion_legado}")
+                                        st.success(f"service_ref {service_ref}")
+                                        st.success(f"operacion_legado {operacion_legado}")
+                                        st.success("")
+                                        st.success("")
+                                        st.success(f"osb_services: {osb_services}")
+                                        st.success("")
 
                                 else:
                                     for operation, proxy_interno in service_for_operations.items():
-                                        print_with_line_number(f"operacion {operacion}")
-                                        print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                        print_with_line_number(f"referencia {referencia}")
-                                        print_with_line_number(f"operacion_legado {operacion_legado}")
-                                        print_with_line_number(f"proxy_interno {proxy_interno}")
-                                        print_with_line_number("")
+                                        st.success(f"operacion {operacion}")
+                                        st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                        st.success(f"referencia {referencia}")
+                                        st.success(f"operacion_legado {operacion_legado}")
+                                        st.success(f"proxy_interno {proxy_interno}")
+                                        st.success("")
                                         if 'EBS' in referencia and 'PS' in proxy_interno:
                                             proxy_ebs2 = referencia.split("/")[-1]
                                             proxy_ebs3 = proxy_interno.split("/")[-1]
@@ -2051,97 +2051,97 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
                                         es_business_service = '/BusinessServices'
                                         if es_business_service not in proxy_interno:
                                             osb_file_path = os.path.join(jdeveloper_projects_dir, proxy_interno + ".ProxyService")
-                                            print_with_line_number("")
-                                            print_with_line_number(f"osb_file_path {osb_file_path}")
-                                            print_with_line_number("")
+                                            st.success("")
+                                            st.success(f"osb_file_path {osb_file_path}")
+                                            st.success("")
                                             ruta_pipeline = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                                            print_with_line_number(f"ruta_pipeline: {ruta_pipeline}")
+                                            st.success(f"ruta_pipeline: {ruta_pipeline}")
                                             if ruta_pipeline is None:
                                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, 'N/A', 'N/A'))
-                                                print_with_line_number(f"ruta_pipeline es 'None' : {project_name}")
-                                                print_with_line_number(f"operacion {operacion}")
-                                                print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                print_with_line_number(f"referencia {referencia}")
-                                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                print_with_line_number(f"service_ref {service_ref}")
-                                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                print_with_line_number("")
-                                                print_with_line_number("")
-                                                print_with_line_number(f"osb_services: {osb_services}")
-                                                print_with_line_number("")
+                                                st.success(f"ruta_pipeline es 'None' : {project_name}")
+                                                st.success(f"operacion {operacion}")
+                                                st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                st.success(f"referencia {referencia}")
+                                                st.success(f"operacion_legado {operacion_legado}")
+                                                st.success(f"service_ref {service_ref}")
+                                                st.success(f"operacion_legado {operacion_legado}")
+                                                st.success("")
+                                                st.success("")
+                                                st.success(f"osb_services: {osb_services}")
+                                                st.success("")
                                                 continue
                                             operaciones_internas = definir_operaciones_internas_pipeline(ruta_pipeline)
-                                            print_with_line_number("")
-                                            print_with_line_number(f"operaciones_internas {operaciones_internas}")
+                                            st.success("")
+                                            st.success(f"operaciones_internas {operaciones_internas}")
                                             proxy_ebs3_momento = proxy_ebs3
-                                            print_with_line_number(f"proxy_ebs3_momento {proxy_ebs3_momento}")
+                                            st.success(f"proxy_ebs3_momento {proxy_ebs3_momento}")
                                             
                                             for clave, valor in operaciones_internas.items():
                                                 operacion_legado = clave
                                                 proxy_interno = valor.split("/")[-1]
-                                                print_with_line_number(f"clave {clave}")
-                                                print_with_line_number("")
-                                                print_with_line_number(f"valor {valor}")
+                                                st.success(f"clave {clave}")
+                                                st.success("")
+                                                st.success(f"valor {valor}")
                                                 proxy_ebs3 = proxy_ebs3_momento
-                                                print_with_line_number(f"proxy_ebs3 {proxy_ebs3}")
+                                                st.success(f"proxy_ebs3 {proxy_ebs3}")
                                                 
                                                 if es_business_service in valor:
                                                     
                                                     proxy_abc_ebs = proxy_ebs2+"/"+proxy_ebs3
                                                     osb_file_path = os.path.join(jdeveloper_projects_dir, valor + ".BusinessService")
                                                     project_name = extract_project_name_from_business(osb_file_path)
-                                                    print_with_line_number(f"project_name es : {project_name}")
+                                                    st.success(f"project_name es : {project_name}")
                                                     if project_name is None:
-                                                        print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                        print_with_line_number("")
+                                                        st.success(f"project_name es 'None' : {project_name}")
+                                                        st.success("")
                                                         continue
 
                                                     with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                         content = f.read()
                                                         service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                                                        print_with_line_number(f"service_name: {service_name}")
+                                                        st.success(f"service_name: {service_name}")
                                                         wsdl_relative_path = extract_wsdl_relative_path(content)
 
                                                         wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                                                         operations = extract_wsdl_operations(wsdl_path)
                                                         service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                                        print_with_line_number(f"service_refs: {service_refs}")
-                                                        print_with_line_number("")
+                                                        st.success(f"service_refs: {service_refs}")
+                                                        st.success("")
 
                                                         for uri_value, provider_id_value in service_refs:
                                                             
-                                                            print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_abc_ebs, valor, operacion_legado, uri_value, provider_id_value}")
+                                                            st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_abc_ebs, valor, operacion_legado, uri_value, provider_id_value}")
                                                             osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_abc_ebs, valor, operacion_legado, uri_value, provider_id_value))
                                                 
                                                 else:
                                                 
                                                     if 'EBS' in valor:
                                                         valor_limpio = valor.split("/")[-1]
-                                                        print_with_line_number(f"valor_limpio: {valor_limpio}")
+                                                        st.success(f"valor_limpio: {valor_limpio}")
                                                         proxy_ebs3 = proxy_ebs3_momento+"/"+valor_limpio
-                                                        print_with_line_number(f"proxy_ebs2: {proxy_ebs2}")
-                                                        print_with_line_number(f"proxy_ebs3: {proxy_ebs3}")
+                                                        st.success(f"proxy_ebs2: {proxy_ebs2}")
+                                                        st.success(f"proxy_ebs3: {proxy_ebs3}")
                                                         proxy_anterior = proxy_ebs3
                                                         
                                                         if 'Proxies' in valor:
-                                                            print_with_line_number(f"Proxies esta en valor : {valor}")
-                                                            print_with_line_number("")
+                                                            st.success(f"Proxies esta en valor : {valor}")
+                                                            st.success("")
                                                             osb_file_path = os.path.join(jdeveloper_projects_dir, valor + ".ProxyService")
-                                                            print_with_line_number(f"osb_file_path : {osb_file_path}")
-                                                            print_with_line_number("")
+                                                            st.success(f"osb_file_path : {osb_file_path}")
+                                                            st.success("")
                                                             project_name = extract_project_name_from_proxy(osb_file_path)
                                                             if project_name is None:
                                                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, 'N/A', 'N/A'))
-                                                                print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                                print_with_line_number("")
-                                                                print_with_line_number("")
-                                                                print_with_line_number(f"osb_services: {osb_services}")
-                                                                print_with_line_number("")
+                                                                st.success(f"project_name es 'None' : {project_name}")
+                                                                st.success("")
+                                                                st.success("")
+                                                                st.success(f"osb_services: {osb_services}")
+                                                                st.success("")
                                                                 continue
 
                                                             pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                                                            print_with_line_number(f"pipeline_path: {pipeline_path}")
-                                                            print_with_line_number("")
+                                                            st.success(f"pipeline_path: {pipeline_path}")
+                                                            st.success("")
                                                             with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                                 content = f.read()
                                                                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
@@ -2149,110 +2149,110 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
 
                                                                 if wsdl_relative_path:
                                                                     wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
-                                                                    print_with_line_number(f"wsdl_path: {wsdl_path}")
-                                                                    print_with_line_number("")
+                                                                    st.success(f"wsdl_path: {wsdl_path}")
+                                                                    st.success("")
                                                                     operations = extract_wsdl_operations(wsdl_path)
-                                                                    print_with_line_number(f"operations: {operations}")
-                                                                    print_with_line_number("")
+                                                                    st.success(f"operations: {operations}")
+                                                                    st.success("")
                                                                     service_for_operations = extract_service_for_operations(pipeline_path, operacion_legado)
-                                                                    print_with_line_number(f"service_for_operations: {service_for_operations}")
-                                                                    print_with_line_number("")
+                                                                    st.success(f"service_for_operations: {service_for_operations}")
+                                                                    st.success("")
                                                                     proxy_ebs3_momento = proxy_ebs3
 
                                                                     if not service_for_operations:
                                                                         service_refs = extract_service_refs_from_pipeline(pipeline_path)
-                                                                        print_with_line_number(f"service_for_operations 2: {service_for_operations}")
-                                                                        print_with_line_number("")
+                                                                        st.success(f"service_for_operations 2: {service_for_operations}")
+                                                                        st.success("")
 
                                                                         for service_ref in service_refs:
                                                                             osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, service_ref, operacion_legado))
-                                                                            print_with_line_number(f"operacion {operacion}")
-                                                                            print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                            print_with_line_number(f"referencia {referencia}")
-                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                            print_with_line_number(f"service_ref {service_ref}")
-                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                            print_with_line_number("")
-                                                                            print_with_line_number("")
-                                                                            print_with_line_number(f"osb_services: {osb_services}")
-                                                                            print_with_line_number("")
+                                                                            st.success(f"operacion {operacion}")
+                                                                            st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                            st.success(f"referencia {referencia}")
+                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                            st.success(f"service_ref {service_ref}")
+                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                            st.success("")
+                                                                            st.success("")
+                                                                            st.success(f"osb_services: {osb_services}")
+                                                                            st.success("")
 
                                                                     else:
                                                                         for operation, proxy_interno in service_for_operations.items():
-                                                                            print_with_line_number(f"operacion {operacion}")
-                                                                            print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                            print_with_line_number(f"referencia {referencia}")
-                                                                            print_with_line_number(f"proxy_ebs3_momento {proxy_ebs3_momento}")
-                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                            print_with_line_number(f"proxy_interno {proxy_interno}")
-                                                                            print_with_line_number("")
+                                                                            st.success(f"operacion {operacion}")
+                                                                            st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                            st.success(f"referencia {referencia}")
+                                                                            st.success(f"proxy_ebs3_momento {proxy_ebs3_momento}")
+                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                            st.success(f"proxy_interno {proxy_interno}")
+                                                                            st.success("")
                                                                             if 'EBS' in referencia and 'PS' in proxy_ebs3_momento:
                                                                                 proxy_ebs2 = referencia.split("/")[-1]
                                                                                 proxy_ebs3 = proxy_interno.split("/")[-1]
-                                                                                print_with_line_number(f"proxy_ebs2: {proxy_ebs2}")
-                                                                                print_with_line_number(f"proxy_ebs3: {proxy_ebs3}")
+                                                                                st.success(f"proxy_ebs2: {proxy_ebs2}")
+                                                                                st.success(f"proxy_ebs3: {proxy_ebs3}")
                                                                             
                                                                             es_business_service = '/BusinessServices'
                                                                             proxy_concatenado = proxy_interno.split("/")[-1]
-                                                                            print_with_line_number(f"proxy_concatenado {proxy_concatenado}")
+                                                                            st.success(f"proxy_concatenado {proxy_concatenado}")
                                                                             proxy_ebs3 = proxy_ebs3_momento+"/"+proxy_concatenado
-                                                                            print_with_line_number(f"proxy_ebs3 {proxy_ebs3}")
+                                                                            st.success(f"proxy_ebs3 {proxy_ebs3}")
                                                                             if es_business_service not in proxy_interno:
                                                                                 osb_file_path = os.path.join(jdeveloper_projects_dir, proxy_interno + ".ProxyService")
-                                                                                print_with_line_number("")
-                                                                                print_with_line_number(f"osb_file_path {osb_file_path}")
-                                                                                print_with_line_number("")
+                                                                                st.success("")
+                                                                                st.success(f"osb_file_path {osb_file_path}")
+                                                                                st.success("")
                                                                                 ruta_pipeline = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                                                                                print_with_line_number(f"ruta_pipeline: {ruta_pipeline}")
+                                                                                st.success(f"ruta_pipeline: {ruta_pipeline}")
                                                                                 if ruta_pipeline is None:
                                                                                     osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, 'N/A', 'N/A'))
-                                                                                    print_with_line_number(f"ruta_pipeline es 'None' : {project_name}")
-                                                                                    print_with_line_number(f"operacion {operacion}")
-                                                                                    print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                                    print_with_line_number(f"referencia {referencia}")
-                                                                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                                    print_with_line_number(f"service_ref {service_ref}")
-                                                                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                                    print_with_line_number("")
-                                                                                    print_with_line_number("")
-                                                                                    print_with_line_number(f"osb_services: {osb_services}")
-                                                                                    print_with_line_number("")
+                                                                                    st.success(f"ruta_pipeline es 'None' : {project_name}")
+                                                                                    st.success(f"operacion {operacion}")
+                                                                                    st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                                    st.success(f"referencia {referencia}")
+                                                                                    st.success(f"operacion_legado {operacion_legado}")
+                                                                                    st.success(f"service_ref {service_ref}")
+                                                                                    st.success(f"operacion_legado {operacion_legado}")
+                                                                                    st.success("")
+                                                                                    st.success("")
+                                                                                    st.success(f"osb_services: {osb_services}")
+                                                                                    st.success("")
                                                                                     continue
                                                                                 operaciones_internas = definir_operaciones_internas_pipeline(ruta_pipeline)
-                                                                                print_with_line_number("")
-                                                                                print_with_line_number(f"operaciones_internas {operaciones_internas}")
+                                                                                st.success("")
+                                                                                st.success(f"operaciones_internas {operaciones_internas}")
                                                                                 
                                                                                 for clave, valor in operaciones_internas.items():
                                                                                     operacion_legado = clave
                                                                                     proxy_externo = valor.split("/")[-1]
-                                                                                    print_with_line_number(f"clave {clave}")
-                                                                                    print_with_line_number("")
-                                                                                    print_with_line_number(f"valor {valor}")
+                                                                                    st.success(f"clave {clave}")
+                                                                                    st.success("")
+                                                                                    st.success(f"valor {valor}")
                                                                                     
                                                                                     if es_business_service in valor:
                                                                                         
                                                                                         osb_file_path = os.path.join(jdeveloper_projects_dir, valor + ".BusinessService")
                                                                                         project_name = extract_project_name_from_business(osb_file_path)
-                                                                                        print_with_line_number(f"project_name es : {project_name}")
+                                                                                        st.success(f"project_name es : {project_name}")
                                                                                         if project_name is None:
-                                                                                            print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                                                            print_with_line_number("")
+                                                                                            st.success(f"project_name es 'None' : {project_name}")
+                                                                                            st.success("")
                                                                                             continue
 
                                                                                         with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                                                             content = f.read()
                                                                                             service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                                                                                            print_with_line_number(f"service_name: {service_name}")
+                                                                                            st.success(f"service_name: {service_name}")
                                                                                             wsdl_relative_path = extract_wsdl_relative_path(content)
 
                                                                                             wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                                                                                             operations = extract_wsdl_operations(wsdl_path)
                                                                                             service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                                                                            print_with_line_number(f"service_refs: {service_refs}")
-                                                                                            print_with_line_number("")
+                                                                                            st.success(f"service_refs: {service_refs}")
+                                                                                            st.success("")
 
                                                                                             for uri_value, provider_id_value in service_refs:
-                                                                                                print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, uri_value, provider_id_value}")
+                                                                                                st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, uri_value, provider_id_value}")
                                                                                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, uri_value, provider_id_value))
                                                                                     
                                                                                     else:
@@ -2267,56 +2267,56 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
                                                                                         
                                                                                         
                                                                                         else:
-                                                                                            print_with_line_number(f"proxy_ebs2: {proxy_ebs2}")
-                                                                                            print_with_line_number(f"proxy_ebs3: {proxy_ebs3}")
-                                                                                            print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, proxy_externo, clave}")
+                                                                                            st.success(f"proxy_ebs2: {proxy_ebs2}")
+                                                                                            st.success(f"proxy_ebs3: {proxy_ebs3}")
+                                                                                            st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, proxy_externo, clave}")
                                                                                             osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, proxy_externo, clave))
-                                                                                            print_with_line_number(f"operacion {operacion}")
-                                                                                            print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                                            print_with_line_number(f"referencia {referencia}")
-                                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                                            print_with_line_number("")
-                                                                                            print_with_line_number("")
-                                                                                            print_with_line_number(f"osb_services: {osb_services}")
-                                                                                            print_with_line_number("")
+                                                                                            st.success(f"operacion {operacion}")
+                                                                                            st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                                            st.success(f"referencia {referencia}")
+                                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                                            st.success("")
+                                                                                            st.success("")
+                                                                                            st.success(f"osb_services: {osb_services}")
+                                                                                            st.success("")
                                                                             
                                                                             else:
                                                                                 osb_file_path = os.path.join(jdeveloper_projects_dir, proxy_interno + ".BusinessService")
                                                                                 project_name = extract_project_name_from_business(osb_file_path)
-                                                                                print_with_line_number(f"project_name es : {project_name}")
+                                                                                st.success(f"project_name es : {project_name}")
                                                                                 if project_name is None:
-                                                                                    print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                                                    print_with_line_number("")
+                                                                                    st.success(f"project_name es 'None' : {project_name}")
+                                                                                    st.success("")
                                                                                     continue
 
                                                                                 with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                                                     content = f.read()
                                                                                     service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                                                                                    print_with_line_number(f"service_name: {service_name}")
+                                                                                    st.success(f"service_name: {service_name}")
                                                                                     wsdl_relative_path = extract_wsdl_relative_path(content)
 
                                                                                     wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                                                                                     operations = extract_wsdl_operations(wsdl_path)
                                                                                     service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                                                                    print_with_line_number(f"service_refs: {service_refs}")
-                                                                                    print_with_line_number("")
+                                                                                    st.success(f"service_refs: {service_refs}")
+                                                                                    st.success("")
 
                                                                                     for uri_value, provider_id_value in service_refs:
                                                                                         osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, uri_value, provider_id_value))
-                                                                                        print_with_line_number(f"operacion {operacion}")
-                                                                                        print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                                        print_with_line_number(f"referencia {referencia}")
-                                                                                        print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                                        print_with_line_number(f"uri_value {uri_value}")
-                                                                                        print_with_line_number(f"provider_id_value {provider_id_value}")
-                                                                                        print_with_line_number("")
-                                                                                        print_with_line_number(f"osb_services: {osb_services}")
-                                                                                        print_with_line_number("")
+                                                                                        st.success(f"operacion {operacion}")
+                                                                                        st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                                        st.success(f"referencia {referencia}")
+                                                                                        st.success(f"operacion_legado {operacion_legado}")
+                                                                                        st.success(f"uri_value {uri_value}")
+                                                                                        st.success(f"provider_id_value {provider_id_value}")
+                                                                                        st.success("")
+                                                                                        st.success(f"osb_services: {osb_services}")
+                                                                                        st.success("")
                                                                                 
-                                                                            print_with_line_number("")
-                                                                            print_with_line_number(f"osb_services: {osb_services}")
-                                                                            print_with_line_number("")
+                                                                            st.success("")
+                                                                            st.success(f"osb_services: {osb_services}")
+                                                                            st.success("")
                                                                             proxy_ebs3 = ""
                                                                             
 
@@ -2324,27 +2324,27 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
                                                         
                                                         if 'Proxies' in valor:
                                                             valor_limpio = valor.split("/")[-1]
-                                                            print_with_line_number(f"valor_limpio: {valor_limpio}")
+                                                            st.success(f"valor_limpio: {valor_limpio}")
                                                             proxy_ebs3 = proxy_ebs3_momento+"/"+valor_limpio
-                                                            print_with_line_number(f"proxy_ebs3: {proxy_ebs3}")
-                                                            print_with_line_number(f"Proxies esta en valor : {valor}")
-                                                            print_with_line_number("")
+                                                            st.success(f"proxy_ebs3: {proxy_ebs3}")
+                                                            st.success(f"Proxies esta en valor : {valor}")
+                                                            st.success("")
                                                             osb_file_path = os.path.join(jdeveloper_projects_dir, valor + ".ProxyService")
-                                                            print_with_line_number(f"osb_file_path : {osb_file_path}")
-                                                            print_with_line_number("")
+                                                            st.success(f"osb_file_path : {osb_file_path}")
+                                                            st.success("")
                                                             project_name = extract_project_name_from_proxy(osb_file_path)
                                                             if project_name is None:
                                                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, 'N/A', 'N/A'))
-                                                                print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                                print_with_line_number("")
-                                                                print_with_line_number("")
-                                                                print_with_line_number(f"osb_services: {osb_services}")
-                                                                print_with_line_number("")
+                                                                st.success(f"project_name es 'None' : {project_name}")
+                                                                st.success("")
+                                                                st.success("")
+                                                                st.success(f"osb_services: {osb_services}")
+                                                                st.success("")
                                                                 continue
 
                                                             pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                                                            print_with_line_number(f"pipeline_path: {pipeline_path}")
-                                                            print_with_line_number("")
+                                                            st.success(f"pipeline_path: {pipeline_path}")
+                                                            st.success("")
                                                             with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                                 content = f.read()
                                                                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
@@ -2352,41 +2352,41 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
 
                                                                 if wsdl_relative_path:
                                                                     wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
-                                                                    print_with_line_number(f"wsdl_path: {wsdl_path}")
-                                                                    print_with_line_number("")
+                                                                    st.success(f"wsdl_path: {wsdl_path}")
+                                                                    st.success("")
                                                                     operations = extract_wsdl_operations(wsdl_path)
-                                                                    print_with_line_number(f"operations: {operations}")
-                                                                    print_with_line_number("")
+                                                                    st.success(f"operations: {operations}")
+                                                                    st.success("")
                                                                     service_for_operations = extract_service_for_operations(pipeline_path, operacion_legado)
-                                                                    print_with_line_number(f"service_for_operations: {service_for_operations}")
-                                                                    print_with_line_number("")
+                                                                    st.success(f"service_for_operations: {service_for_operations}")
+                                                                    st.success("")
 
                                                                     if not service_for_operations:
                                                                         service_refs = extract_service_refs_from_pipeline(pipeline_path)
-                                                                        print_with_line_number(f"service_for_operations 2: {service_for_operations}")
-                                                                        print_with_line_number("")
+                                                                        st.success(f"service_for_operations 2: {service_for_operations}")
+                                                                        st.success("")
 
                                                                         for service_ref in service_refs:
                                                                             osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, service_ref, operacion_legado))
-                                                                            print_with_line_number(f"operacion {operacion}")
-                                                                            print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                            print_with_line_number(f"valor {valor}")
-                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                            print_with_line_number(f"service_ref {service_ref}")
-                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                            print_with_line_number("")
-                                                                            print_with_line_number("")
-                                                                            print_with_line_number(f"osb_services: {osb_services}")
-                                                                            print_with_line_number("")
+                                                                            st.success(f"operacion {operacion}")
+                                                                            st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                            st.success(f"valor {valor}")
+                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                            st.success(f"service_ref {service_ref}")
+                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                            st.success("")
+                                                                            st.success("")
+                                                                            st.success(f"osb_services: {osb_services}")
+                                                                            st.success("")
 
                                                                     else:
                                                                         for operation, proxy_interno in service_for_operations.items():
-                                                                            print_with_line_number(f"operacion {operacion}")
-                                                                            print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                            print_with_line_number(f"valor {valor}")
-                                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                            print_with_line_number(f"proxy_interno {proxy_interno}")
-                                                                            print_with_line_number("")
+                                                                            st.success(f"operacion {operacion}")
+                                                                            st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                            st.success(f"valor {valor}")
+                                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                                            st.success(f"proxy_interno {proxy_interno}")
+                                                                            st.success("")
                                                                             if 'EBS' in valor and 'PS' in proxy_interno:
                                                                                 proxy_ebs2 = valor.split("/")[-1]
                                                                                 proxy_ebs3 = proxy_interno.split("/")[-1]
@@ -2398,222 +2398,222 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
                                                                             es_business_service = '/BusinessServices'
                                                                             if es_business_service not in proxy_interno:
                                                                                 osb_file_path = os.path.join(jdeveloper_projects_dir, proxy_interno + ".ProxyService")
-                                                                                print_with_line_number("")
-                                                                                print_with_line_number(f"osb_file_path {osb_file_path}")
-                                                                                print_with_line_number("")
+                                                                                st.success("")
+                                                                                st.success(f"osb_file_path {osb_file_path}")
+                                                                                st.success("")
                                                                                 ruta_pipeline = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                                                                                print_with_line_number(f"ruta_pipeline: {ruta_pipeline}")
+                                                                                st.success(f"ruta_pipeline: {ruta_pipeline}")
                                                                                 if ruta_pipeline is None:
                                                                                     osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, 'N/A', 'N/A'))
-                                                                                    print_with_line_number(f"ruta_pipeline es 'None' : {project_name}")
-                                                                                    print_with_line_number(f"operacion {operacion}")
-                                                                                    print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                                                    print_with_line_number(f"valor {valor}")
-                                                                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                                    print_with_line_number(f"service_ref {service_ref}")
-                                                                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                                                    print_with_line_number("")
-                                                                                    print_with_line_number("")
-                                                                                    print_with_line_number(f"osb_services: {osb_services}")
-                                                                                    print_with_line_number("")
+                                                                                    st.success(f"ruta_pipeline es 'None' : {project_name}")
+                                                                                    st.success(f"operacion {operacion}")
+                                                                                    st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                                                    st.success(f"valor {valor}")
+                                                                                    st.success(f"operacion_legado {operacion_legado}")
+                                                                                    st.success(f"service_ref {service_ref}")
+                                                                                    st.success(f"operacion_legado {operacion_legado}")
+                                                                                    st.success("")
+                                                                                    st.success("")
+                                                                                    st.success(f"osb_services: {osb_services}")
+                                                                                    st.success("")
                                                                                     continue
                                                                                 operaciones_internas = definir_operaciones_internas_pipeline(ruta_pipeline)
-                                                                                print_with_line_number("")
-                                                                                print_with_line_number(f"operaciones_internas {operaciones_internas}")
+                                                                                st.success("")
+                                                                                st.success(f"operaciones_internas {operaciones_internas}")
                                                                                 proxy_ebs3_momento = proxy_ebs3
-                                                                                print_with_line_number(f"proxy_ebs3_momento {proxy_ebs3_momento}")
+                                                                                st.success(f"proxy_ebs3_momento {proxy_ebs3_momento}")
                                                                                 
                                                                                 for clave, valor in operaciones_internas.items():
                                                                                     operacion_legado = clave
                                                                                     proxy_interno = valor.split("/")[-1]
-                                                                                    print_with_line_number(f"clave {clave}")
-                                                                                    print_with_line_number("")
-                                                                                    print_with_line_number(f"valor {valor}")
+                                                                                    st.success(f"clave {clave}")
+                                                                                    st.success("")
+                                                                                    st.success(f"valor {valor}")
                                                                                     
                                                                                     if es_business_service in valor:
                                                                                         
                                                                                         osb_file_path = os.path.join(jdeveloper_projects_dir, valor + ".BusinessService")
                                                                                         project_name = extract_project_name_from_business(osb_file_path)
-                                                                                        print_with_line_number(f"project_name es : {project_name}")
+                                                                                        st.success(f"project_name es : {project_name}")
                                                                                         if project_name is None:
-                                                                                            print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                                                            print_with_line_number("")
+                                                                                            st.success(f"project_name es 'None' : {project_name}")
+                                                                                            st.success("")
                                                                                             continue
 
                                                                                         with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                                                             content = f.read()
                                                                                             service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                                                                                            print_with_line_number(f"service_name: {service_name}")
+                                                                                            st.success(f"service_name: {service_name}")
                                                                                             wsdl_relative_path = extract_wsdl_relative_path(content)
 
                                                                                             wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                                                                                             operations = extract_wsdl_operations(wsdl_path)
                                                                                             service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                                                                            print_with_line_number(f"service_refs: {service_refs}")
-                                                                                            print_with_line_number("")
+                                                                                            st.success(f"service_refs: {service_refs}")
+                                                                                            st.success("")
 
                                                                                             for uri_value, provider_id_value in service_refs:
                                                                                                 
-                                                                                                print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, uri_value, provider_id_value}")
+                                                                                                st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, uri_value, provider_id_value}")
                                                                                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, uri_value, provider_id_value))
                                                                                 
                                                     
                                                     
                                                         else:
                                                             valor_limpio = valor.split("/")[-1]
-                                                            print_with_line_number(f"valor_limpio: {valor_limpio}")
+                                                            st.success(f"valor_limpio: {valor_limpio}")
                                                             proxy_ebs3 = proxy_ebs3_momento+"/"+valor_limpio
-                                                            print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, proxy_interno, clave}")
+                                                            st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, proxy_interno, clave}")
                                                             osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, valor, operacion_legado, proxy_interno, clave))
-                                                            print_with_line_number(f"operacion {operacion}")
-                                                            print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                            print_with_line_number(f"referencia {referencia}")
-                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                            print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                            print_with_line_number("")
-                                                            print_with_line_number("")
-                                                            print_with_line_number(f"osb_services: {osb_services}")
-                                                            print_with_line_number("")
+                                                            st.success(f"operacion {operacion}")
+                                                            st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                            st.success(f"referencia {referencia}")
+                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                            st.success(f"operacion_legado {operacion_legado}")
+                                                            st.success("")
+                                                            st.success("")
+                                                            st.success(f"osb_services: {osb_services}")
+                                                            st.success("")
                                                     
                                                     valor_limpio = ""
                                         
                                         else:
                                             osb_file_path = os.path.join(jdeveloper_projects_dir, proxy_interno + ".BusinessService")
                                             project_name = extract_project_name_from_business(osb_file_path)
-                                            print_with_line_number(f"project_name es : {project_name}")
+                                            st.success(f"project_name es : {project_name}")
                                             if project_name is None:
-                                                print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                print_with_line_number("")
+                                                st.success(f"project_name es 'None' : {project_name}")
+                                                st.success("")
                                                 continue
 
                                             with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                 content = f.read()
                                                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                                                print_with_line_number(f"service_name: {service_name}")
+                                                st.success(f"service_name: {service_name}")
                                                 wsdl_relative_path = extract_wsdl_relative_path(content)
 
                                                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                                                 operations = extract_wsdl_operations(wsdl_path)
                                                 service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                                print_with_line_number(f"service_refs: {service_refs}")
-                                                print_with_line_number("")
+                                                st.success(f"service_refs: {service_refs}")
+                                                st.success("")
 
                                                 for uri_value, provider_id_value in service_refs:
                                                     ruta_proxy_completa = proxy_interno
                                                     proxy_ebs3 = referencia.split("/")[-1]
-                                                    print_with_line_number(f"ruta_proxy_completa {ruta_proxy_completa}")
-                                                    print_with_line_number(f"proxy_ebs3 {proxy_ebs3}")
-                                                    print_with_line_number(f"proxy_interno {proxy_interno}")
-                                                    print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, ruta_proxy_completa, operacion_legado, uri_value, provider_id_value}")
+                                                    st.success(f"ruta_proxy_completa {ruta_proxy_completa}")
+                                                    st.success(f"proxy_ebs3 {proxy_ebs3}")
+                                                    st.success(f"proxy_interno {proxy_interno}")
+                                                    st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, ruta_proxy_completa, operacion_legado, uri_value, provider_id_value}")
                                                     osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, ruta_proxy_completa, operacion_legado, uri_value, provider_id_value))
-                                                    print_with_line_number(f"operacion {operacion}")
-                                                    print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                    print_with_line_number(f"referencia {referencia}")
-                                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                    print_with_line_number(f"uri_value {uri_value}")
-                                                    print_with_line_number(f"provider_id_value {provider_id_value}")
-                                                    print_with_line_number("")
-                                                    print_with_line_number(f"osb_services: {osb_services}")
-                                                    print_with_line_number("")
+                                                    st.success(f"operacion {operacion}")
+                                                    st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                    st.success(f"referencia {referencia}")
+                                                    st.success(f"operacion_legado {operacion_legado}")
+                                                    st.success(f"uri_value {uri_value}")
+                                                    st.success(f"provider_id_value {provider_id_value}")
+                                                    st.success("")
+                                                    st.success(f"osb_services: {osb_services}")
+                                                    st.success("")
                                             
-                                        print_with_line_number("")
-                                        print_with_line_number(f"osb_services: {osb_services}")
-                                        print_with_line_number("")
+                                        st.success("")
+                                        st.success(f"osb_services: {osb_services}")
+                                        st.success("")
                                         proxy_ebs3 = ""
                                         
 
                     elif 'Business' in referencia:
-                        print_with_line_number("Es BUSINESS SERVICE!!")
+                        st.success("Es BUSINESS SERVICE!!")
                         osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
-                        print_with_line_number("")
-                        print_with_line_number(f"osb_file_path: {osb_file_path}")
-                        print_with_line_number("")
+                        st.success("")
+                        st.success(f"osb_file_path: {osb_file_path}")
+                        st.success("")
                         project_name = extract_project_name_from_business(osb_file_path)
-                        print_with_line_number(f"project_name: {project_name}")
-                        print_with_line_number("")
+                        st.success(f"project_name: {project_name}")
+                        st.success("")
                         if project_name is None:
-                            print_with_line_number(f"project_name es 'None' : {project_name}")
-                            print_with_line_number("")
+                            st.success(f"project_name es 'None' : {project_name}")
+                            st.success("")
                             continue
                             
                         if len(project_name) <= 0:
                             project_name = extract_project_name_from_business_tuxedo(osb_file_path)
-                            print_with_line_number(f"project_name: {project_name}")
-                            print_with_line_number("")
+                            st.success(f"project_name: {project_name}")
+                            st.success("")
                             
                             service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                            print_with_line_number(f"service_refs: {service_refs}")
-                            print_with_line_number("")
+                            st.success(f"service_refs: {service_refs}")
+                            st.success("")
 
                             for uri_value, provider_id_value in service_refs:
                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, uri_value, provider_id_value))
-                                print_with_line_number(f"operacion {operacion}")
-                                print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                print_with_line_number(f"proxy_ebs2 {proxy_ebs2}")
-                                print_with_line_number(f"proxy_ebs3 {proxy_ebs3}")
-                                print_with_line_number(f"referencia {referencia}")
-                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                print_with_line_number(f"uri_value {uri_value}")
-                                print_with_line_number(f"provider_id_value {provider_id_value}")
-                                print_with_line_number("")
-                                print_with_line_number(f"osb_services: {osb_services}")
-                                print_with_line_number("")
+                                st.success(f"operacion {operacion}")
+                                st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                st.success(f"proxy_ebs2 {proxy_ebs2}")
+                                st.success(f"proxy_ebs3 {proxy_ebs3}")
+                                st.success(f"referencia {referencia}")
+                                st.success(f"operacion_legado {operacion_legado}")
+                                st.success(f"uri_value {uri_value}")
+                                st.success(f"provider_id_value {provider_id_value}")
+                                st.success("")
+                                st.success(f"osb_services: {osb_services}")
+                                st.success("")
 
                         with open(osb_file_path, 'r', encoding="utf-8") as f:
                             content = f.read()
                             service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                            print_with_line_number(f"service_name: {service_name}")
-                            print_with_line_number("")
+                            st.success(f"service_name: {service_name}")
+                            st.success("")
                             wsdl_relative_path = extract_wsdl_relative_path(content)
-                            print_with_line_number(f"wsdl_relative_path: {wsdl_relative_path}")
-                            print_with_line_number("")
+                            st.success(f"wsdl_relative_path: {wsdl_relative_path}")
+                            st.success("")
 
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
-                                print_with_line_number(f"wsdl_path: {wsdl_path}")
-                                print_with_line_number("")
+                                st.success(f"wsdl_path: {wsdl_path}")
+                                st.success("")
                                 operations = extract_wsdl_operations(wsdl_path)
-                                print_with_line_number(f"operations: {operations}")
-                                print_with_line_number("")
+                                st.success(f"operations: {operations}")
+                                st.success("")
                                 service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                print_with_line_number(f"service_refs: {service_refs}")
-                                print_with_line_number("")
+                                st.success(f"service_refs: {service_refs}")
+                                st.success("")
 
                                 for uri_value, provider_id_value in service_refs:
                                     osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, uri_value, provider_id_value))
-                                    print_with_line_number(f"operacion {operacion}")
-                                    print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                    print_with_line_number(f"proxy_ebs2 {proxy_ebs2}")
-                                    print_with_line_number(f"proxy_ebs3 {proxy_ebs3}")
-                                    print_with_line_number(f"referencia {referencia}")
-                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                    print_with_line_number(f"uri_value {uri_value}")
-                                    print_with_line_number(f"provider_id_value {provider_id_value}")
-                                    print_with_line_number("")
-                                    print_with_line_number(f"osb_services: {osb_services}")
-                                    print_with_line_number("")
+                                    st.success(f"operacion {operacion}")
+                                    st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                    st.success(f"proxy_ebs2 {proxy_ebs2}")
+                                    st.success(f"proxy_ebs3 {proxy_ebs3}")
+                                    st.success(f"referencia {referencia}")
+                                    st.success(f"operacion_legado {operacion_legado}")
+                                    st.success(f"uri_value {uri_value}")
+                                    st.success(f"provider_id_value {provider_id_value}")
+                                    st.success("")
+                                    st.success(f"osb_services: {osb_services}")
+                                    st.success("")
                     
                     
                 else: #Es un ABC
                     if 'Proxies' in referencia:
-                        print_with_line_number(f"Proxies esta en referencia : {referencia}")
-                        print_with_line_number("")
+                        st.success(f"Proxies esta en referencia : {referencia}")
+                        st.success("")
                         osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
-                        print_with_line_number(f"osb_file_path : {osb_file_path}")
-                        print_with_line_number("")
+                        st.success(f"osb_file_path : {osb_file_path}")
+                        st.success("")
                         project_name = extract_project_name_from_proxy(osb_file_path)
                         if project_name is None:
                             osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, 'N/A', 'N/A'))
-                            print_with_line_number(f"project_name es 'None' : {project_name}")
-                            print_with_line_number("")
-                            print_with_line_number("")
-                            print_with_line_number(f"osb_services: {osb_services}")
-                            print_with_line_number("")
+                            st.success(f"project_name es 'None' : {project_name}")
+                            st.success("")
+                            st.success("")
+                            st.success(f"osb_services: {osb_services}")
+                            st.success("")
                             continue
 
                         pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                        print_with_line_number(f"pipeline_path: {pipeline_path}")
-                        print_with_line_number("")
+                        st.success(f"pipeline_path: {pipeline_path}")
+                        st.success("")
                         with open(osb_file_path, 'r', encoding="utf-8") as f:
                             content = f.read()
                             service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
@@ -2621,213 +2621,213 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
 
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
-                                print_with_line_number(f"wsdl_path: {wsdl_path}")
-                                print_with_line_number("")
+                                st.success(f"wsdl_path: {wsdl_path}")
+                                st.success("")
                                 operations = extract_wsdl_operations(wsdl_path)
-                                print_with_line_number(f"operations: {operations}")
-                                print_with_line_number("")
+                                st.success(f"operations: {operations}")
+                                st.success("")
                                 service_for_operations = extract_service_for_operations(pipeline_path, operacion_legado)
-                                print_with_line_number(f"service_for_operations: {service_for_operations}")
-                                print_with_line_number("")
+                                st.success(f"service_for_operations: {service_for_operations}")
+                                st.success("")
 
                                 if not service_for_operations:
                                     service_refs = extract_service_refs_from_pipeline(pipeline_path)
-                                    print_with_line_number(f"service_for_operations 2: {service_for_operations}")
-                                    print_with_line_number("")
+                                    st.success(f"service_for_operations 2: {service_for_operations}")
+                                    st.success("")
 
                                     for service_ref in service_refs:
                                         osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, service_ref, operacion_legado))
-                                        print_with_line_number(f"operacion {operacion}")
-                                        print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                        print_with_line_number(f"referencia {referencia}")
-                                        print_with_line_number(f"operacion_legado {operacion_legado}")
-                                        print_with_line_number(f"service_ref {service_ref}")
-                                        print_with_line_number(f"operacion_legado {operacion_legado}")
-                                        print_with_line_number("")
-                                        print_with_line_number("")
-                                        print_with_line_number(f"osb_services: {osb_services}")
-                                        print_with_line_number("")
+                                        st.success(f"operacion {operacion}")
+                                        st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                        st.success(f"referencia {referencia}")
+                                        st.success(f"operacion_legado {operacion_legado}")
+                                        st.success(f"service_ref {service_ref}")
+                                        st.success(f"operacion_legado {operacion_legado}")
+                                        st.success("")
+                                        st.success("")
+                                        st.success(f"osb_services: {osb_services}")
+                                        st.success("")
 
                                 else:
                                     for operation, proxy_interno in service_for_operations.items():
-                                        print_with_line_number(f"operacion {operacion}")
-                                        print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                        print_with_line_number(f"referencia {referencia}")
-                                        print_with_line_number(f"operacion_legado {operacion_legado}")
-                                        print_with_line_number(f"proxy_interno {proxy_interno}")
-                                        print_with_line_number("")
+                                        st.success(f"operacion {operacion}")
+                                        st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                        st.success(f"referencia {referencia}")
+                                        st.success(f"operacion_legado {operacion_legado}")
+                                        st.success(f"proxy_interno {proxy_interno}")
+                                        st.success("")
                                         es_business_service = '/BusinessServices'
                                         if es_business_service not in proxy_interno:
                                         
                                             osb_file_path = os.path.join(jdeveloper_projects_dir, proxy_interno + ".ProxyService")
-                                            print_with_line_number("")
-                                            print_with_line_number(f"osb_file_path {osb_file_path}")
-                                            print_with_line_number("")
+                                            st.success("")
+                                            st.success(f"osb_file_path {osb_file_path}")
+                                            st.success("")
                                             ruta_pipeline = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                                            print_with_line_number(f"ruta_pipeline: {ruta_pipeline}")
+                                            st.success(f"ruta_pipeline: {ruta_pipeline}")
                                             if ruta_pipeline is None:
                                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, 'N/A', 'N/A'))
-                                                print_with_line_number(f"ruta_pipeline es 'None' : {project_name}")
-                                                print_with_line_number(f"operacion {operacion}")
-                                                print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                print_with_line_number(f"referencia {referencia}")
-                                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                print_with_line_number(f"service_ref {service_ref}")
-                                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                print_with_line_number("")
-                                                print_with_line_number("")
-                                                print_with_line_number(f"osb_services: {osb_services}")
-                                                print_with_line_number("")
+                                                st.success(f"ruta_pipeline es 'None' : {project_name}")
+                                                st.success(f"operacion {operacion}")
+                                                st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                st.success(f"referencia {referencia}")
+                                                st.success(f"operacion_legado {operacion_legado}")
+                                                st.success(f"service_ref {service_ref}")
+                                                st.success(f"operacion_legado {operacion_legado}")
+                                                st.success("")
+                                                st.success("")
+                                                st.success(f"osb_services: {osb_services}")
+                                                st.success("")
                                                 continue
                                             operaciones_internas = definir_operaciones_internas_pipeline(ruta_pipeline)
-                                            print_with_line_number("")
-                                            print_with_line_number(f"operaciones_internas {operaciones_internas}")
+                                            st.success("")
+                                            st.success(f"operaciones_internas {operaciones_internas}")
                                             
                                             for clave in operaciones_internas.keys():
-                                                print_with_line_number(f"clave {clave}")
-                                                print_with_line_number("")
+                                                st.success(f"clave {clave}")
+                                                st.success("")
                                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, proxy_interno, clave))
-                                                print_with_line_number(f"operacion {operacion}")
-                                                print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                print_with_line_number(f"referencia {referencia}")
-                                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                print_with_line_number(f"service_ref {service_ref}")
-                                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                print_with_line_number("")
-                                                print_with_line_number("")
-                                                print_with_line_number(f"osb_services: {osb_services}")
-                                                print_with_line_number("")
+                                                st.success(f"operacion {operacion}")
+                                                st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                st.success(f"referencia {referencia}")
+                                                st.success(f"operacion_legado {operacion_legado}")
+                                                st.success(f"service_ref {service_ref}")
+                                                st.success(f"operacion_legado {operacion_legado}")
+                                                st.success("")
+                                                st.success("")
+                                                st.success(f"osb_services: {osb_services}")
+                                                st.success("")
                                         
                                         else:
                                             osb_file_path = os.path.join(jdeveloper_projects_dir, proxy_interno + ".BusinessService")
                                             project_name = extract_project_name_from_business(osb_file_path)
-                                            print_with_line_number(f"project_name es : {project_name}")
+                                            st.success(f"project_name es : {project_name}")
                                             if project_name is None:
-                                                print_with_line_number(f"project_name es 'None' : {project_name}")
-                                                print_with_line_number("")
+                                                st.success(f"project_name es 'None' : {project_name}")
+                                                st.success("")
                                                 continue
 
                                             with open(osb_file_path, 'r', encoding="utf-8") as f:
                                                 content = f.read()
                                                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                                                print_with_line_number(f"service_name: {service_name}")
+                                                st.success(f"service_name: {service_name}")
                                                 wsdl_relative_path = extract_wsdl_relative_path(content)
 
                                                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                                                 operations = extract_wsdl_operations(wsdl_path)
                                                 service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                                print_with_line_number(f"service_refs: {service_refs}")
-                                                print_with_line_number("")
+                                                st.success(f"service_refs: {service_refs}")
+                                                st.success("")
 
                                                 for uri_value, provider_id_value in service_refs:
                                                     proxy_ebs2 = proxy_ebs1
                                                     proxy_ebs3 = referencia.split("/")[-1]
                                                     referencia = service_name
                                                     operacion_legado = operation
-                                                    print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, proxy_interno, operacion_legado, uri_value, provider_id_value}")
+                                                    st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, proxy_interno, operacion_legado, uri_value, provider_id_value}")
                                                     osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, proxy_interno, operacion_legado, uri_value, provider_id_value))
-                                                    print_with_line_number(f"operacion {operacion}")
-                                                    print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                                    print_with_line_number(f"referencia {referencia}")
-                                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                                    print_with_line_number(f"uri_value {uri_value}")
-                                                    print_with_line_number(f"provider_id_value {provider_id_value}")
-                                                    print_with_line_number("")
-                                                    print_with_line_number(f"osb_services: {osb_services}")
-                                                    print_with_line_number("")
+                                                    st.success(f"operacion {operacion}")
+                                                    st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                                    st.success(f"referencia {referencia}")
+                                                    st.success(f"operacion_legado {operacion_legado}")
+                                                    st.success(f"uri_value {uri_value}")
+                                                    st.success(f"provider_id_value {provider_id_value}")
+                                                    st.success("")
+                                                    st.success(f"osb_services: {osb_services}")
+                                                    st.success("")
                                             
-                                        print_with_line_number("")
-                                        print_with_line_number(f"osb_services: {osb_services}")
-                                        print_with_line_number("")
+                                        st.success("")
+                                        st.success(f"osb_services: {osb_services}")
+                                        st.success("")
                                         
 
                     elif 'Business' in referencia:
-                        print_with_line_number("Es BUSINESS SERVICE!!")
+                        st.success("Es BUSINESS SERVICE!!")
                         osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
-                        print_with_line_number("")
-                        print_with_line_number(f"osb_file_path: {osb_file_path}")
-                        print_with_line_number("")
+                        st.success("")
+                        st.success(f"osb_file_path: {osb_file_path}")
+                        st.success("")
                         project_name = extract_project_name_from_business(osb_file_path)
-                        print_with_line_number(f"project_name: {project_name}")
-                        print_with_line_number("")
+                        st.success(f"project_name: {project_name}")
+                        st.success("")
                         if project_name is None:
-                            print_with_line_number(f"project_name es 'None' : {project_name}")
-                            print_with_line_number("")
+                            st.success(f"project_name es 'None' : {project_name}")
+                            st.success("")
                             continue
                             
                         if len(project_name) <= 0:
                             project_name = extract_project_name_from_business_tuxedo(osb_file_path)
-                            print_with_line_number(f"project_name: {project_name}")
-                            print_with_line_number("")
+                            st.success(f"project_name: {project_name}")
+                            st.success("")
                             
                             service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                            print_with_line_number(f"service_refs: {service_refs}")
-                            print_with_line_number("")
+                            st.success(f"service_refs: {service_refs}")
+                            st.success("")
 
                             for uri_value, provider_id_value in service_refs:
                                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, uri_value, provider_id_value))
-                                print_with_line_number(f"operacion {operacion}")
-                                print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                print_with_line_number(f"proxy_ebs2 {proxy_ebs2}")
-                                print_with_line_number(f"proxy_ebs3 {proxy_ebs3}")
-                                print_with_line_number(f"referencia {referencia}")
-                                print_with_line_number(f"operacion_legado {operacion_legado}")
-                                print_with_line_number(f"uri_value {uri_value}")
-                                print_with_line_number(f"provider_id_value {provider_id_value}")
-                                print_with_line_number("")
-                                print_with_line_number(f"osb_services: {osb_services}")
-                                print_with_line_number("")
+                                st.success(f"operacion {operacion}")
+                                st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                st.success(f"proxy_ebs2 {proxy_ebs2}")
+                                st.success(f"proxy_ebs3 {proxy_ebs3}")
+                                st.success(f"referencia {referencia}")
+                                st.success(f"operacion_legado {operacion_legado}")
+                                st.success(f"uri_value {uri_value}")
+                                st.success(f"provider_id_value {provider_id_value}")
+                                st.success("")
+                                st.success(f"osb_services: {osb_services}")
+                                st.success("")
 
                         with open(osb_file_path, 'r', encoding="utf-8") as f:
                             content = f.read()
                             service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
-                            print_with_line_number(f"service_name: {service_name}")
-                            print_with_line_number("")
+                            st.success(f"service_name: {service_name}")
+                            st.success("")
                             wsdl_relative_path = extract_wsdl_relative_path(content)
-                            print_with_line_number(f"wsdl_relative_path: {wsdl_relative_path}")
-                            print_with_line_number("")
+                            st.success(f"wsdl_relative_path: {wsdl_relative_path}")
+                            st.success("")
 
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
-                                print_with_line_number(f"wsdl_path: {wsdl_path}")
-                                print_with_line_number("")
+                                st.success(f"wsdl_path: {wsdl_path}")
+                                st.success("")
                                 operations = extract_wsdl_operations(wsdl_path)
-                                print_with_line_number(f"operations: {operations}")
-                                print_with_line_number("")
+                                st.success(f"operations: {operations}")
+                                st.success("")
                                 service_refs = extract_uri_and_provider_id_from_bix(osb_file_path)
-                                print_with_line_number(f"service_refs: {service_refs}")
-                                print_with_line_number("")
+                                st.success(f"service_refs: {service_refs}")
+                                st.success("")
 
                                 for uri_value, provider_id_value in service_refs:
                                     osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, uri_value, provider_id_value))
-                                    print_with_line_number(f"operacion {operacion}")
-                                    print_with_line_number(f"proxy_ebs1 {proxy_ebs1}")
-                                    print_with_line_number(f"proxy_ebs2 {proxy_ebs2}")
-                                    print_with_line_number(f"proxy_ebs3 {proxy_ebs3}")
-                                    print_with_line_number(f"referencia {referencia}")
-                                    print_with_line_number(f"operacion_legado {operacion_legado}")
-                                    print_with_line_number(f"uri_value {uri_value}")
-                                    print_with_line_number(f"provider_id_value {provider_id_value}")
-                                    print_with_line_number("")
-                                    print_with_line_number(f"osb_services: {osb_services}")
-                                    print_with_line_number("")
+                                    st.success(f"operacion {operacion}")
+                                    st.success(f"proxy_ebs1 {proxy_ebs1}")
+                                    st.success(f"proxy_ebs2 {proxy_ebs2}")
+                                    st.success(f"proxy_ebs3 {proxy_ebs3}")
+                                    st.success(f"referencia {referencia}")
+                                    st.success(f"operacion_legado {operacion_legado}")
+                                    st.success(f"uri_value {uri_value}")
+                                    st.success(f"provider_id_value {provider_id_value}")
+                                    st.success("")
+                                    st.success(f"osb_services: {osb_services}")
+                                    st.success("")
                     
                     
                     else:
                         osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_ebs3, referencia, operacion_legado, 'N/A', 'N/A'))
-                        print_with_line_number(f"NO es ni 'Proxy' ni 'Business': {referencia}")
-                        print_with_line_number("")
-                        print_with_line_number(f"osb_services: {osb_services}")
-                        print_with_line_number("")
+                        st.success(f"NO es ni 'Proxy' ni 'Business': {referencia}")
+                        st.success("")
+                        st.success(f"osb_services: {osb_services}")
+                        st.success("")
             
             else:
                 proxy_interno = referencia.split("/")[-1]
-                print_with_line_number(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_interno, referencia, operacion_legado, 'N/A', 'N/A'}")
+                st.success(f"DATOS {operacion , proxy_ebs1, proxy_ebs2, proxy_interno, referencia, operacion_legado, 'N/A', 'N/A'}")
                 osb_services.append((operacion , proxy_ebs1, proxy_ebs2, proxy_interno, referencia, operacion_legado, 'N/A', 'N/A'))
-                print_with_line_number(f"Palabra invalida: {referencia}")
-                print_with_line_number("")
-                print_with_line_number(f"osb_services: {osb_services}")
-                print_with_line_number("")
+                st.success(f"Palabra invalida: {referencia}")
+                st.success("")
+                st.success(f"osb_services: {osb_services}")
+                st.success("")
     return osb_services
 
 def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_documentar,operations,pipeline_path):
@@ -3336,7 +3336,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         #st.success(f"\nTabla {i+1}:")
                         for row in table.rows:
                             row_data = [cell.text for cell in row.cells]
-                            print_with_line_number('\t'.join(row_data))
+                            st.success('\t'.join(row_data))
                     
                     url = ""
                     ruta =""
@@ -3352,21 +3352,21 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         minOccurs = elem['minOccurs']
                         
                     #st.success(f"url: {url}")
-                    print_with_line_number("")
+                    st.success("")
                     #st.success(f"ruta: {ruta}")
-                    print_with_line_number("")
+                    st.success("")
                     #st.success(f"business: {business}")
-                    print_with_line_number("")
+                    st.success("")
                     fecha_actual = datetime.now()
                     fecha_formateada = fecha_actual.strftime("%d/%m/%Y")
                     
-                    print_with_line_number("")
-                    print_with_line_number("")
+                    st.success("")
+                    st.success("")
                     #st.success(f"operation: {operation}")
                     
                     #st.success(f"elements: {elements}")
-                    print_with_line_number("")
-                    print_with_line_number("")
+                    st.success("")
+                    st.success("")
                     
                     # Definir las variables y sus valores
                     variables = {
@@ -3429,7 +3429,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                             row_text = [cell.text.strip() for cell in row.cells]  # Extraer el texto de cada celda
                             #st.success(f"  {row_text}")  # Imprimir el contenido de la fila
 
-                        print_with_line_number("-" * 50)  # Separador entre tablas
+                        st.success("-" * 50)  # Separador entre tablas
                    
                    
                     # Recorrer las filas de la tabla 7
@@ -3458,7 +3458,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                             # tabla_response = tabla_cabecera_salida  # Ahora sí es una tabla válida
                             # break
                     # else:
-                        # print_with_line_number("No se encontró la sección 'Response Body' en la tabla 7.")
+                        # st.success("No se encontró la sección 'Response Body' en la tabla 7.")
                         # tabla_response = None  # Para evitar futuros errores
                    
                     
@@ -3588,7 +3588,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     if total_operaciones == 1:
                         progress_bar_general.progress(75)
                     
-                    print_with_line_number("___________________________________________")
+                    st.success("___________________________________________")
                     
                     #st.success(f"✅ temp_dir  {temp_dir }")
                     #st.success(f"✅ ruta_temporal  {ruta_temporal }")
@@ -3669,9 +3669,9 @@ def obtener_operaciones(project_path):
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
                                 capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
-                                print_with_line_number("")
+                                st.success("")
                                 #st.success(f"capa_proyecto: {capa_proyecto}")
-                                print_with_line_number("")
+                                st.success("")
                                 #st.success(f"wsdl_path: {wsdl_path}")
                                 operaciones_especificas = extract_wsdl_operations(wsdl_path)
                                 #st.success(f"operations: {operations}")
@@ -3702,7 +3702,7 @@ def main():
                 try:
                     shutil.rmtree(carpeta_destino)  # Elimina la carpeta y su contenido
                 except Exception as e:
-                    print_with_line_number(f"⚠️ No se pudo limpiar la carpeta temporal: {e}")
+                    st.success(f"⚠️ No se pudo limpiar la carpeta temporal: {e}")
 
             # 📌 Crear nuevamente la carpeta vacía
             os.makedirs(carpeta_destino, exist_ok=True)

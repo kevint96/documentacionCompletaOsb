@@ -836,7 +836,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
     print_with_line_number("")
     print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
         
-    if pipeline_path.endswith('.pipeline') and os.path.isfile(pipeline_path):
+    if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
         print_with_line_number(f"pipeline_path: {pipeline_path}")
         with open(pipeline_path, 'r', encoding="utf-8") as f:
             pipeline_content = f.read()
@@ -2833,6 +2833,10 @@ def extract_osb_services_references_abc2(jdeveloper_projects_dir, services_for_o
 def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_documentar,operations,pipeline_path):
     
     osb_services = []
+    st.success(f"project_path: {project_path}")
+    st.success(f"operacion_a_documentar: {operacion_a_documentar}")
+    st.success(f"operations: {operations}")
+    st.success(f"pipeline_path: {pipeline_path}")
     service_for_operations = extract_service_for_operations_audibpel(pipeline_path, operations)
     st.success(f"service_for_operations: {service_for_operations}")
     
