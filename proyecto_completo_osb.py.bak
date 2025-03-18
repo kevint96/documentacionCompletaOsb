@@ -996,6 +996,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operation
         try:
             tree = ET.parse(pipeline_path)
             root = tree.getroot()
+            st.success(f"tree: {tree}")
             namespace = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
                           'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
                           'con2': 'http://www.bea.com/wli/sb/stages/config',
@@ -1006,6 +1007,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operation
             
             for service in root.findall(".//*[@xsi:type='ref']", namespaces=namespace):
                 ref_service = service.get('ref')
+                st.success(f"ref_service: {ref_service}")
                 if ref_service and ref_service not in services_found:
                     services_found.append(ref_service)
                     if ref_service.endswith('.Pipeline'):
@@ -1013,16 +1015,19 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, file_path, operation
             
             for branch in root.findall(".//con:branch", namespaces=namespace):
                 operation = branch.get('operation')
+                st.success(f"operation: {operation}")
                 if operation:
                     services_found.append(f"{parent_service} -> {operation}")
             
             for request in root.findall(".//con:request", namespaces=namespace):
                 operation = request.get('operation')
+                st.success(f"operation: {operation}")
                 if operation:
                     services_found.append(f"{parent_service} -> {operation}")
             
             for op in root.findall(".//con1:operation", namespaces=namespace):
                 method = op.get('method')
+                st.success(f"method: {method}")
                 if method:
                     services_found.append(f"{parent_service} -> {method}")
         
