@@ -826,126 +826,95 @@ def extract_osb_services_with_http_provider_id(project_path,operacion_a_document
     operations =[]
     operation_to_xsd = {}
     found = False  # Variable para rastrear si se encuentra la operación
-    ##st.success(f"project_path: {project_path}")
-    for root, dirs, files in os.walk(project_path):
-        if os.path.basename(root) == "Proxies":
-            ##st.success(f"✅ Proxies {elementos_xsd}")
-            for file in files:
-                if file.endswith('.ProxyService'):
-                    osb_file_path = os.path.join(root, file)
-                    #st.success(f"✅ osb_file_path {osb_file_path}")
-                    project_name = extract_project_name_from_proxy(osb_file_path)
-                    
-                    if project_name is None:
-                        continue 
-                    pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, project_path)
-                    ##st.success(f"✅ pipeline_path {pipeline_path}")
-                    with open(osb_file_path, 'r', encoding="utf-8") as f:
-                        content = f.read()
-                        if has_http_provider_id(content):
-                            service_name = os.path.splitext(file)[0]
-                            #st.success(f"✅ project_name {project_name}")
-                            #st.success(f"✅ service_name {service_name}")
-                            service_url = extract_service_url(content)
-                            #st.success(f"✅ service_url {service_url}")
-                            wsdl_relative_path = extract_wsdl_relative_path(content)
-                            #st.success(f"file: {file}")
-                            #st.success(f"project_path: {project_path}")
-                            #st.success(f"project_name: {project_name}")
-                            #st.success(f"pipeline_path: {pipeline_path}")
-                            
-                            #operacion_business = service_refs_ruta_pipeline(pipeline_path,project_path)
-                            operacion_business = ""
-                            #st.success(f"operacion_business: {operacion_business}")
-                            
-                            #st.success(f"service_name: {service_name}")
-                            #st.success(f"service_url: {service_url}")
-                            #st.success(f"wsdl_relative_path: {wsdl_relative_path}")
-                            if wsdl_relative_path:
-                                wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
-                                capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
-                                print_with_line_number("")
-                                #st.success(f"capa_proyecto: {capa_proyecto}")
-                                print_with_line_number("")
-                                #st.success(f"wsdl_path: {wsdl_path}")
-                                operations = extract_wsdl_operations(wsdl_path)
-                                #st.success(f"operations: {operations}")
-                                imports = extract_xsd_import_paths(wsdl_path)
-                                #st.success(f"wsdl_path: {wsdl_path}")
-                                #st.success(f"imports: {imports}")
-                                #print_with_line_number("_________PRUEBA__________")
-                                #print_with_line_number("")
-                                
-                                #st.success(f"project_path: {project_path}")
-                                # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
-                                wsdl_relative_base = os.path.relpath(wsdl_path, "extraccion_jar")
-                                #st.success(f"wsdl_relative_base: {wsdl_relative_base}")
-                                # 🔹 Obtener la carpeta donde está el WSDL
-                                wsdl_dir = os.path.dirname(wsdl_relative_base)
-                                #st.success(f"wsdl_dir: {wsdl_dir}")
-                                # 🔹 Procesar cada import y ajustar solo los que empiezan con "../Schemas"
-                                xsd_relative_paths = []
-                                # 🔹 Modificar `imports` en su lugar
-                                for i, imp in enumerate(imports):
-                                    if imp.startswith("../Schemas"):  # Solo modificar los que empiezan con "../Schemas"
-                                        imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
-                                                                    
-                                
-                                #st.success(f"imports despues: {imports}")
-                                
-                                if operacion_a_documentar in operations or not operacion_a_documentar:
-                                    for operation in operations:
-                                        for xsd in imports:
-                                            if operation.lower() in os.path.basename(xsd).lower():
-                                                operation_to_xsd[operation] = xsd
-                                                break
-                                            else:
-                                                xsd_names = [os.path.basename(xsd) for xsd in imports]  # Obtener solo los nombres de archivos XSD
-                                                closest_match = difflib.get_close_matches(operation, xsd_names, n=1, cutoff=0.5)  # Buscar el más similar
+    
+    wsdl_operations_map = extraer_operaciones_expuestas_http(carpeta_destino)
+    
+    # Recorriendo el diccionario
+    for wsdl_path, data in wsdl_operations_map.items():
+        # Desempaquetar la tupla
+        operations, project_name, service_name, service_url, capa_proyecto = data
+        
+        st.success(f"wsdl_path: {wsdl_path}")
+        st.success(f"operations: {operations}")
+        st.success(f"project_name: {project_name}")
+        st.success(f"service_name: {service_name}")
+        st.success(f"service_url: {service_url}")
+        st.success(f"capa_proyecto: {capa_proyecto}")
 
-                                                if closest_match:
-                                                    matched_xsd = next(xsd for xsd in imports if os.path.basename(xsd) == closest_match[0])
-                                                    operation_to_xsd[operation] = matched_xsd
-                                                else:
-                                                    operation_to_xsd[operation] = None  # No se encontró una coincidencia
+        imports = extract_xsd_import_paths(wsdl_path)
+        #st.success(f"wsdl_path: {wsdl_path}")
+        #st.success(f"imports: {imports}")
+        
+        #st.success(f"project_path: {project_path}")
+        # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
+        wsdl_relative_base = os.path.relpath(wsdl_path, "extraccion_jar")
+        #st.success(f"wsdl_relative_base: {wsdl_relative_base}")
+        # 🔹 Obtener la carpeta donde está el WSDL
+        wsdl_dir = os.path.dirname(wsdl_relative_base)
+        #st.success(f"wsdl_dir: {wsdl_dir}")
+        # 🔹 Procesar cada import y ajustar solo los que empiezan con "../Schemas"
+        xsd_relative_paths = []
+        # 🔹 Modificar `imports` en su lugar
+        for i, imp in enumerate(imports):
+            if imp.startswith("../Schemas"):  # Solo modificar los que empiezan con "../Schemas"
+                imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
-                                    
-                                    #st.success(f"operation_to_xsd: {operation_to_xsd}")
-                                    
-                                    # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
-                                    if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
-                                        continue
-                                    else:
-                                        found = True  # La operación se encontró en este archivo
-                                        # Iterar sobre el diccionario y realizar la llamada a parse_xsd_file
-                                        for operation_name, xsd in operation_to_xsd.items():
-                                            #print_with_line_number("")
-                                            operation_actual = operation_name
-                                            #st.success(f"operation_actual: {operation_actual}")
-                                            #st.success(f"operacion_a_documentar: {operacion_a_documentar}")
-                                            if not operacion_a_documentar or operation_name == operacion_a_documentar:
-                                                #st.success(f"operation_actual: {operation_actual}")
-                                                st.success(f"🔍 Analizando operacion: {operation_actual}")
-                                                #st.success(f"service_name: {service_name}")
-                                                #st.success(f"operation_name: {operation_name}")
-                                                #st.success(f"service_url: {service_url}")
-                                                #st.success(f"capa_proyecto: {capa_proyecto}")
-                                                #st.success(f"operacion_business: {operacion_business}")
-                                                xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                                                #print_with_line_number("")
-                                                #print_with_line_number("")
-                                                #st.success(f"xsd: {xsd}")
-                                            
-                                                elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
-                                                #st.success(f"elementos_xsd: {elementos_xsd}")
-                                                #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
-                                                osb_services.append(elementos_xsd)
-                                            
-                                                if operacion_a_documentar:
-                                                    return osb_services
-                                                
-    if not found:  
-        st.error("⛔ No se encuentra la operación en el .jar ⛔")
+        
+        #st.success(f"imports despues: {imports}")
+        
+        if operacion_a_documentar in operations or not operacion_a_documentar:
+            for operation in operations:
+                for xsd in imports:
+                    if operation.lower() in os.path.basename(xsd).lower():
+                        operation_to_xsd[operation] = xsd
+                        break
+                    else:
+                        xsd_names = [os.path.basename(xsd) for xsd in imports]  # Obtener solo los nombres de archivos XSD
+                        closest_match = difflib.get_close_matches(operation, xsd_names, n=1, cutoff=0.5)  # Buscar el más similar
+
+                        if closest_match:
+                            matched_xsd = next(xsd for xsd in imports if os.path.basename(xsd) == closest_match[0])
+                            operation_to_xsd[operation] = matched_xsd
+                        else:
+                            operation_to_xsd[operation] = None  # No se encontró una coincidencia
+                    
+            
+            #st.success(f"operation_to_xsd: {operation_to_xsd}")
+            
+            # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
+            if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
+                continue
+            else:
+                found = True  # La operación se encontró en este archivo
+                # Iterar sobre el diccionario y realizar la llamada a parse_xsd_file
+                for operation_name, xsd in operation_to_xsd.items():
+                    #print_with_line_number("")
+                    operation_actual = operation_name
+                    #st.success(f"operation_actual: {operation_actual}")
+                    #st.success(f"operacion_a_documentar: {operacion_a_documentar}")
+                    if not operacion_a_documentar or operation_name == operacion_a_documentar:
+                        #st.success(f"operation_actual: {operation_actual}")
+                        st.success(f"🔍 Analizando operacion: {operation_actual}")
+                        #st.success(f"service_name: {service_name}")
+                        #st.success(f"operation_name: {operation_name}")
+                        #st.success(f"service_url: {service_url}")
+                        #st.success(f"capa_proyecto: {capa_proyecto}")
+                        #st.success(f"operacion_business: {operacion_business}")
+                        xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
+                        #print_with_line_number("")
+                        #print_with_line_number("")
+                        #st.success(f"xsd: {xsd}")
+                    
+                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
+                        #st.success(f"elementos_xsd: {elementos_xsd}")
+                        #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
+                        osb_services.append(elementos_xsd)
+                    
+                        if operacion_a_documentar:
+                            return osb_services
+                                                    
+        if not found:  
+            st.error("⛔ No se encuentra la operación en el .jar ⛔")
 
     #st.success(f"osb_services: {osb_services}")
     return osb_services
@@ -1552,7 +1521,6 @@ def main():
         generar_doc = st.button("Generar Documentación")
          
     with st.container():
-        lista_operaciones_expuestas = extraer_operaciones_expuestas_http(carpeta_destino)
         if generar_doc:
             if jar_file and plantilla_file and nombre_autor:
                 #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
