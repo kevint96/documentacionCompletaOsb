@@ -931,7 +931,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
 def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations):
     """ Extrae servicios para operaciones en un archivo .pipeline """
 
-    if not (pipeline_path.endswith('.pipeline')):
+    if not (pipeline_path.endswith('.Pipeline')):
         st.error("Archivo no válido.")
         return {}
 
