@@ -398,8 +398,8 @@ def get_correct_xsd_path(current_xsd_path, schema_location):
     #st.success(f"base_path: {base_path}")
     corrected_path = os.path.abspath(os.path.join(base_path, schema_location))
     #st.success(f"corrected_path: {corrected_path}")    # Resolver la ruta correcta
-    corrected_path = corrected_path.replace("/mount/src/documentacion-osb/extraccion_jar","")
-    corrected_path = corrected_path.replace("/mount/src/documentacion-osb","")
+    corrected_path = corrected_path.replace("/mount/src/documentacioncompletaosb/extraccion_jar","")
+    corrected_path = corrected_path.replace("/mount/src/documentacioncompletaosb","")
     corrected_path = corrected_path.replace(".xsd",".XMLSchema")
     #st.success(f"corrected_path: {corrected_path}")    # Resolver la ruta correcta
 
