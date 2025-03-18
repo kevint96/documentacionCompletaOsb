@@ -2834,8 +2834,8 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
     
     osb_services = []
     service_for_operations = extract_service_for_operations_audibpel(pipeline_path, operations)
-    print_with_line_number(f"service_for_operations: {service_for_operations}")
-    print_with_line_number("")
+    st.success(f"service_for_operations: {service_for_operations}")
+    
     operations_audibpel_exp = {}
     service_for_operations_new = {}
 
@@ -2860,10 +2860,10 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
         
             service_for_operations_new[operation_name].append(service_ref)                                                              
 
-    print_with_line_number(f"operations_audibpel_exp: {operations_audibpel_exp}")
-    print_with_line_number("")
-    print_with_line_number(f"service_for_operations_new: {service_for_operations_new}")
-    print_with_line_number("")
+    st.success(f"operations_audibpel_exp: {operations_audibpel_exp}")
+    
+    st.success(f"service_for_operations_new: {service_for_operations_new}")
+    
 
     service_for_operations = service_for_operations_new
     operaciones_y_ebs = service_for_operations_new
@@ -2876,13 +2876,13 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
 
     for service_for_operations in service_for_operations_resultado:
         
-        print_with_line_number(f"service_for_operations: {service_for_operations}")   
+        st.success(f"service_for_operations: {service_for_operations}")   
         
         referencias_for_operations = extract_osb_services_with_given_path(project_path, service_for_operations)
-        print_with_line_number("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
-        print_with_line_number("")
-        print_with_line_number(f"referencias_for_operations: {referencias_for_operations}")
-        print_with_line_number("")
+        st.success("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
+        
+        st.success(f"referencias_for_operations: {referencias_for_operations}")
+        
         
         grouped_data = {}
         
@@ -2895,16 +2895,16 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
         for key, value in referencias_for_operations:
             grouped_data[key] = value
         
-        print_with_line_number("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
-        print_with_line_number("")
-        print_with_line_number(f"grouped_data: {grouped_data}")
+        st.success("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
         
-        print_with_line_number("")
+        st.success(f"grouped_data: {grouped_data}")
+        
+        
         for service, references in grouped_data.items():
-            print_with_line_number(f"{service}: {references}")
-        print_with_line_number("")
-        print_with_line_number("************VERIFICACION GROUPED_DATA****************")
-        print_with_line_number("")
+            st.success(f"{service}: {references}")
+        
+        st.success("************VERIFICACION GROUPED_DATA****************")
+        
         
         grupo_referencia = []
         # Lista para almacenar las claves encontradas
@@ -2913,11 +2913,11 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
         for operacion, proxies in grouped_data.items():
             if isinstance(proxies, list):
                 grupo = {operacion: proxies}
-                print_with_line_number(grupo)
-                print_with_line_number("-------------")
+                st.success(grupo)
+                st.success("-------------")
                 
                 if(es_operacion_lista_referencias(grupo)):
-                    print_with_line_number("grouped_data_1 sigue la estructura del caso 1")
+                    st.success("grouped_data_1 sigue la estructura del caso 1")
                     
                     
                     for operacion, proxies in grupo.items():
@@ -2925,12 +2925,12 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
                             grupo_referencia_temporal = []
 
                             if 'Business' in proxy:
-                                print_with_line_number("")
-                                print_with_line_number(f"El proxy '{proxy}' contiene 'BusinessServices'")
+                                
+                                st.success(f"El proxy '{proxy}' contiene 'BusinessServices'")
                                 servicio = service_for_operations.get(operacion, None)
                                 
-                                print_with_line_number(f"servicio: {servicio}")
-                                print_with_line_number("")
+                                st.success(f"servicio: {servicio}")
+                                
                                 
                                 # Verificar si el servicio es encontrado
                                 if servicio:
@@ -2938,69 +2938,69 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
                                     nombre_servicio = servicio.split('/')[-1]
                                     operacion_proxy = proxy.split('/')[-1]
                                     
-                                    print_with_line_number(f"nombre_servicio: {nombre_servicio}")
-                                    print_with_line_number("")
-                                    print_with_line_number(f"operacion_proxy: {operacion_proxy}")
-                                    print_with_line_number("")
+                                    st.success(f"nombre_servicio: {nombre_servicio}")
+                                    
+                                    st.success(f"operacion_proxy: {operacion_proxy}")
+                                    
                                     
                                     ruta_completa_proxy = os.path.join(project_path, servicio + ".ProxyService")
                                     
                                     if os.path.exists(ruta_completa_proxy):
                                         ruta_completa_pipeline = extract_pipeline_path_from_proxy(ruta_completa_proxy, project_path)
-                                        print_with_line_number(f"ruta_completa_pipeline: {ruta_completa_pipeline}")
-                                        print_with_line_number("")
+                                        st.success(f"ruta_completa_pipeline: {ruta_completa_pipeline}")
+                                        
                                         def_op_internas_pipeline = definir_operaciones_internas_pipeline(ruta_completa_pipeline)
-                                        print_with_line_number(f"def_op_internas_pipeline: {def_op_internas_pipeline}")
-                                        print_with_line_number("")
+                                        st.success(f"def_op_internas_pipeline: {def_op_internas_pipeline}")
+                                        
                                         
                                         operacion_proxy = obtener_operacion_por_proxy(def_op_internas_pipeline, proxy)
                                         
-                                        print_with_line_number(f"operacion_proxy: {operacion_proxy}")
-                                        print_with_line_number("")
+                                        st.success(f"operacion_proxy: {operacion_proxy}")
+                                        
 
                                     tupla_extendida = (operacion,nombre_servicio,proxy,operacion_proxy)
                                     
                                     tuplas_extendidas.append(tupla_extendida)
                                     
-                                    print_with_line_number(f"tupla_extendida: {tupla_extendida}")
-                                    print_with_line_number("")
+                                    st.success(f"tupla_extendida: {tupla_extendida}")
+                                    
                                     
                             else:
-                                print_with_line_number("")
-                                print_with_line_number(f"El proxy '{proxy}' no contiene 'BusinessServices'")
+                                
+                                st.success(f"El proxy '{proxy}' no contiene 'BusinessServices'")
                                 
                                 ruta_completa_proxy = os.path.join(project_path, proxy + ".ProxyService")
-                                print_with_line_number(f"ruta_completa_proxy: {ruta_completa_proxy}")
+                                st.success(f"ruta_completa_proxy: {ruta_completa_proxy}")
                                 if os.path.exists(ruta_completa_proxy):
                                     ruta_completa_pipeline = extract_pipeline_path_from_proxy(ruta_completa_proxy, project_path)
-                                    print_with_line_number(f"ruta_completa_pipeline: {ruta_completa_pipeline}")                                   
+                                    st.success(f"ruta_completa_pipeline: {ruta_completa_pipeline}")                                   
                                     operacion_pipeline = extract_service_refs_from_pipeline(ruta_completa_pipeline)
-                                    print_with_line_number(f"operacion_pipeline: {operacion_pipeline}") 
+                                    st.success(f"operacion_pipeline: {operacion_pipeline}") 
                                     if not operacion_pipeline:
                                         continue
                                     ruta_completa_wsdl = os.path.join(project_path, devolver_ruta_wsdl_proxy(ruta_completa_proxy) + ".WSDL")
-                                    print_with_line_number(f"ruta_completa_wsdl: {ruta_completa_wsdl}") 
+                                    st.success(f"ruta_completa_wsdl: {ruta_completa_wsdl}") 
                                     operaciones_internas = extract_wsdl_operations(ruta_completa_wsdl)
-                                    print_with_line_number(f"operaciones_internas: {operaciones_internas}")
+                                    st.success(f"operaciones_internas: {operaciones_internas}")
                                     operacion_pipeline_por_nombre = extract_service_for_operations(ruta_completa_pipeline, operaciones_internas)
-                                    print_with_line_number(f"operacion_pipeline_por_nombre: {operacion_pipeline_por_nombre}")
+                                    st.success(f"operacion_pipeline_por_nombre: {operacion_pipeline_por_nombre}")
                                     def_op_internas_pipeline = definir_operaciones_internas_pipeline(ruta_completa_pipeline)
-                                    print_with_line_number(f"def_op_internas_pipeline: {def_op_internas_pipeline}")
+                                    st.success(f"def_op_internas_pipeline: {def_op_internas_pipeline}")
                                 
                                     referencia_operacion = {operacion: proxy}
-                                    print_with_line_number(f"referencia_operacion: {referencia_operacion}")
+                                    st.success(f"referencia_operacion: {referencia_operacion}")
                                     grupo_referencia_temporal.append(referencia_operacion)
-                                    print_with_line_number("")
+                                    
                                     referencias_for_operations = extract_osb_services_with_given_path_dict(project_path, grupo_referencia_temporal)
-                                    print_with_line_number("")
-                                    print_with_line_number("************GRUPO_REFERENCIA****************")
-                                    print_with_line_number("")
-                                    print_with_line_number(f"referencias_for_operations GRUPO: {referencias_for_operations}")
-                                    print_with_line_number("")
-                                    # print_with_line_number("************GRUPO_REFERENCIA****************")
-                                    print_with_line_number("")
+                                    
+                                    st.success("************GRUPO_REFERENCIA****************")
+                                    
+                                    st.success(f"referencias_for_operations GRUPO: {referencias_for_operations}")
+                                    
+                                    # st.success("************GRUPO_REFERENCIA****************")
+                                    
                                     # grupo_referencia.append(referencias_for_operations)
-                                    print_with_line_number("")
+                                    
 
 
                                     # Iterar sobre cada tupla en referencias_for_operations
@@ -3016,73 +3016,73 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
                                             # Agregar la tupla extendida a la lista
                                             tuplas_extendidas.append(tupla_extendida)
                                             
-                                            print_with_line_number(f"tupla_extendida: {tupla_extendida}")
+                                            st.success(f"tupla_extendida: {tupla_extendida}")
 
 
                                     
-                                    print_with_line_number("")
-                                    print_with_line_number("")
+                                    
+                                    
 
                 if es_operacion_clave_valor(grupo):
-                    print_with_line_number("grouped_data_2 sigue la estructura del caso 2")
+                    st.success("grouped_data_2 sigue la estructura del caso 2")
                 
             else:
                 # Si los proxies no son una lista, imprimimos la operación y el proxy directamente
-                print_with_line_number({operacion: proxies})
-                print_with_line_number("-------------")
+                st.success({operacion: proxies})
+                st.success("-------------")
                 
-                print_with_line_number("")
+                
         
-        # print_with_line_number(f"grupo_referencia: {grupo_referencia}")
-        print_with_line_number("")
-        print_with_line_number("************VERIFICACION GROUPED_DATA****************")
-        print_with_line_number("")
+        # st.success(f"grupo_referencia: {grupo_referencia}")
         
-        print_with_line_number(f"tuplas_extendidas: {tuplas_extendidas}")
-        print_with_line_number("")
+        st.success("************VERIFICACION GROUPED_DATA****************")
+        
+        
+        st.success(f"tuplas_extendidas: {tuplas_extendidas}")
+        
         referencias_abc2 = extract_osb_services_references_abc2(project_path, tuplas_extendidas)
-        print_with_line_number("")
-        print_with_line_number("")
+        
+        
         
         # referencias_abc = extract_osb_services_references_abc(project_path, grupo_referencia)
         
         #referencias_finales = extract_osb_services_finals(project_path, grouped_data)
-        print_with_line_number("")
-        print_with_line_number("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
-        print_with_line_number("") 
         
-        print_with_line_number("")
-        print_with_line_number("-----------------INFO-----------------------")
-        print_with_line_number(f"project_name: {project_name}")
-        print_with_line_number("")
-        print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number("")
-        print_with_line_number(f"service_url: {service_url}")
-        print_with_line_number("")
-        print_with_line_number(f"operations: {operations}")
-        print_with_line_number("")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        print_with_line_number("")
-        print_with_line_number(f"operacion_proxy: {service_for_operations}")
-        print_with_line_number("")
-        print_with_line_number(f"grouped_data: {grouped_data}")
-        print_with_line_number("")
-        print_with_line_number(f"grupo_referencia: {grupo_referencia}")
-        print_with_line_number("")
-        print_with_line_number(f"referencias_abc2: {referencias_abc2}")
-        print_with_line_number("")
-        print_with_line_number(f"tuplas_extendidas: {tuplas_extendidas}")
-        print_with_line_number("")
-        print_with_line_number(f"operations_audibpel_exp: {operations_audibpel_exp}")                                                                                                    
-        print_with_line_number("-----------------INFO-----------------------")
-        
-        print_with_line_number("")
+        st.success("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
+         
         
         
-        print_with_line_number("-----------------INICIO ANALISIS-----------------------")
+        st.success("-----------------INFO-----------------------")
+        st.success(f"project_name: {project_name}")
+        
+        st.success(f"service_name: {service_name}")
+        
+        st.success(f"service_url: {service_url}")
+        
+        st.success(f"operations: {operations}")
+        
+        st.success(f"pipeline_path: {pipeline_path}")
+        
+        st.success(f"operacion_proxy: {service_for_operations}")
+        
+        st.success(f"grouped_data: {grouped_data}")
+        
+        st.success(f"grupo_referencia: {grupo_referencia}")
+        
+        st.success(f"referencias_abc2: {referencias_abc2}")
+        
+        st.success(f"tuplas_extendidas: {tuplas_extendidas}")
+        
+        st.success(f"operations_audibpel_exp: {operations_audibpel_exp}")                                                                                                    
+        st.success("-----------------INFO-----------------------")
         
         
-        print_with_line_number("")
+        
+        
+        st.success("-----------------INICIO ANALISIS-----------------------")
+        
+        
+        
         # Lista para almacenar los resultados
         for index, referencia in enumerate(referencias_abc2, start=1):
             operacion_abc = referencia[0]
@@ -3090,7 +3090,7 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
             parts_proxy = proxy_ebs_completo.split('/')
             ruta_proxy_ebs = parts_proxy[0]
             nombre_ebs = operaciones_y_ebs.get(operacion_abc, None)
-            print_with_line_number(f"nombre_ebs: {nombre_ebs}")  
+            st.success(f"nombre_ebs: {nombre_ebs}")  
             cadena = nombre_ebs[0]
             proxy_ebs1 = cadena.split("/")[-1]
             proxy_ebs2 = referencia[2]
@@ -3121,12 +3121,12 @@ def recorrer_y_extraer_operaciones_servicios_osb(project_path,operacion_a_docume
             
             datos = f"({index},'{service_name}','{operacion_abc}','{project_name}','{service_url}','{nombre_flujo_audibpel_exp}','{ruta_proxy_ebs}','{proxy_ebs1}','{proxy_ebs2}','{proxy_ebs3}','{proxy_abc}', '{proyecto_abc}', '{nombre_business}','{operacion_business}', '{url_business}', '{tipo_business}')"
             
-            print_with_line_number(f"({datos})")
+            st.success(f"({datos})")
             
             osb_services.append(datos)
         
-        print_with_line_number("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
-        print_with_line_number(f"OSB: {osb_services}")
+        st.success("************EXTRACT_OSB_SERVICES_WITH_HTTP_PROVIDER_ID****************")
+        st.success(f"OSB: {osb_services}")
                                 
     return osb_services
 
