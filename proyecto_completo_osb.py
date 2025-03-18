@@ -1004,7 +1004,12 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                 if next_proxy_path not in visited_proxies:
                     visited_proxies.add(next_proxy_path)
                     new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
-                    services_for_operations.update(recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies))
+                    if new_pipeline_path:  # Verifica que no sea None
+                        services_for_operations.update(
+                            recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                        )
+else:
+    st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
     
     # Procesar <flow>
     for flow in root.findall(".//con:flow", namespaces):
@@ -1021,7 +1026,10 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                         if next_proxy_path not in visited_proxies:
                             visited_proxies.add(next_proxy_path)
                             new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
-                            services_for_operations.update(recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies))
+                            if new_pipeline_path:  # Verifica que no sea None
+                                services_for_operations.update(
+                                    recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                                )
     
     # Procesar <route-node>
     for route in root.findall(".//con:route-node", namespaces):
@@ -1035,7 +1043,10 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                     if next_proxy_path not in visited_proxies:
                         visited_proxies.add(next_proxy_path)
                         new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
-                        services_for_operations.update(recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies))
+                        if new_pipeline_path:  # Verifica que no sea None
+                            services_for_operations.update(
+                                recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                            )
     
     # Procesar <wsCallout>
     for callout in root.iter():
@@ -1051,7 +1062,10 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                     if next_proxy_path not in visited_proxies:
                         visited_proxies.add(next_proxy_path)
                         new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
-                        services_for_operations.update(recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies))
+                        if new_pipeline_path:  # Verifica que no sea None
+                            services_for_operations.update(
+                                recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                            )
     
     return services_for_operations
 
