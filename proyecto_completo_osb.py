@@ -821,7 +821,6 @@ def extraer_operaciones_expuestas_http(project_path):
 
 def extract_osb_services_with_http_provider_id(project_path,operacion_a_documentar):
     
-    lista_operaciones_expuestas = extraer_operaciones_expuestas_http(project_path)
     osb_services = []
     elementos_xsd = []
     operations =[]
@@ -1553,6 +1552,7 @@ def main():
         generar_doc = st.button("Generar Documentación")
          
     with st.container():
+        lista_operaciones_expuestas = extraer_operaciones_expuestas_http(carpeta_destino)
         if generar_doc:
             if jar_file and plantilla_file and nombre_autor:
                 #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
