@@ -26,7 +26,7 @@ import glob
 import base64
 import sys
 
-def st.success(msg):
+def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
     print(f"Linea {line_number}: {msg}")
