@@ -918,7 +918,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #st.success(f"elementos_xsd: {elementos_xsd}")
                         # Inicializar conjunto para evitar ciclos
                         visited_proxies = set()
-                        services_for_operations = recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations, visited_proxies)
+                        services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipeline_path, operations, visited_proxies)
 
                         st.success(f"services_for_operations: {services_for_operations}")
 
@@ -939,7 +939,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                                 new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
                                 if new_pipeline_path:
                                     st.success(f"🔄 Siguiendo cadena de invocación en: {new_pipeline_path}")
-                                    sub_services = recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                                    sub_services = recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                                     services_for_operations.update(sub_services)
 
                         st.success(f"🔎 Servicios finales encontrados: {services_for_operations}")
@@ -956,7 +956,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     #st.success(f"osb_services: {osb_services}")
     return osb_services
 
-def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations, visited_proxies=None):
+def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipeline_path, operations, visited_proxies=None):
     """ Extrae servicios para operaciones en un archivo .pipeline, explorando recursivamente hasta encontrar BusinessService """
     if not (pipeline_path.endswith('.Pipeline')):
         st.error("Archivo no válido.")
@@ -965,7 +965,7 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
     if visited_proxies is None:
         visited_proxies = set()
     
-    
+    st.success(f"project_path: {project_path}")
     st.success(f"pipeline_path: {pipeline_path}")
     services_for_operations = defaultdict(list)
     
@@ -1004,15 +1004,15 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
             service_ref = buscar_service_y_agregar(branch, operation_name)
             st.success(f"service_ref: {service_ref}")
             if service_ref and 'BusinessService' not in service_ref:
-                next_proxy_path = os.path.join(os.path.dirname(pipeline_path), service_ref + ".ProxyService")
+                next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
                 st.success(f"next_proxy_path: {next_proxy_path}")
                 if next_proxy_path not in visited_proxies:
                     visited_proxies.add(next_proxy_path)
-                    new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
+                    new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
                     st.success(f"new_pipeline_path: {new_pipeline_path}")
                     if new_pipeline_path:  # Verifica que no sea None
                         services_for_operations.update(
-                            recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                            recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                         )
                     else:
                         st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
@@ -1029,15 +1029,15 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                 if operation_name in operations:
                     services_for_operations[operation_name].append(service_ref)
                     if 'BusinessService' not in service_ref:
-                        next_proxy_path = os.path.join(os.path.dirname(pipeline_path), service_ref + ".ProxyService")
+                        next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
                         st.success(f"next_proxy_path: {next_proxy_path}")
                         if next_proxy_path not in visited_proxies:
                             visited_proxies.add(next_proxy_path)
-                            new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
+                            new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
                             st.success(f"new_pipeline_path: {new_pipeline_path}")
                             if new_pipeline_path:  # Verifica que no sea None
                                 services_for_operations.update(
-                                    recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                                    recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                                 )
                             else:
                                 st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
@@ -1052,15 +1052,15 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                 service_ref = buscar_service_y_agregar(route, operation_name)
                 st.success(f"service_ref: {service_ref}")
                 if service_ref and 'BusinessService' not in service_ref:
-                    next_proxy_path = os.path.join(os.path.dirname(pipeline_path), service_ref + ".ProxyService")
+                    next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
                     st.success(f"next_proxy_path: {next_proxy_path}")
                     if next_proxy_path not in visited_proxies:
                         visited_proxies.add(next_proxy_path)
-                        new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
+                        new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
                         st.success(f"new_pipeline_path: {new_pipeline_path}")
                         if new_pipeline_path:  # Verifica que no sea None
                             services_for_operations.update(
-                                recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                                recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                             )
                         else:
                             st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
@@ -1078,15 +1078,15 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                 st.success(f"service_ref: {service_ref}")
                 services_for_operations[operation_name].append(service_ref)
                 if 'BusinessService' not in service_ref:
-                    next_proxy_path = os.path.join(os.path.dirname(pipeline_path), service_ref + ".ProxyService")
+                    next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
                     st.success(f"next_proxy_path: {next_proxy_path}")
                     if next_proxy_path not in visited_proxies:
                         visited_proxies.add(next_proxy_path)
-                        new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, os.path.dirname(pipeline_path))
+                        new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
                         st.success(f"new_pipeline_path: {new_pipeline_path}")
                         if new_pipeline_path:  # Verifica que no sea None
                             services_for_operations.update(
-                                recorrer_servicios_internos_osb(operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                                recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
                             )
                         else:
                             st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
