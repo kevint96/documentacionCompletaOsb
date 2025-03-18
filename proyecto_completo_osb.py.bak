@@ -1015,7 +1015,9 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
                 
                 # Buscar la operación asociada dentro del mismo bloque
                 parent = service_element.find("../con1:operation", namespaces) or \
-                         service_element.find("../con3:operation", namespaces)
+                         service_element.find("../con2:operation", namespaces) or \
+                         service_element.find("../con3:operation", namespaces) or \
+                         service_element.find("../con4:operation", namespaces)
                 
                 if parent is not None and parent.text.strip() in operations:
                     operation_name = parent.text.strip()
