@@ -791,8 +791,8 @@ def extraer_operaciones_expuestas_http(project_path):
             for file in files:
                 if file.endswith('.ProxyService'):
                     osb_file_path = os.path.join(root, file)
-                    st.success(f"✅ file {file}")
-                    st.success(f"✅ osb_file_path {osb_file_path}")
+                    #st.success(f"✅ file {file}")
+                    #st.success(f"✅ osb_file_path {osb_file_path}")
                     project_name = extract_project_name_from_proxy(osb_file_path)
                     
                     if project_name is None:
@@ -817,7 +817,7 @@ def extraer_operaciones_expuestas_http(project_path):
                                 st.success(f"wsdl_path: {wsdl_path}")
                                 operations = extract_wsdl_operations(wsdl_path)
                                 wsdl_operations_map[wsdl_path] = (
-                                    operations, project_name, service_name, pipeline_path, service_url, capa_proyecto
+                                    operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                 )
     st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
     return wsdl_operations_map
@@ -835,12 +835,13 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
         # Desempaquetar la tupla
-        operations, project_name, service_name, pipeline_path, service_url, capa_proyecto = data
+        operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
         st.success(f"wsdl_path: {wsdl_path}")
         st.success(f"operations: {operations}")
         st.success(f"project_name: {project_name}")
         st.success(f"service_name: {service_name}")
+        st.success(f"osb_file_path: {osb_file_path}")
         st.success(f"pipeline_path: {pipeline_path}")
         st.success(f"service_url: {service_url}")
         st.success(f"capa_proyecto: {capa_proyecto}")
@@ -916,6 +917,11 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #st.success(f"elementos_xsd: {elementos_xsd}")
                         services_for_operations = recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, operations)
+                        visited_proxies = set()
+                        initial_proxy_path = os.path.join(project_path, "EXP/Proxies/MainService.ProxyService")
+
+                        extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
+                        
                         st.success(f"services_for_operations: {services_for_operations}")
                         #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
                         osb_services.append(elementos_xsd)
@@ -974,13 +980,7 @@ def extract_services_recursively(proxy_path, project_path, services_for_operatio
     
     return services_for_operations
 
-    # Uso de la función:
-    services_for_operations = defaultdict(list)
-    visited_proxies = set()
-    project_path = "C:/Users/ktorres/Desktop/BCS/BUS/Prueba2"
-    initial_proxy_path = os.path.join(project_path, "EXP/Proxies/MainService.ProxyService")
-
-    extract_services_recursively(initial_proxy_path, project_path, services_for_operations, visited_proxies)
+    
     st.success(f"✅ services_for_operations {services_for_operations}")
 
 
@@ -990,8 +990,6 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
     if not (pipeline_path.endswith('.Pipeline')):
         st.error("Archivo no válido.")
         return {}
-
-    services_for_operations = defaultdict(list)
     
     namespaces = {
         'con': 'http://www.bea.com/wli/sb/pipeline/config', 
@@ -1002,56 +1000,30 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
         'ref': 'http://www.bea.com/wli/sb/reference',
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
-    # Cargar el XML
-    tree = ET.parse(pipeline_path)
-    root = tree.getroot()
-
-    def buscar_service_y_agregar(element, operation_name):
-        """ Busca elementos <service> y agrega la información a services_for_operations """
-        service_element = element.find(".//con1:service", namespaces)
-        if service_element is not None:
-            service_ref = service_element.attrib.get('ref', '')
-            services_for_operations[operation_name].append((service_ref))
-            print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-            return True
-        return False
-
-    # Procesar <branch>
-    for branch in root.findall(".//con:branch", namespaces):
-        operation_name = branch.attrib.get('name', '')
-        if operation_name in operations:
-            if buscar_service_y_agregar(branch, operation_name):
-                continue
-
-    # Procesar <flow>
-    for flow in root.findall(".//con:flow", namespaces):
-        service_elements = flow.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces)
-        for service_element in service_elements:
-            service_ref = service_element.attrib.get('ref', '')
-            operation_elements = flow.findall(".//con1:operation", namespaces)
-            for operation_element in operation_elements:
-                operation_name = operation_element.text.strip()
-                if operation_name in operations:
-                    services_for_operations[operation_name].append((service_ref))
-
-    # Procesar <route-node>
-    for route in root.findall(".//con:route-node", namespaces):
-        operation_element = route.find(".//con1:operation", namespaces)
-        if operation_element is not None:
-            operation_name = operation_element.text.strip()
-            if operation_name in operations:
-                buscar_service_y_agregar(route, operation_name)
-
-    # Procesar <wsCallout>
-    for callout in root.iter():
-        if callout.tag.endswith('wsCallout'):
-            operation_element = callout.find(".//con3:operation", namespaces)
-            service_element = callout.find(".//con3:service", namespaces)
-            if operation_element is not None and service_element is not None:
-                operation_name = operation_element.text.strip()
-                service_ref = service_element.attrib.get('ref', '')
-                services_for_operations[operation_name].append((service_ref))
-
+    services_for_operations = defaultdict(list)
+    
+    try:
+        tree = ET.parse(pipeline_path)
+        root = tree.getroot()
+        
+        # Buscar todos los elementos que tienen xsi:type="ref:*"
+        for service_element in root.findall(".//*[@xsi:type]", namespaces):
+            xsi_type = service_element.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type", "")
+            
+            if xsi_type.startswith("ref:"):
+                service_ref = service_element.attrib.get("ref", "")
+                
+                # Buscar la operación asociada dentro del mismo bloque
+                parent = service_element.find("../con1:operation", namespaces) or \
+                         service_element.find("../con3:operation", namespaces)
+                
+                if parent is not None and parent.text.strip() in operations:
+                    operation_name = parent.text.strip()
+                    services_for_operations[operation_name].append(service_ref)
+                    
+    except Exception as e:
+        print(f"Error procesando el archivo {pipeline_path}: {e}")
+    
     return services_for_operations
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):

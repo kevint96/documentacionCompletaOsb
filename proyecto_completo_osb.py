@@ -990,8 +990,6 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
     if not (pipeline_path.endswith('.Pipeline')):
         st.error("Archivo no válido.")
         return {}
-
-    services_for_operations = defaultdict(list)
     
     namespaces = {
         'con': 'http://www.bea.com/wli/sb/pipeline/config', 
@@ -1002,56 +1000,32 @@ def recorrer_servicios_internos_osb(operacion_a_documentar, pipeline_path, opera
         'ref': 'http://www.bea.com/wli/sb/reference',
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
-    # Cargar el XML
-    tree = ET.parse(pipeline_path)
-    root = tree.getroot()
-
-    def buscar_service_y_agregar(element, operation_name):
-        """ Busca elementos <service> y agrega la información a services_for_operations """
-        service_element = element.find(".//con1:service", namespaces)
-        if service_element is not None:
-            service_ref = service_element.attrib.get('ref', '')
-            services_for_operations[operation_name].append((service_ref))
-            print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-            return True
-        return False
-
-    # Procesar <branch>
-    for branch in root.findall(".//con:branch", namespaces):
-        operation_name = branch.attrib.get('name', '')
-        if operation_name in operations:
-            if buscar_service_y_agregar(branch, operation_name):
-                continue
-
-    # Procesar <flow>
-    for flow in root.findall(".//con:flow", namespaces):
-        service_elements = flow.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces)
-        for service_element in service_elements:
-            service_ref = service_element.attrib.get('ref', '')
-            operation_elements = flow.findall(".//con1:operation", namespaces)
-            for operation_element in operation_elements:
-                operation_name = operation_element.text.strip()
-                if operation_name in operations:
-                    services_for_operations[operation_name].append((service_ref))
-
-    # Procesar <route-node>
-    for route in root.findall(".//con:route-node", namespaces):
-        operation_element = route.find(".//con1:operation", namespaces)
-        if operation_element is not None:
-            operation_name = operation_element.text.strip()
-            if operation_name in operations:
-                buscar_service_y_agregar(route, operation_name)
-
-    # Procesar <wsCallout>
-    for callout in root.iter():
-        if callout.tag.endswith('wsCallout'):
-            operation_element = callout.find(".//con3:operation", namespaces)
-            service_element = callout.find(".//con3:service", namespaces)
-            if operation_element is not None and service_element is not None:
-                operation_name = operation_element.text.strip()
-                service_ref = service_element.attrib.get('ref', '')
-                services_for_operations[operation_name].append((service_ref))
-
+    services_for_operations = defaultdict(list)
+    
+    try:
+        tree = ET.parse(pipeline_path)
+        root = tree.getroot()
+        
+        # Buscar todos los elementos que tienen xsi:type="ref:*"
+        for service_element in root.findall(".//*[@xsi:type]", namespaces):
+            xsi_type = service_element.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type", "")
+            
+            if xsi_type.startswith("ref:"):
+                service_ref = service_element.attrib.get("ref", "")
+                
+                # Buscar la operación asociada dentro del mismo bloque
+                parent = service_element.find("../con1:operation", namespaces) or \
+                         service_element.find("../con2:operation", namespaces) or \
+                         service_element.find("../con3:operation", namespaces) or \
+                         service_element.find("../con4:operation", namespaces)
+                
+                if parent is not None and parent.text.strip() in operations:
+                    operation_name = parent.text.strip()
+                    services_for_operations[operation_name].append(service_ref)
+                    
+    except Exception as e:
+        print(f"Error procesando el archivo {pipeline_path}: {e}")
+    
     return services_for_operations
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
