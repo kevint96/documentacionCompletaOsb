@@ -28,7 +28,7 @@ import sys
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 
-def print_with_line_number(msg):
+def st.success(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
     print(f"Linea {line_number}: {msg}")
@@ -146,12 +146,12 @@ def replace_text_in_paragraph(paragraph, replacements):
 def print_element_content(element, element_name):
     #st.success(f"Contenido del {element_name}:")
     for paragraph in element.paragraphs:
-        print_with_line_number(paragraph.text)
+        st.success(paragraph.text)
     for table in element.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    print_with_line_number(paragraph.text)
+                    st.success(paragraph.text)
 
 def replace_text_in_element(element, replacements):
     for paragraph in element.paragraphs:
@@ -185,7 +185,7 @@ def replace_text_in_doc(doc, replacements):
                 for row in table.rows:
                     for cell in row.cells:
                         for paragraph in cell.paragraphs:
-                            print_with_line_number(paragraph.text)
+                            st.success(paragraph.text)
             for table in section.header.tables:
                 for row in table.rows:
                     for cell in row.cells:
@@ -228,9 +228,9 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                 servicios.add(service_ref)
 
         # Imprimir los servicios encontrados
-        print_with_line_number("Servicios encontrados:")
+        st.success("Servicios encontrados:")
         for service in servicios:
-            print_with_line_number(service)
+            st.success(service)
             
              # Si el elemento contiene '/BusinessServices/', salir del bucle
             if '/BusinessServices/' in service:
@@ -251,9 +251,9 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                         elementos_ref.add(invoke_ref)
 
                     # Imprimir los elementos ref encontrados
-                    print_with_line_number("Elementos ref encontrados en {}: ".format(service))
+                    st.success("Elementos ref encontrados en {}: ".format(service))
                     for elemento in elementos_ref:
-                        print_with_line_number(elemento)
+                        st.success(elemento)
                 return elemento
 
             # Construir la ruta del archivo proxy
@@ -277,9 +277,9 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                     elementos_ref.add(invoke_ref)
 
                 # Imprimir los elementos ref encontrados
-                print_with_line_number("Elementos ref encontrados en {}: ".format(service))
+                st.success("Elementos ref encontrados en {}: ".format(service))
                 for elemento in elementos_ref:
-                    print_with_line_number(elemento)
+                    st.success(elemento)
 
                     # Si el elemento contiene '/BusinessServices/', salir del bucle
                     if '/BusinessServices/' in elemento:
@@ -289,7 +289,7 @@ def service_refs_ruta_pipeline(pipeline_path, project_path):
                         pipeline_path = os.path.join(project_path, elemento + '.pipeline')
                        
             else:
-                print_with_line_number("El archivo proxy {} no existe.".format(proxy_path))
+                st.success("El archivo proxy {} no existe.".format(proxy_path))
                 break
 
     return elemento
@@ -636,7 +636,7 @@ def leer_xsd_file(xsd_file_path, complexType_name):
             namespaces = {'xs': 'http://www.w3.org/2001/XMLSchema'}
             
             #st.success(f"xsd_file_path: {xsd_file_path}")
-            print_with_line_number("")
+            
 
             # Función para detectar y eliminar repeticiones cíclicas en los nombres de los elementos
             def remove_repetitions(element_name):
@@ -679,11 +679,11 @@ def leer_xsd_file(xsd_file_path, complexType_name):
 
             complex_type_element = root.find(f".//xs:complexType[@name='{complexType_name}']", namespaces)
             if complex_type_element is not None:
-                print_with_line_number("")
+                
                 #st.success(f"complex_type_name: {complexType_name}")
-                print_with_line_number("")
+                
                 #st.success(f"complex_type_element: {complex_type_element}")
-                print_with_line_number("")
+                
                 
                 visited = set()
                 get_elements(complex_type_element, complexType_name, visited)
@@ -811,9 +811,9 @@ def extraer_operaciones_expuestas_http(project_path):
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
                                 capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
-                                print_with_line_number("")
+                                
                                 st.success(f"capa_proyecto: {capa_proyecto}")
-                                print_with_line_number("")
+                                
                                 st.success(f"wsdl_path: {wsdl_path}")
                                 operations = extract_wsdl_operations(wsdl_path)
                                 wsdl_operations_map[wsdl_path] = (
@@ -897,7 +897,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 found = True  # La operación se encontró en este archivo
                 # Iterar sobre el diccionario y realizar la llamada a parse_xsd_file
                 for operation_name, xsd in operation_to_xsd.items():
-                    #print_with_line_number("")
+                    #
                     operation_actual = operation_name
                     #st.success(f"operation_actual: {operation_actual}")
                     #st.success(f"operacion_a_documentar: {operacion_a_documentar}")
@@ -910,8 +910,8 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #st.success(f"capa_proyecto: {capa_proyecto}")
                         #st.success(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                        #print_with_line_number("")
-                        #print_with_line_number("")
+                        #
+                        #
                         #st.success(f"xsd: {xsd}")
                     
                         #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
@@ -1056,45 +1056,288 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
     return services_for_operations
 
 def extract_service_for_operations_audibpel(pipeline_path, operations):
-    services = []
-    namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
-                  'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
-                  'con2': 'http://www.bea.com/wli/sb/stages/config',
-                  'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
-                  'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
-                  'ref': 'http://www.bea.com/wli/sb/reference',
-                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+    services_for_operations = {}
+    seguir = True
     
-    try:
-        st.success(f"Procesando archivo: {pipeline_path}")
-        tree = ET.parse(pipeline_path)
-        root = tree.getroot()
+    st.success("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
         
-        branch_elements = root.findall(".//con:branch", namespaces)
-        for branch in branch_elements:
-            operation_name = branch.get("name")
-            if operation_name in operations:
-                services.append(operation_name)
-                st.success(f"Operación encontrada en branch: {operation_name}")
-        
-        ws_callouts = root.findall(".//con1:wsCallout", namespaces)
-        java_callouts = root.findall(".//con1:javaCallout", namespaces)
-        routes = root.findall(".//con1:route", namespaces)
-        routes2 = root.findall(".//con1:route", namespaces)
-        flow_elements = root.findall(".//con:flow", namespaces)
-        
-        for element in ws_callouts + java_callouts + routes + routes2 + flow_elements:
-            service_name = element.get("name")
-            if service_name and service_name in operations:
-                services.append(service_name)
-                st.success(f"Servicio encontrado: {service_name}")
+    if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
+        st.success(f"pipeline_path: {pipeline_path}")
+        with open(pipeline_path, 'r', encoding="utf-8") as f:
+            pipeline_content = f.read()
+            root = ET.fromstring(pipeline_content)
+            namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
+                          'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+                          'con2': 'http://www.bea.com/wli/sb/stages/config',
+                          'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+                          'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+                          'ref': 'http://www.bea.com/wli/sb/reference',
+                          'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
+                          
+
+            st.success(f"LEYENDO ROOT OPERATIONS AUDIBPEL: {root}")
+            # Parsea el archivo .pipeline
+            tree = ET.parse(pipeline_path)
+            root = tree.getroot()
+
+            branch_elements = root.findall(".//con:branch", namespaces)
+            if branch_elements:
+                for branch_element in branch_elements:
+                    
+                    operation_name = branch_element.attrib.get('name', '')
+                    
+                    st.success(f"Operation Name Branch Elements: {operation_name}")
+                    if operation_name in operations:
+                        service_element = branch_element.find(".//con1:service", namespaces)
+                        st.success(f"service_element: {service_element}")
+                        
+                                    
+                        if service_element is not None:                            
+                            #Consulta audibpel:
+                            st.success("buscar_definicion_audibpel")
+                            nombre_audibpel = buscar_definicion_audibpel(branch_element,operation_name,namespaces,root)
+                            st.success(f"nombre_audibpel: {nombre_audibpel}")
+                            
+                            service_ref = service_element.attrib.get('ref', '')
+                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                            st.success("branch_elements")
+                            st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}, nombre_audibpel: {nombre_audibpel}")
+                            
+                            st.success(services_for_operations)
+                            
+                            seguir = False
+                            continue
+                        else:
+                            seguir = True
+                            #Consulta audibpel:
+                            st.success("buscar_definicion_audibpel")
+                            nombre_audibpel = buscar_definicion_audibpel(branch_element,operation_name,namespaces,root)
+                            st.success(f"nombre_audibpel: {nombre_audibpel}")
+                            
+                            # Si service_element es None, buscar el elemento <con:request> dentro de branch_element
+                            request_element = branch_element.find(".//con:request", namespaces)
+                            st.success(f"request_element: {request_element}")
+                            if request_element is not None:
+                                request_value = request_element.text
+                                print("El valor del elemento <con:request> dentro de branch_element es:", request_value)
+                                
+                                
+                                # Utilizamos XPath para encontrar los elementos 'con:pipeline' con el atributo 'name' igual a 'request_value'
+                                pipelines = root.findall(".//con:pipeline[@name='" + request_value + "']", namespaces)
+
+                                # Imprimimos los elementos encontrados (si los hay)
+                                for pipeline in pipelines:
+                                    print("Se encontró un pipeline con name igual a '{}':".format(request_value))
+                                    #print(ET.tostring(pipeline, encoding='unicode'))
+                                    
+                                    ns_stage_transform_config   = {'con1': 'http://www.bea.com/wli/sb/stages/transform/config'}
+                                    ns_stage_publish_config     = {'con1': 'http://www.bea.com/wli/sb/stages/publish/config'}
+                                    ns_stage_routing_config     = {'con1': 'http://www.bea.com/wli/sb/stages/routing/config'}
+                                    ns_stage_config             = {'con1':'http://www.bea.com/wli/sb/stages/config'}
+                                    
+                                    ns_stage_pipeline_config    = {'con': 'http://www.bea.com/wli/sb/pipeline/config',
+                                                                'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+                                                                'con2': 'http://www.bea.com/wli/sb/stages/config',
+                                                                'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+                                                                'ref': 'http://www.bea.com/wli/sb/reference',
+                                                                'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+                                    
+                                    ns                           = {'con': 'http://www.example.com',
+                                                                    'con4': 'http://www.bea.com/wli/sb/stages/routing/config',
+                                                                    'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+                                    
+
+                                    ws_callouts = pipeline.findall(".//con1:wsCallout", namespaces=ns_stage_transform_config)
+                                    #st.success(f"ws_callouts: {ws_callouts}")
+                                    java_callouts = pipeline.findall(".//con1:javaCallout", namespaces=ns_stage_transform_config)
+                                    #st.success(f"java_callouts: {java_callouts}")
+                                    routes = pipeline.findall(".//con1:route", namespaces=ns_stage_publish_config)
+                                    #st.success(f"routes: {routes}")
+                                    routes2 = pipeline.findall(".//con1:route", namespaces=ns_stage_routing_config)
+                                    #st.success(f"routes2: {routes2}")
+                                    flow_elements = pipeline.findall(".//con:flow", ns_stage_pipeline_config)
+                                    #st.success(f"flow_elements: {flow_elements}")
+                                    
+                                    
+                                    for ws_callout in ws_callouts:
+                                        service_element = ws_callout.find(".//con1:service", namespaces=ns_stage_transform_config)
+                                        operation_element = ws_callout.find(".//con1:operation", namespaces=ns_stage_transform_config)
+                                        if service_element is not None and operation_element is not None:
+                                            service_ref = service_element.attrib.get('ref', '')
+                                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                            st.success(f"services_for_operations ws_callouts: {services_for_operations}")
+                                            seguir = False
+                                            continue
+                                    
+                                    
+                                    for java_callout in java_callouts:
+                                        method_element = java_callout.find(".//con1:method", namespaces=ns_stage_transform_config)
+                                        if method_element is not None:
+                                            method_text = method_element.text
+                                            service_element = java_callout.find(".//con1:archive", namespaces=ns_stage_transform_config)
+                                            if service_element is not None:
+                                                service_ref = service_element.attrib.get('ref', '')
+                                                services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                                st.success(f"services_for_operations java_callouts: {services_for_operations}")
+                                                seguir = False
+                                                continue
+
+                                    for route in routes:
+                                        service_element = route.find(".//con1:service", namespaces=ns_stage_publish_config)
+                                        operation_element = route.find(".//con1:operation", namespaces=ns_stage_publish_config)
+                                        if service_element is not None and operation_element is not None:
+                                            service_ref = service_element.attrib.get('ref', '')
+                                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                            st.success(f"services_for_operations routes: {services_for_operations}")
+                                            seguir = False
+                                            continue
+                                    
+                                    for route in routes2:
+                                        service_element = route.find(" .//con1:service", namespaces=ns_stage_routing_config)
+                                        operation_element = route.find(" .//con1:operation", namespaces=ns_stage_routing_config)
+                                        if service_element is not None and operation_element is not None:
+                                            service_ref = service_element.attrib.get('ref', '')
+                                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                            st.success(f"services_for_operations routes2: {services_for_operations}")
+                                            seguir = False
+                                            continue
+                                            
+                                     
+                                     # Itera sobre cada elemento <con:flow> encontrado
+                                    for flow_element in flow_elements:
+                                        # Encuentra todos los elementos <con1:service> dentro de <con:flow>
+                                        service_elements = flow_element.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", ns_stage_pipeline_config)
+                                        
+                                        # Si no se encuentra ningún servicio dentro del flujo, salta al siguiente flujo
+                                        if not service_elements:
+                                            seguir = False
+                                            continue
+                                        
+                                        # Itera sobre cada elemento <con1:service> encontrado dentro de <con:flow>
+                                        for service_element in service_elements:
+                                            # Accede al atributo 'ref' del elemento <con1:service>
+                                            service_ref = service_element.attrib.get('ref', '')
+
+                                            # Encuentra todos los elementos <con1:operation> dentro de <con:flow>
+                                            operation_elements = flow_element.findall(".//con1:operation", ns_stage_pipeline_config)
+
+
+                                            operation_element = operation_elements[0]
+
+                                            # Agrega la relación entre el nombre de la operación y la referencia del servicio al diccionario services_for_operations
+                                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                            seguir = False
+                                            continue
+                                                    
+                            st.success(services_for_operations)
+                            
+
+
+
+
+            if seguir:
+                flow_elements = root.findall(".//con:flow", namespaces)
+
+                
+                for flow_element in flow_elements:
+                    
+                    service_elements = flow_element.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces)
+                    proxy_elements = flow_element.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces)
+                    
+                    for service_element in service_elements:
+                        service_ref = service_element.attrib.get('ref', '')
+                        operation_elements = flow_element.findall(".//con1:operation", namespaces)
+                        for operation_element in operation_elements:
+                            operation_name = operation_element.text.strip()
+                            st.success(f"Operation Name: {operation_name}")
+                            st.success(f"len(operations): {len(operations)}")
+                            
+                            if len(operations) == 1:
+                                operation_name = operations[0]
+                                
+                            st.success(f"Operation Name: {operation_name}")
+                            
+                            if operation_name in operations:
+                                #Consulta audibpel:
+                                st.success("buscar_definicion_audibpel")
+                                nombre_audibpel = buscar_definicion_audibpel(flow_element,operation_name,namespaces,root)
+                                st.success(f"nombre_audibpel: {nombre_audibpel}")
+                                services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                st.success("flow_element")
+                                st.success(f"Operation Name: {operation_name}")
+                                
+                                seguir = False
+                                continue
+                    
+                    for proxy_element in proxy_elements:
+                        service_ref = proxy_element.attrib.get('ref', '')
+                        operation_elements = flow_element.findall(".//con1:operation", namespaces)
+                        for operation_element in operation_elements:
+                            
+                            operation_name = operation_element.text.strip()
+                            st.success(f"Operation Name: {operation_name}")
+                            st.success(f"len(operations): {len(operations)}")
+                            
+                            if len(operations) == 1:
+                                operation_name = operations[0]
+                                
+                            st.success(f"Operation Name: {operation_name}")
+                            
+                            if operation_name in operations:
+                                #Consulta audibpel:
+                                st.success("buscar_definicion_audibpel")
+                                nombre_audibpel = buscar_definicion_audibpel(flow_element,operation_name,namespaces,root)
+                                st.success(f"nombre_audibpel: {nombre_audibpel}")
+                                services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                st.success("flow_element")
+                                st.success(f"Operation Name: {operation_name}")
+                                
+                                seguir = False
+                                continue
+                            
+                
+            if seguir:               
+                route_elements = root.findall(".//con:route-node", namespaces)
+                for route_element in route_elements:
+                    operation_element = route_element.find(".//con1:operation", namespaces)
+                    if operation_element is not None:
+                        operation_name = operation_element.text.strip()  
+                        if operation_name in operations:
+                            service_element = route_element.find(".//con1:service", namespaces)
+                            if service_element is not None:
+                                service_ref = service_element.attrib.get('ref', '')
+                                services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
+                                st.success("route_elements")
+                                st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                                
+                                seguir = False
+                                continue
+                                
+                # Encuentra todos los elementos <wsCallout> sin importar el prefijo del namespace
+                callout_elements = [element for element in root.iter() if element.tag.endswith('wsCallout')]
+                
+                # Itera sobre cada elemento <wsCallout> encontrado
+                for callout_element in callout_elements:
+                    operation_name = ""
+                    service_ref = ""
+                    operation_element = callout_element.find(".//con3:operation", namespaces)
+                    if operation_element is not None:
+                        operation_name = operation_element.text.strip()
+                    service_element = callout_element.find(".//con3:service", namespaces)
+                    if service_element is not None:
+                        service_ref = service_element.attrib.get('ref', '')
+                    if operation_name and service_ref:
+                        services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
+                        st.success("callout_element")
+                        st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                        
+                        seguir = False
+                        continue
+                                
+    st.success(f"SERVICES FOR: {services_for_operations}")
+    st.success("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
     
-    except ET.ParseError as e:
-        st.error(f"Error parsing {pipeline_path}: {e}")
-    except Exception as e:
-        st.error(f"Unexpected error processing {pipeline_path}: {e}")
-    
-    return services
+    return services_for_operations
 
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
@@ -1299,7 +1542,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         #st.success(f"\nTabla {i+1}:")
                         for row in table.rows:
                             row_data = [cell.text for cell in row.cells]
-                            print_with_line_number('\t'.join(row_data))
+                            st.success('\t'.join(row_data))
                     
                     url = ""
                     ruta =""
@@ -1315,21 +1558,21 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         minOccurs = elem['minOccurs']
                         
                     #st.success(f"url: {url}")
-                    print_with_line_number("")
+                    
                     #st.success(f"ruta: {ruta}")
-                    print_with_line_number("")
+                    
                     #st.success(f"business: {business}")
-                    print_with_line_number("")
+                    
                     fecha_actual = datetime.now()
                     fecha_formateada = fecha_actual.strftime("%d/%m/%Y")
                     
-                    print_with_line_number("")
-                    print_with_line_number("")
+                    
+                    
                     #st.success(f"operation: {operation}")
                     
                     #st.success(f"elements: {elements}")
-                    print_with_line_number("")
-                    print_with_line_number("")
+                    
+                    
                     
                     # Definir las variables y sus valores
                     variables = {
@@ -1392,7 +1635,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                             row_text = [cell.text.strip() for cell in row.cells]  # Extraer el texto de cada celda
                             #st.success(f"  {row_text}")  # Imprimir el contenido de la fila
 
-                        print_with_line_number("-" * 50)  # Separador entre tablas
+                        st.success("-" * 50)  # Separador entre tablas
                    
                    
                     # Recorrer las filas de la tabla 7
@@ -1421,7 +1664,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                             # tabla_response = tabla_cabecera_salida  # Ahora sí es una tabla válida
                             # break
                     # else:
-                        # print_with_line_number("No se encontró la sección 'Response Body' en la tabla 7.")
+                        # st.success("No se encontró la sección 'Response Body' en la tabla 7.")
                         # tabla_response = None  # Para evitar futuros errores
                    
                     
@@ -1551,7 +1794,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     if total_operaciones == 1:
                         progress_bar_general.progress(75)
                     
-                    print_with_line_number("___________________________________________")
+                    st.success("___________________________________________")
                     
                     #st.success(f"✅ temp_dir  {temp_dir }")
                     #st.success(f"✅ ruta_temporal  {ruta_temporal }")
@@ -1632,9 +1875,9 @@ def obtener_operaciones(project_path):
                             if wsdl_relative_path:
                                 wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
                                 capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
-                                print_with_line_number("")
+                                
                                 #st.success(f"capa_proyecto: {capa_proyecto}")
-                                print_with_line_number("")
+                                
                                 #st.success(f"wsdl_path: {wsdl_path}")
                                 operaciones_especificas = extract_wsdl_operations(wsdl_path)
                                 #st.success(f"operations: {operations}")
@@ -1665,7 +1908,7 @@ def main():
                 try:
                     shutil.rmtree(carpeta_destino)  # Elimina la carpeta y su contenido
                 except Exception as e:
-                    print_with_line_number(f"⚠️ No se pudo limpiar la carpeta temporal: {e}")
+                    st.success(f"⚠️ No se pudo limpiar la carpeta temporal: {e}")
 
             # 📌 Crear nuevamente la carpeta vacía
             os.makedirs(carpeta_destino, exist_ok=True)
