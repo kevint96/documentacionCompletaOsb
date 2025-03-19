@@ -968,7 +968,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
 
     for operacion_padre in operations:
         extract_service_for_operations_audibpel(pipeline_path,operations)
-        procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
+        #procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
     
     st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
