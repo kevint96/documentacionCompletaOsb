@@ -973,7 +973,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
     st.success(f"🔍 project_path: {project_path}")
     st.success(f"🔍 pipeline_path: {pipeline_path}")
     
-    def procesar_pipeline(pipeline_actual, operacion_actual):
+    def procesar_pipeline(project_path,pipeline_actual, operacion_actual):
         if pipeline_actual in visited_proxies:
             return
         visited_proxies.add(pipeline_actual)
@@ -993,16 +993,20 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
             service_ref = service.get("ref")
             st.success(f"🔍 service_ref: {service_ref}")
             if service_ref and service_ref not in visited_proxies:
-                referencias.append(service_ref)
-                procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
+                initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
+                referencias.append(initial_proxy_path)
+                procesar_pipeline(project_path,new_pipeline_path, operacion_actual)
         
         for route in root.findall(".//con:route-node", namespaces):
             for service in route.findall(".//con1:service", namespaces):
                 service_ref = service.get("ref")
                 st.success(f"🔍 service_ref: {service_ref}")
                 if service_ref and service_ref not in visited_proxies:
-                    referencias.append(service_ref)
-                    procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
+                    initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                    new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
+                    referencias.append(initial_proxy_path)
+                    procesar_pipeline(project_path,new_pipeline_path, operacion_actual)
         
         for callout in root.iter("{http://www.bea.com/wli/sb/stages/config}service-callout"):
             service_ref = callout.find("{http://www.bea.com/wli/sb/stages/config}service")
@@ -1010,16 +1014,20 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
             if service_ref is not None and "ref" in service_ref.attrib:
                 service_path = service_ref.attrib["ref"]
                 if service_path not in visited_proxies:
-                    referencias.append(service_path)
-                    procesar_pipeline(service_path.replace("Proxies", "Pipeline"), operacion_actual)
+                    initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                    new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
+                    referencias.append(initial_proxy_path)
+                    procesar_pipeline(project_path,new_pipeline_path, operacion_actual)
         
         for branch in root.findall(".//con:branch", namespaces):
             for service in branch.findall(".//con1:service", namespaces):
                 service_ref = service.get("ref")
                 st.success(f"🔍 service_ref: {service_ref}")
                 if service_ref and service_ref not in visited_proxies:
-                    referencias.append(service_ref)
-                    procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
+                    initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                    new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
+                    referencias.append(initial_proxy_path)
+                    procesar_pipeline(project_path,new_pipeline_path, operacion_actual)
         
         for route in root.findall(".//con1:route", namespaces):
             business_service = route.find(".//con1:service", namespaces)
@@ -1037,7 +1045,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
     
     for operacion in operations:
         st.info(f"Procesando operación: {operacion}")
-        procesar_pipeline(pipeline_path, operacion)
+        procesar_pipeline(project_path,pipeline_path, operacion)
     
     st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
