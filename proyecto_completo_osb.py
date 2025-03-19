@@ -1046,6 +1046,7 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
                 st.success(f"🔍 referencias: {referencias}")
                 services_for_operations[operacion_actual].append({pipeline_actual: referencias})
                 st.success(f"🔍 services_for_operations: {services_for_operations}")
+                break
     
     return services_for_operations
 
