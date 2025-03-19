@@ -979,11 +979,11 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         visited_proxies.add(pipeline_actual)
         st.success(f"🔍 pipeline_actual: {pipeline_actual}")
         
-        if not (pipeline_file):
-            st.warning(f"Archivo no encontrado: {pipeline_file}")
+        if not os.path.exists(pipeline_actual):
+            st.warning(f"Archivo no encontrado: {pipeline_actual}")
             return
         
-        with open(pipeline_file, "r", encoding="utf-8") as file:
+        with open(pipeline_actual, "r", encoding="utf-8") as file:
             xml_content = file.read()
         root = ET.fromstring(xml_content)
         
