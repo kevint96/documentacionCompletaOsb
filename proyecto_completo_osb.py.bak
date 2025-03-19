@@ -27,6 +27,7 @@ import base64
 import sys
 import xml.etree.ElementTree as ET
 from collections import defaultdict
+from lxml import etree
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
@@ -968,7 +969,8 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
 
     for operacion_padre in operations:
         operacion_actual = operacion_padre
-        extract_service_for_operations_audibpel(project_path,pipeline_path,operations,services_for_operations,operacion_padre,operacion_actual)
+        buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a_documentar)
+        #extract_service_for_operations_audibpel(project_path,pipeline_path,operations,services_for_operations,operacion_padre,operacion_actual)
         #procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
     
     st.success(f"Servicios internos encontrados: {services_for_operations}")
@@ -1056,6 +1058,62 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
     return services_for_operations
 
+
+def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a_documentar):
+    if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
+        print_with_line_number(f"📂 Analizando pipeline: {pipeline_path}")
+
+        # Leer el contenido del pipeline
+        with open(pipeline_path, 'r', encoding="utf-8") as f:
+            pipeline_content = f.read()
+        
+        # Cargar el XML
+        root = ET.fromstring(pipeline_content)
+        
+        # Definir los namespaces del XML
+        namespaces = {
+            'con': 'http://www.bea.com/wli/sb/pipeline/config', 
+            'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+            'con2': 'http://www.bea.com/wli/sb/stages/config',
+            'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+            'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+            'ref': 'http://www.bea.com/wli/sb/reference',
+            'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+        }
+        
+        lista_proxys = []
+        lista_operaciones_proxys = []
+        
+        # Buscar el <con:branch> con el name específico
+        branch_xpath = f".//con:branch[@name='{operacion_a_documentar}']"
+        branch_element = root.find(branch_xpath, namespaces)
+        
+        if branch_element is not None:
+            print_with_line_number(f"✅ Se encontró el branch: {operacion_a_documentar}")
+            
+            # Buscar el <con1:service> dentro del branch encontrado
+            service_element = branch_element.find(".//con1:service", namespaces)
+            
+            if service_element is not None:
+                service_ref = service_element.attrib.get('ref', '')
+                print_with_line_number(f"🔗 Referencia al servicio: {service_ref}")
+                
+                # Construir la ruta al ProxyService
+                proxy_referencia = os.path.join(project_path, service_ref + ".ProxyService")
+                print_with_line_number(f"📄 Proxy referencia: {proxy_referencia}")
+                
+                # Obtener el pipeline asociado al proxy
+                new_pipeline_path = extract_pipeline_path_from_proxy(proxy_referencia, project_path)
+                print_with_line_number(f"📂 Nuevo pipeline detectado: {new_pipeline_path}")
+
+                return new_pipeline_path
+            else:
+                print_with_line_number("⚠️ No se encontró un <con1:service> dentro del branch.")
+        else:
+            print_with_line_number(f"❌ No se encontró el branch con name='{operacion_a_documentar}' en el pipeline.")
+        
+    return None
+
 def extract_service_for_operations_audibpel(project_path, pipeline_path, operations, services_for_operations=None, operacion_padre=None, operacion_actual=None):
     if services_for_operations is None:
         services_for_operations = defaultdict(list)
@@ -1095,6 +1153,116 @@ def extract_service_for_operations_audibpel(project_path, pipeline_path, operati
                         print_with_line_number(f"proxy_referencia: {proxy_referencia}")
                         new_pipeline_path = extract_pipeline_path_from_proxy(proxy_referencia, project_path)
                         print_with_line_number(f"new_pipeline_path: {new_pipeline_path}")
+                        
+                    "Recorrer elementos:"
+                        
+                    
+                    print("Se encontró un pipeline con name igual a '{}':".format(request_value))
+                    #print(ET.tostring(pipeline, encoding='unicode'))
+                    
+                    ns_stage_transform_config   = {'con1': 'http://www.bea.com/wli/sb/stages/transform/config'}
+                    ns_stage_publish_config     = {'con1': 'http://www.bea.com/wli/sb/stages/publish/config'}
+                    ns_stage_routing_config     = {'con1': 'http://www.bea.com/wli/sb/stages/routing/config'}
+                    ns_stage_config             = {'con1':'http://www.bea.com/wli/sb/stages/config'}
+                    
+                    ns_stage_pipeline_config    = {'con': 'http://www.bea.com/wli/sb/pipeline/config',
+                                                'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+                                                'con2': 'http://www.bea.com/wli/sb/stages/config',
+                                                'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+                                                'ref': 'http://www.bea.com/wli/sb/reference',
+                                                'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+                    
+                    ns                           = {'con': 'http://www.example.com',
+                                                    'con4': 'http://www.bea.com/wli/sb/stages/routing/config',
+                                                    'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+                    
+
+                    ws_callouts = pipeline.findall(".//con1:wsCallout", namespaces=ns_stage_transform_config)
+                    #print_with_line_number(f"ws_callouts: {ws_callouts}")
+                    java_callouts = pipeline.findall(".//con1:javaCallout", namespaces=ns_stage_transform_config)
+                    #print_with_line_number(f"java_callouts: {java_callouts}")
+                    routes = pipeline.findall(".//con1:route", namespaces=ns_stage_publish_config)
+                    #print_with_line_number(f"routes: {routes}")
+                    routes2 = pipeline.findall(".//con1:route", namespaces=ns_stage_routing_config)
+                    #print_with_line_number(f"routes2: {routes2}")
+                    flow_elements = pipeline.findall(".//con:flow", ns_stage_pipeline_config)
+                    #print_with_line_number(f"flow_elements: {flow_elements}")
+                    print_with_line_number("")
+                    
+                    for ws_callout in ws_callouts:
+                        service_element = ws_callout.find(".//con1:service", namespaces=ns_stage_transform_config)
+                        operation_element = ws_callout.find(".//con1:operation", namespaces=ns_stage_transform_config)
+                        if service_element is not None and operation_element is not None:
+                            service_ref = service_element.attrib.get('ref', '')
+                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                            print_with_line_number(f"services_for_operations ws_callouts: {services_for_operations}")
+                            seguir = False
+                            continue
+                    
+                    
+                    for java_callout in java_callouts:
+                        method_element = java_callout.find(".//con1:method", namespaces=ns_stage_transform_config)
+                        if method_element is not None:
+                            method_text = method_element.text
+                            service_element = java_callout.find(".//con1:archive", namespaces=ns_stage_transform_config)
+                            if service_element is not None:
+                                service_ref = service_element.attrib.get('ref', '')
+                                services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                                print_with_line_number(f"services_for_operations java_callouts: {services_for_operations}")
+                                seguir = False
+                                continue
+
+                    for route in routes:
+                        service_element = route.find(".//con1:service", namespaces=ns_stage_publish_config)
+                        operation_element = route.find(".//con1:operation", namespaces=ns_stage_publish_config)
+                        if service_element is not None and operation_element is not None:
+                            service_ref = service_element.attrib.get('ref', '')
+                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                            print_with_line_number(f"services_for_operations routes: {services_for_operations}")
+                            seguir = False
+                            continue
+                    
+                    for route in routes2:
+                        service_element = route.find(" .//con1:service", namespaces=ns_stage_routing_config)
+                        operation_element = route.find(" .//con1:operation", namespaces=ns_stage_routing_config)
+                        if service_element is not None and operation_element is not None:
+                            service_ref = service_element.attrib.get('ref', '')
+                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                            print_with_line_number(f"services_for_operations routes2: {services_for_operations}")
+                            seguir = False
+                            continue
+                            
+                     
+                     # Itera sobre cada elemento <con:flow> encontrado
+                    for flow_element in flow_elements:
+                        # Encuentra todos los elementos <con1:service> dentro de <con:flow>
+                        service_elements = flow_element.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", ns_stage_pipeline_config)
+                        
+                        # Si no se encuentra ningún servicio dentro del flujo, salta al siguiente flujo
+                        if not service_elements:
+                            seguir = False
+                            continue
+                        
+                        # Itera sobre cada elemento <con1:service> encontrado dentro de <con:flow>
+                        for service_element in service_elements:
+                            # Accede al atributo 'ref' del elemento <con1:service>
+                            service_ref = service_element.attrib.get('ref', '')
+
+                            # Encuentra todos los elementos <con1:operation> dentro de <con:flow>
+                            operation_elements = flow_element.findall(".//con1:operation", ns_stage_pipeline_config)
+
+
+                            operation_element = operation_elements[0]
+
+                            # Agrega la relación entre el nombre de la operación y la referencia del servicio al diccionario services_for_operations
+                            services_for_operations.setdefault(operation_name, []).append((service_ref, nombre_audibpel))
+                            seguir = False
+                            continue
+                        
+                        
+                        
+                        
+                        
                         lista_proxys.append(service_ref)
                         lista_operaciones_proxys.append(operation_name)
                         agregar_referencia(services_for_operations, service_ref, operation_name, lista_proxys, lista_operaciones_proxys)
@@ -1137,6 +1305,8 @@ def extract_service_for_operations_audibpel(project_path, pipeline_path, operati
     print_with_line_number(f"SERVICES FOR: {services_for_operations}")
     st.success("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
     return services_for_operations
+
+
 def agregar_referencia(estructura, proxy_principal, operacion_principal, proxys_referenciados, operaciones_referenciadas):
     """
     Agrega referencias de proxys a la estructura de datos.
