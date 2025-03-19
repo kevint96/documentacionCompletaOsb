@@ -968,7 +968,6 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
     st.success(f"project_path: {project_path}")
     st.success(f"pipeline_path: {pipeline_path}")
     services_for_operations = defaultdict(list)
-    st.success(f"services_for_operations: {services_for_operations}")
     
     namespaces = {
         'con': 'http://www.bea.com/wli/sb/pipeline/config', 
@@ -980,122 +979,78 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
     
-    # Cargar el XML
     try:
         tree = ET.parse(pipeline_path)
         root = tree.getroot()
     except Exception as e:
         st.error(f"Error al procesar el pipeline {pipeline_path}: {str(e)}")
         return {}
-
-    def buscar_service_y_agregar(element, operation_name):
-        """ Busca elementos <service> y agrega la información a services_for_operations """
-        service_element = element.find(".//con1:service", namespaces)
-        st.success(f"service_element: {service_element}")
-        if service_element is not None:
-            service_ref = service_element.attrib.get('ref', '')
+    
+    def agregar_servicio(operation_name, service_ref):
+        """ Agrega servicios encontrados a la operación padre """
+        if service_ref:
             services_for_operations[operation_name].append(service_ref)
             st.success(f"services_for_operations: {services_for_operations}")
-            return service_ref
-        return None
-
+    
+    def procesar_referencia(operation_name, service_ref):
+        """ Procesa referencias a ProxyService y BusinessService """
+        agregar_servicio(operation_name, service_ref)
+        
+        if 'BusinessService' not in service_ref:
+            next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+            st.success(f"next_proxy_path: {next_proxy_path}")
+            
+            if next_proxy_path not in visited_proxies:
+                visited_proxies.add(next_proxy_path)
+                new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
+                st.success(f"new_pipeline_path: {new_pipeline_path}")
+                
+                if new_pipeline_path:
+                    child_services = recorrer_servicios_internos_osb(project_path, operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                    services_for_operations[operation_name].append(child_services)
+                else:
+                    st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
+    
     # Procesar <branch>
     for branch in root.findall(".//con:branch", namespaces):
         operation_name = branch.attrib.get('name', '')
         if operation_name in operations:
-            service_ref = buscar_service_y_agregar(branch, operation_name)
-            st.success(f"service_ref: {service_ref}")
-            if service_ref and 'BusinessService' not in service_ref:
-                next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                st.success(f"next_proxy_path: {next_proxy_path}")
-                if next_proxy_path not in visited_proxies:
-                    visited_proxies.add(next_proxy_path)
-                    new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
-                    st.success(f"new_pipeline_path: {new_pipeline_path}")
-                    if new_pipeline_path:  # Verifica que no sea None
-                        services_for_operations.update(
-                            recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
-                        )
-                        st.success(f"services_for_operations: {services_for_operations}")
-                    else:
-                        st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
+            service_element = branch.find(".//con1:service", namespaces)
+            service_ref = service_element.attrib.get('ref', '') if service_element is not None else None
+            procesar_referencia(operation_name, service_ref)
     
     # Procesar <flow>
     for flow in root.findall(".//con:flow", namespaces):
         service_elements = flow.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces)
+        operation_elements = flow.findall(".//con1:operation", namespaces)
+        
         for service_element in service_elements:
             service_ref = service_element.attrib.get('ref', '')
-            st.success(f"service_ref: {service_ref}")
-            operation_elements = flow.findall(".//con1:operation", namespaces)
             for operation_element in operation_elements:
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
-                    services_for_operations[operation_name].append(service_ref)
-                    if 'BusinessService' not in service_ref:
-                        next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                        st.success(f"next_proxy_path: {next_proxy_path}")
-                        if next_proxy_path not in visited_proxies:
-                            visited_proxies.add(next_proxy_path)
-                            new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
-                            st.success(f"new_pipeline_path: {new_pipeline_path}")
-                            if new_pipeline_path:  # Verifica que no sea None
-                                services_for_operations.update(
-                                    recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
-                                )
-                                st.success(f"services_for_operations: {services_for_operations}")
-                            else:
-                                st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
+                    procesar_referencia(operation_name, service_ref)
     
     # Procesar <route-node>
     for route in root.findall(".//con:route-node", namespaces):
         operation_element = route.find(".//con1:operation", namespaces)
-        st.success(f"operation_element: {operation_element}")
         if operation_element is not None:
             operation_name = operation_element.text.strip()
             if operation_name in operations:
-                service_ref = buscar_service_y_agregar(route, operation_name)
-                st.success(f"service_ref: {service_ref}")
-                if service_ref and 'BusinessService' not in service_ref:
-                    next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                    st.success(f"next_proxy_path: {next_proxy_path}")
-                    if next_proxy_path not in visited_proxies:
-                        visited_proxies.add(next_proxy_path)
-                        new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
-                        st.success(f"new_pipeline_path: {new_pipeline_path}")
-                        if new_pipeline_path:  # Verifica que no sea None
-                            services_for_operations.update(
-                                recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
-                            )
-                            st.success(f"services_for_operations: {services_for_operations}")
-                        else:
-                            st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
+                service_element = route.find(".//con1:service", namespaces)
+                service_ref = service_element.attrib.get('ref', '') if service_element is not None else None
+                procesar_referencia(operation_name, service_ref)
     
     # Procesar <wsCallout>
     for callout in root.iter():
         if callout.tag.endswith('wsCallout'):
             operation_element = callout.find(".//con3:operation", namespaces)
-            st.success(f"operation_element: {operation_element}")
             service_element = callout.find(".//con3:service", namespaces)
-            st.success(f"service_element: {service_element}")
+            
             if operation_element is not None and service_element is not None:
                 operation_name = operation_element.text.strip()
                 service_ref = service_element.attrib.get('ref', '')
-                st.success(f"service_ref: {service_ref}")
-                services_for_operations[operation_name].append(service_ref)
-                if 'BusinessService' not in service_ref:
-                    next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                    st.success(f"next_proxy_path: {next_proxy_path}")
-                    if next_proxy_path not in visited_proxies:
-                        visited_proxies.add(next_proxy_path)
-                        new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
-                        st.success(f"new_pipeline_path: {new_pipeline_path}")
-                        if new_pipeline_path:  # Verifica que no sea None
-                            services_for_operations.update(
-                                recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
-                            )
-                            st.success(f"services_for_operations: {services_for_operations}")
-                        else:
-                            st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
+                procesar_referencia(operation_name, service_ref)
     
     return services_for_operations
 
