@@ -966,13 +966,13 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
     st.success(f"🔍 proxy_path: {proxy_path}")
     st.success(f"🔍 pipeline_path: {pipeline_path}")
 
-
-    procesar_pipeline(project_path, proxy_path,pipeline_path, operacion=None)
+    operacion =""
+    procesar_pipeline(project_path, proxy_path,pipeline_path, operacion)
     
     st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
-def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual):
+def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual=None):
     
     services_for_operations = defaultdict(list)
     namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
