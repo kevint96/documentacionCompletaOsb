@@ -996,7 +996,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         if branch is not None:
             for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
                 service_ref = service.get("ref")
-                st.success(f"🔍 service_ref: {service_ref}")
+                st.success(f"🔍1 service_ref: {service_ref}")
                 if service_ref and service_ref not in visited_proxies:
                     initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
                     new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
@@ -1009,7 +1009,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
             
             if business_service is not None and "ref" in business_service.attrib:
                 service_ref = business_service.attrib["ref"]
-                st.success(f"🔍 service_ref: {service_ref}")
+                st.success(f"🔍2 service_ref: {service_ref}")
                 operation_name = operation.text if operation is not None else ""
                 referencias.append((service_ref, operation_name))
                 st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
