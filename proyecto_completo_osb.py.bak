@@ -966,17 +966,14 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
     st.success(f"🔍 proxy_path: {proxy_path}")
     st.success(f"🔍 pipeline_path: {pipeline_path}")
 
-    operacion =""
-    procesar_pipeline(project_path, proxy_path,pipeline_path, operacion)
+    for operacion_padre in operations:
+        extract_service_for_operations_audibpel(pipeline_path,operations)
+        procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
     
     st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
 def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual=None, services_for_operations=None):
-    """
-    Procesa un archivo .pipeline y sigue las referencias de servicios en cascada,
-    respetando la jerarquía de operaciones padre -> operaciones hijas.
-    """
     if services_for_operations is None:
         services_for_operations = defaultdict(dict)
 
@@ -1057,6 +1054,48 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
                 st.success(f"🔍 services_for_operations actualizado: {services_for_operations}")
 
     return services_for_operations
+
+def extract_service_for_operations_audibpel(pipeline_path, operations):
+    services = []
+    namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
+                  'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+                  'con2': 'http://www.bea.com/wli/sb/stages/config',
+                  'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+                  'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+                  'ref': 'http://www.bea.com/wli/sb/reference',
+                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+    
+    try:
+        st.success(f"Procesando archivo: {pipeline_path}")
+        tree = ET.parse(pipeline_path)
+        root = tree.getroot()
+        
+        branch_elements = root.findall(".//con:branch", namespaces)
+        for branch in branch_elements:
+            operation_name = branch.get("name")
+            if operation_name in operations:
+                services.append(operation_name)
+                st.success(f"Operación encontrada en branch: {operation_name}")
+        
+        ws_callouts = root.findall(".//con1:wsCallout", namespaces)
+        java_callouts = root.findall(".//con1:javaCallout", namespaces)
+        routes = root.findall(".//con1:route", namespaces)
+        routes2 = root.findall(".//con1:route", namespaces)
+        flow_elements = root.findall(".//con:flow", namespaces)
+        
+        for element in ws_callouts + java_callouts + routes + routes2 + flow_elements:
+            service_name = element.get("name")
+            if service_name and service_name in operations:
+                services.append(service_name)
+                st.success(f"Servicio encontrado: {service_name}")
+    
+    except ET.ParseError as e:
+        st.error(f"Error parsing {pipeline_path}: {e}")
+    except Exception as e:
+        st.error(f"Unexpected error processing {pipeline_path}: {e}")
+    
+    return services
+
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
