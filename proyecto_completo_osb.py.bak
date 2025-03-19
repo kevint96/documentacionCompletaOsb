@@ -979,80 +979,53 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
     
-    try:
-        tree = ET.parse(pipeline_path)
-        root = tree.getroot()
-    except Exception as e:
-        st.error(f"Error al procesar el pipeline {pipeline_path}: {str(e)}")
-        return {}
+    with open(pipeline_path, 'r', encoding='utf-8') as file:
+        xml_content = file.read()
     
-    def agregar_servicio(operation_name, service_ref):
-        """ Agrega servicios encontrados a la operación padre """
-        if service_ref:
-            services_for_operations[operation_name].append(service_ref)
-            st.success(f"services_for_operations: {services_for_operations}")
+    root = ET.fromstring(xml_content)
+    services_for_operations = defaultdict(list)
+    current_service_path = pipeline_path
     
-    def procesar_referencia(operation_name, service_ref):
-        """ Procesa referencias a ProxyService y BusinessService """
-        agregar_servicio(operation_name, service_ref)
-        
-        if 'BusinessService' not in service_ref:
-            next_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-            st.success(f"next_proxy_path: {next_proxy_path}")
-            
-            if next_proxy_path not in visited_proxies:
-                visited_proxies.add(next_proxy_path)
-                new_pipeline_path = extract_pipeline_path_from_proxy(next_proxy_path, project_path)
-                st.success(f"new_pipeline_path: {new_pipeline_path}")
-                
-                if new_pipeline_path:
-                    child_services = recorrer_servicios_internos_osb(project_path, operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
-                    services_for_operations[operation_name].append(child_services)
-                else:
-                    st.warning(f"No se encontró un pipeline válido para {service_ref}. Verifica el ProxyService.")
-    
-    # Procesar <branch>
-    for branch in root.findall(".//con:branch", namespaces):
-        operation_name = branch.attrib.get('name', '')
-        if operation_name in operations:
-            service_element = branch.find(".//con1:service", namespaces)
-            service_ref = service_element.attrib.get('ref', '') if service_element is not None else None
-            procesar_referencia(operation_name, service_ref)
-    
-    # Procesar <flow>
     for flow in root.findall(".//con:flow", namespaces):
-        service_elements = flow.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces)
-        operation_elements = flow.findall(".//con1:operation", namespaces)
-        
-        for service_element in service_elements:
-            service_ref = service_element.attrib.get('ref', '')
-            for operation_element in operation_elements:
-                operation_name = operation_element.text.strip()
-                if operation_name in operations:
-                    procesar_referencia(operation_name, service_ref)
+        for service in flow.findall(".//con:service", namespaces):
+            service_ref = service.get("ref")
+            if service_ref:
+                services_for_operations[current_service_path].append(service_ref)
     
-    # Procesar <route-node>
     for route in root.findall(".//con:route-node", namespaces):
-        operation_element = route.find(".//con1:operation", namespaces)
-        if operation_element is not None:
-            operation_name = operation_element.text.strip()
-            if operation_name in operations:
-                service_element = route.find(".//con1:service", namespaces)
-                service_ref = service_element.attrib.get('ref', '') if service_element is not None else None
-                procesar_referencia(operation_name, service_ref)
+        for service in route.findall(".//con1:service", namespaces):
+            service_ref = service.get("ref")
+            if service_ref:
+                services_for_operations[current_service_path].append(service_ref)
     
-    # Procesar <wsCallout>
-    for callout in root.iter():
-        if callout.tag.endswith('wsCallout'):
-            operation_element = callout.find(".//con3:operation", namespaces)
-            service_element = callout.find(".//con3:service", namespaces)
+    for callout in root.iter("{http://www.bea.com/wli/sb/stages/config}service-callout"):
+        service_ref = callout.find("{http://www.bea.com/wli/sb/stages/config}service")
+        if service_ref is not None and "ref" in service_ref.attrib:
+            services_for_operations[current_service_path].append(service_ref.attrib["ref"])
+    
+    for branch in root.findall(".//con:branch", namespaces):
+        for service in branch.findall(".//con1:service", namespaces):
+            service_ref = service.get("ref")
+            if service_ref:
+                services_for_operations[current_service_path].append(service_ref)
+    
+    # Identificar BusinessService en los pipelines de la capa inferior
+    for route in root.findall(".//con1:route", namespaces):
+        business_service = route.find(".//con1:service", namespaces)
+        operation = route.find(".//con1:operation", namespaces)
+        
+        if business_service is not None and "ref" in business_service.attrib:
+            service_ref = business_service.attrib["ref"]
+            operation_name = operation.text if operation is not None else ""
             
-            if operation_element is not None and service_element is not None:
-                operation_name = operation_element.text.strip()
-                service_ref = service_element.attrib.get('ref', '')
-                procesar_referencia(operation_name, service_ref)
+            if service_ref:
+                services_for_operations[current_service_path].append((service_ref, operation_name))
+                st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+    
+    st.success(f"Servicios internos encontrados en {current_service_path}: {services_for_operations[current_service_path]}")
     
     return services_for_operations
+
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
