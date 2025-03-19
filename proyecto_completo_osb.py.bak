@@ -1001,7 +1001,9 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
     if wsdl_element is not None and 'ref' in wsdl_element.attrib:
         wsdl_pipeline = os.path.join(project_path, wsdl_element.attrib['ref'] + ".WSDL")
         st.info(f"wsdl_pipeline: {wsdl_pipeline}")
-    
+        operations = extract_wsdl_operations(wsdl_pipeline)
+        st.info(f"operations: {operations}")
+        
     referencias = []
     
     # Buscar la operación específica dentro de con:branch
