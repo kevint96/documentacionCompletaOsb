@@ -957,73 +957,84 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     return osb_services
 
 def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipeline_path, operations, visited_proxies=None):
-    """ Extrae servicios para operaciones en un archivo .pipeline, explorando recursivamente hasta encontrar BusinessService """
-    if not (pipeline_path.endswith('.Pipeline')):
-        st.error("Archivo no válido.")
-        return {}
-    
     if visited_proxies is None:
         visited_proxies = set()
     
-    st.success(f"project_path: {project_path}")
-    st.success(f"pipeline_path: {pipeline_path}")
+    namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
+                  'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+                  'con2': 'http://www.bea.com/wli/sb/stages/config',
+                  'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+                  'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+                  'ref': 'http://www.bea.com/wli/sb/reference',
+                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
+    
     services_for_operations = defaultdict(list)
     
-    namespaces = {
-        'con': 'http://www.bea.com/wli/sb/pipeline/config', 
-        'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
-        'con2': 'http://www.bea.com/wli/sb/stages/config',
-        'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
-        'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
-        'ref': 'http://www.bea.com/wli/sb/reference',
-        'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
-    }
+    st.success(f"🔍 project_path: {project_path}")
+    st.success(f"🔍 pipeline_path: {pipeline_path}")
     
-    with open(pipeline_path, 'r', encoding='utf-8') as file:
-        xml_content = file.read()
-    
-    root = ET.fromstring(xml_content)
-    services_for_operations = defaultdict(list)
-    current_service_path = pipeline_path
-    
-    for flow in root.findall(".//con:flow", namespaces):
-        for service in flow.findall(".//con:service", namespaces):
-            service_ref = service.get("ref")
-            if service_ref:
-                services_for_operations[current_service_path].append(service_ref)
-    
-    for route in root.findall(".//con:route-node", namespaces):
-        for service in route.findall(".//con1:service", namespaces):
-            service_ref = service.get("ref")
-            if service_ref:
-                services_for_operations[current_service_path].append(service_ref)
-    
-    for callout in root.iter("{http://www.bea.com/wli/sb/stages/config}service-callout"):
-        service_ref = callout.find("{http://www.bea.com/wli/sb/stages/config}service")
-        if service_ref is not None and "ref" in service_ref.attrib:
-            services_for_operations[current_service_path].append(service_ref.attrib["ref"])
-    
-    for branch in root.findall(".//con:branch", namespaces):
-        for service in branch.findall(".//con1:service", namespaces):
-            service_ref = service.get("ref")
-            if service_ref:
-                services_for_operations[current_service_path].append(service_ref)
-    
-    # Identificar BusinessService en los pipelines de la capa inferior
-    for route in root.findall(".//con1:route", namespaces):
-        business_service = route.find(".//con1:service", namespaces)
-        operation = route.find(".//con1:operation", namespaces)
+    def procesar_pipeline(pipeline_actual, operacion_actual):
+        if pipeline_actual in visited_proxies:
+            return
+        visited_proxies.add(pipeline_actual)
         
-        if business_service is not None and "ref" in business_service.attrib:
-            service_ref = business_service.attrib["ref"]
-            operation_name = operation.text if operation is not None else ""
+        pipeline_file = os.path.join(project_path, pipeline_actual.replace("/", os.sep) + ".pipeline")
+        if not os.path.exists(pipeline_file):
+            st.warning(f"Archivo no encontrado: {pipeline_file}")
+            return
+        
+        with open(pipeline_file, "r", encoding="utf-8") as file:
+            xml_content = file.read()
+        root = ET.fromstring(xml_content)
+        
+        referencias = []
+        
+        for service in root.findall(".//con:service", namespaces):
+            service_ref = service.get("ref")
+            if service_ref and service_ref not in visited_proxies:
+                referencias.append(service_ref)
+                procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
+        
+        for route in root.findall(".//con:route-node", namespaces):
+            for service in route.findall(".//con1:service", namespaces):
+                service_ref = service.get("ref")
+                if service_ref and service_ref not in visited_proxies:
+                    referencias.append(service_ref)
+                    procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
+        
+        for callout in root.iter("{http://www.bea.com/wli/sb/stages/config}service-callout"):
+            service_ref = callout.find("{http://www.bea.com/wli/sb/stages/config}service")
+            if service_ref is not None and "ref" in service_ref.attrib:
+                service_path = service_ref.attrib["ref"]
+                if service_path not in visited_proxies:
+                    referencias.append(service_path)
+                    procesar_pipeline(service_path.replace("Proxies", "Pipeline"), operacion_actual)
+        
+        for branch in root.findall(".//con:branch", namespaces):
+            for service in branch.findall(".//con1:service", namespaces):
+                service_ref = service.get("ref")
+                if service_ref and service_ref not in visited_proxies:
+                    referencias.append(service_ref)
+                    procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
+        
+        for route in root.findall(".//con1:route", namespaces):
+            business_service = route.find(".//con1:service", namespaces)
+            operation = route.find(".//con1:operation", namespaces)
             
-            if service_ref:
-                services_for_operations[current_service_path].append((service_ref, operation_name))
+            if business_service is not None and "ref" in business_service.attrib:
+                service_ref = business_service.attrib["ref"]
+                operation_name = operation.text if operation is not None else ""
+                referencias.append((service_ref, operation_name))
                 st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+        
+        if referencias:
+            services_for_operations[operacion_actual].append({pipeline_actual: referencias})
     
-    st.success(f"Servicios internos encontrados en {current_service_path}: {services_for_operations[current_service_path]}")
+    for operacion in operations:
+        st.info(f"Procesando operación: {operacion}")
+        procesar_pipeline(pipeline_path, operacion)
     
+    st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
 
