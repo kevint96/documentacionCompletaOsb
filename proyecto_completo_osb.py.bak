@@ -996,9 +996,11 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
     root = ET.fromstring(xml_content)
     
     # Buscar la etiqueta con:wsdl y obtener el atributo 'ref'
+    wsdl_pipeline = ""
     wsdl_element = root.find('.//con:wsdl', namespaces)
     if wsdl_element is not None and 'ref' in wsdl_element.attrib:
-        st.success(f"{file}: {wsdl_element.attrib['ref']}")
+        wsdl_pipeline = os.path.join(project_path, wsdl_element.attrib['ref'] + ".WSDL")
+        st.info(f"wsdl_pipeline: {wsdl_pipeline}")
     
     referencias = []
     
