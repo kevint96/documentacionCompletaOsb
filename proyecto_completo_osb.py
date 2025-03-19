@@ -999,7 +999,9 @@ def procesar_elemento(elemento, namespaces, services_for_operations, service_ref
         
         services_for_operations[new_operation_name] = service_ref
 
-st.success(f"🔎 services_for_operations: {services_for_operations}")
+    st.success(f"🔎 services_for_operations: {services_for_operations}")
+
+
 
 def definir_operaciones_internas_pipeline(pipeline_path):
     service_refs = set()
