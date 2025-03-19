@@ -959,15 +959,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
 def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipeline_path, operations, visited_proxies=None):
     if visited_proxies is None:
         visited_proxies = set()
-    
-    namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
-                  'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
-                  'con2': 'http://www.bea.com/wli/sb/stages/config',
-                  'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
-                  'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
-                  'ref': 'http://www.bea.com/wli/sb/reference',
-                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
-    
+
     services_for_operations = defaultdict(list)
     
     st.success(f"🔍 project_path: {project_path}")
@@ -981,6 +973,14 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
     return services_for_operations
 
 def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
+    
+    namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
+              'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+              'con2': 'http://www.bea.com/wli/sb/stages/config',
+              'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+              'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+              'ref': 'http://www.bea.com/wli/sb/reference',
+              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
     
     st.success(f"🔍 project_path: {project_path}")
     st.success(f"🔍 pipeline_actual: {pipeline_actual}")
