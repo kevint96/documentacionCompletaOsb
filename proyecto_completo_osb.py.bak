@@ -1147,6 +1147,11 @@ def agregar_referencia(estructura, proxy_principal, operacion_principal, proxys_
             "listaReferencias": []
         }
 
+    print_with_line_number(f"estructura: {estructura}")
+    print_with_line_number(f"proxy_principal: {proxy_principal}")
+    print_with_line_number(f"operacion_principal: {operacion_principal}")
+    print_with_line_number(f"proxys_referenciados: {proxys_referenciados}")
+    print_with_line_number(f"operaciones_referenciadas: {operaciones_referenciadas}")
     # Asegurar que las listas tienen la misma longitud
     if len(proxys_referenciados) != len(operaciones_referenciadas):
         raise ValueError("Las listas de proxys y operaciones deben tener la misma cantidad de elementos.")

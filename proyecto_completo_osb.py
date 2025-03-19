@@ -1085,13 +1085,15 @@ def extract_service_for_operations_audibpel(project_path, pipeline_path, operati
                 print_with_line_number(f"Operation Name Branch Elements: {operation_name}")
                 if operation_name in operations:
                     service_element = branch_element.find(".//con1:service", namespaces)
+                    print_with_line_number(f"service_element: {service_element}")
                     if service_element is not None:
                         service_ref = service_element.attrib.get('ref', '')
+                        print_with_line_number(f"service_ref: {service_ref}")
                         proxy_referencia = os.path.join(project_path, service_ref + ".ProxyService")
-                        new_pipeline_path = extract_pipeline_path_from_proxy(proxy_referencia, project_path)
-                        agregar_referencia(services_for_operations, operation_name, proxy_referencia, proxy_referencia, operation_name)
                         print_with_line_number(f"proxy_referencia: {proxy_referencia}")
+                        new_pipeline_path = extract_pipeline_path_from_proxy(proxy_referencia, project_path)
                         print_with_line_number(f"new_pipeline_path: {new_pipeline_path}")
+                        agregar_referencia(services_for_operations, operation_name, proxy_referencia, proxy_referencia, operation_name)
                         
                         if new_pipeline_path and os.path.isfile(new_pipeline_path):
                             extract_service_for_operations_audibpel(project_path, new_pipeline_path, operations, services_for_operations, operacion_padre, operation_name)
