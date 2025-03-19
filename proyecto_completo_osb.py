@@ -972,11 +972,14 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
     st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
-def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual=None):
+def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual=None, services_for_operations=None):
     """
-    Procesa un archivo .pipeline, extrae operaciones y sigue las referencias de servicios.
+    Procesa un archivo .pipeline y sigue las referencias de servicios en cascada,
+    respetando la jerarquía de operaciones padre -> operaciones hijas.
     """
-    services_for_operations = defaultdict(list)
+    if services_for_operations is None:
+        services_for_operations = defaultdict(dict)
+
     namespaces = {
         'con': 'http://www.bea.com/wli/sb/pipeline/config',
         'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
@@ -993,13 +996,13 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
     if not os.path.exists(pipeline_actual):
         st.warning(f"Archivo no encontrado: {pipeline_actual}")
-        return
+        return services_for_operations
 
     with open(pipeline_actual, "r", encoding="utf-8") as file:
         xml_content = file.read()
     root = ET.fromstring(xml_content)
 
-    # Buscar la etiqueta con:wsdl y obtener el atributo 'ref'
+    # Obtener operaciones del WSDL asociado al pipeline
     wsdl_pipeline = ""
     wsdl_element = root.find('.//con:wsdl', namespaces)
     if wsdl_element is not None and 'ref' in wsdl_element.attrib:
@@ -1008,16 +1011,16 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
         operations = extract_wsdl_operations(wsdl_pipeline)
         st.info(f"operations: {operations}")
 
-        # Iterar sobre todas las operaciones del WSDL
-        for operacion_actual in operations:
-            st.success(f"🔍 operacion_actual: {operacion_actual}")
-            referencias = []  # Reiniciar referencias para cada operación
-            
-            # Buscar la operación específica dentro de con:branch
-            branch_xpath = f".//con:branch[@name='{operacion_actual}']"
-            branch = root.find(branch_xpath, namespaces)
-            routes = root.findall(".//con1:route", namespaces)
+        # Iterar sobre cada operación principal del pipeline
+        for operacion_padre in operations:
+            st.success(f"🔍 operacion_padre: {operacion_padre}")
 
+            # Diccionario para registrar servicios invocados en esta operación
+            referencias = []
+
+            # Buscar en `branch` referencias a otros ProxyService
+            branch_xpath = f".//con:branch[@name='{operacion_padre}']"
+            branch = root.find(branch_xpath, namespaces)
             if branch is not None:
                 for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
                     service_ref = service.get("ref")
@@ -1027,27 +1030,32 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
                         st.success(f"🔍1 initial_proxy_path: {initial_proxy_path}")
                         new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
                         st.success(f"🔍1 new_pipeline_path: {new_pipeline_path}")
-                        referencias.append((service_ref, operacion_actual))
-                        procesar_pipeline(project_path, initial_proxy_path, new_pipeline_path, operacion_actual)
 
-            if routes:
-                for route in routes:
-                    business_service = route.find(".//con1:service", namespaces)
-                    operation = route.find(".//con1:operation", namespaces)
+                        # Recursivamente procesar el pipeline hijo
+                        sub_operations = procesar_pipeline(
+                            project_path, initial_proxy_path, new_pipeline_path, operacion_padre, services_for_operations
+                        )
 
-                    if business_service is not None and "ref" in business_service.attrib:
-                        service_ref = business_service.attrib["ref"]
-                        st.success(f"🔍2 service_ref: {service_ref}")
-                        operation_name = operation.text if operation is not None else ""
-                        referencias.append((service_ref, operation_name))
-                        st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+                        referencias.append((service_ref, sub_operations))
 
+            # Buscar en `routes` referencias a BusinessService
+            routes = root.findall(".//con1:route", namespaces)
+            for route in routes:
+                business_service = route.find(".//con1:service", namespaces)
+                operation = route.find(".//con1:operation", namespaces)
+
+                if business_service is not None and "ref" in business_service.attrib:
+                    service_ref = business_service.attrib["ref"]
+                    st.success(f"🔍2 service_ref: {service_ref}")
+                    operation_name = operation.text if operation is not None else ""
+                    referencias.append((service_ref, operation_name))
+                    st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+
+            # Almacenar las referencias de la operación padre en el diccionario principal
             if referencias:
-                st.success(f"🔍 referencias: {referencias}")
-                services_for_operations[operacion_actual].append({pipeline_actual: referencias})
-                st.success(f"🔍 services_for_operations: {services_for_operations}")
-                break
-    
+                services_for_operations[operacion_padre][pipeline_actual] = referencias
+                st.success(f"🔍 services_for_operations actualizado: {services_for_operations}")
+
     return services_for_operations
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
