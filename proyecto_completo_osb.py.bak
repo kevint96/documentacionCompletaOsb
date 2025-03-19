@@ -918,7 +918,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #st.success(f"elementos_xsd: {elementos_xsd}")
                         # Inicializar conjunto para evitar ciclos
                         visited_proxies = set()
-                        services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipeline_path, operations, visited_proxies)
+                        services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
 
                         st.success(f"services_for_operations: {services_for_operations}")
 
@@ -939,7 +939,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                                 new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
                                 if new_pipeline_path:
                                     st.success(f"🔄 Siguiendo cadena de invocación en: {new_pipeline_path}")
-                                    sub_services = recorrer_servicios_internos_osb(project_path,operacion_a_documentar, new_pipeline_path, operations, visited_proxies)
+                                    sub_services = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, new_pipeline_path, operations, visited_proxies)
                                     services_for_operations.update(sub_services)
 
                         st.success(f"🔎 Servicios finales encontrados: {services_for_operations}")
@@ -956,23 +956,23 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     #st.success(f"osb_services: {osb_services}")
     return osb_services
 
-def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipeline_path, operations, visited_proxies=None):
+def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_path, pipeline_path, operations, visited_proxies=None):
     if visited_proxies is None:
         visited_proxies = set()
 
     services_for_operations = defaultdict(list)
     
     st.success(f"🔍 project_path: {project_path}")
+    st.success(f"🔍 proxy_path: {proxy_path}")
     st.success(f"🔍 pipeline_path: {pipeline_path}")
 
-    for operacion in operations:
-        st.info(f"Procesando operación: {operacion}")
-        procesar_pipeline(project_path, pipeline_path, operacion)
+
+    procesar_pipeline(project_path, proxy_path,pipeline_path, operacion=None)
     
     st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
-def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
+def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual):
     
     services_for_operations = defaultdict(list)
     namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
@@ -984,8 +984,9 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
               'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
     
     st.success(f"🔍 project_path: {project_path}")
+    st.success(f"🔍 proxy_actual: {proxy_actual}")
     st.success(f"🔍 pipeline_actual: {pipeline_actual}")
-    st.success(f"🔍 operacion_actual: {operacion_actual}")
+    
 
     if not os.path.exists(pipeline_actual):
         st.warning(f"Archivo no encontrado: {pipeline_actual}")
@@ -995,6 +996,8 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
         xml_content = file.read()
     root = ET.fromstring(xml_content)
 
+    operations = []
+    referencias = []
     # Buscar la etiqueta con:wsdl y obtener el atributo 'ref'
     wsdl_pipeline = ""
     wsdl_element = root.find('.//con:wsdl', namespaces)
@@ -1004,38 +1007,44 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
         operations = extract_wsdl_operations(wsdl_pipeline)
         st.info(f"operations: {operations}")
         
-    referencias = []
-    
-    # Buscar la operación específica dentro de con:branch
-    branch_xpath = f".//con:branch[@name='{operacion_actual}']"
-    branch = root.find(branch_xpath, namespaces)
-    
-    if branch is not None:
-        for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
-            service_ref = service.get("ref")
-            st.success(f"🔍1 service_ref: {service_ref}")
-            if service_ref:
-                initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                st.success(f"🔍1 initial_proxy_path: {initial_proxy_path}")
-                new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
-                st.success(f"🔍1 new_pipeline_path: {new_pipeline_path}")
-                referencias.append(initial_proxy_path)
-                procesar_pipeline(project_path, new_pipeline_path, operacion_actual)
-    
-    for route in root.findall(".//con1:route", namespaces):
-        business_service = route.find(".//con1:service", namespaces)
-        operation = route.find(".//con1:operation", namespaces)
-        
-        if business_service is not None and "ref" in business_service.attrib:
-            service_ref = business_service.attrib["ref"]
-            st.success(f"🔍2 service_ref: {service_ref}")
-            operation_name = operation.text if operation is not None else ""
-            referencias.append((service_ref, operation_name))
-            st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
-    
-    if referencias:
-        services_for_operations[operacion_actual].append({pipeline_actual: referencias})
-        st.success(f"🔍 services_for_operations: {services_for_operations}")
+        for operation in operations:
+            
+            operacion_actual = operation
+            operation_name = operacion_actual
+            st.success(f"🔍 operacion_actual: {operacion_actual}")
+            # Buscar la operación específica dentro de con:branch
+            branch_xpath = f".//con:branch[@name='{operacion_actual}']"
+            branch = root.find(branch_xpath, namespaces)
+            routes = root.findall(".//con1:route", namespaces)
+            
+            if branch is not None:
+                for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
+                    service_ref = service.get("ref")
+                    st.success(f"🔍1 service_ref: {service_ref}")
+                    if service_ref:
+                        initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                        st.success(f"🔍1 initial_proxy_path: {initial_proxy_path}")
+                        new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
+                        st.success(f"🔍1 new_pipeline_path: {new_pipeline_path}")
+                        referencias.append((service_ref, operation_name))
+                        procesar_pipeline(project_path, initial_proxy_path, new_pipeline_path, operacion_actual)
+            
+            if routes is not None:
+                for route in routes:
+                    business_service = route.find(".//con1:service", namespaces)
+                    operation = route.find(".//con1:operation", namespaces)
+                    
+                    if business_service is not None and "ref" in business_service.attrib:
+                        service_ref = business_service.attrib["ref"]
+                        st.success(f"🔍2 service_ref: {service_ref}")
+                        operation_name = operation.text if operation is not None else ""
+                        referencias.append((service_ref, operation_name))
+                        st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+            
+            if referencias:
+                st.success(f"🔍 referencias: {referencias}")
+                services_for_operations[operacion_actual].append({pipeline_actual: referencias})
+                st.success(f"🔍 services_for_operations: {services_for_operations}")
 
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
