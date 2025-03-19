@@ -972,91 +972,58 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
     
     st.success(f"🔍 project_path: {project_path}")
     st.success(f"🔍 pipeline_path: {pipeline_path}")
+
+    for operacion in operations:
+        st.info(f"Procesando operación: {operacion}")
+        procesar_pipeline(project_path, pipeline_path, operacion)
     
-    services_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-    
-    
+    st.success(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
-def procesar_elemento(elemento, namespaces, services_for_operations, service_refs):
-    service_element = elemento.find(".//con1:service", namespaces=namespaces)
-    st.success(f"🔎 service_element: {service_element}")
-    operation_element = elemento.find(".//con1:operation", namespaces=namespaces)
-    st.success(f"🔎 operation_element: {operation_element}")
+def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
     
-    if service_element is not None and operation_element is not None:
-        service_ref = service_element.attrib.get('ref', '')
-        st.success(f"🔎 service_ref: {service_ref}")
-        operation_name = operation_element.text.strip()
-        st.success(f"🔎 operation_name: {operation_name}")
-        service_refs.add(service_ref)
-        
-        new_operation_name = operation_name
-        version = 2
-        while new_operation_name in services_for_operations and services_for_operations[new_operation_name] != service_ref:
-            new_operation_name = f"{operation_name}v{version}"
-            version += 1
-        
-        services_for_operations[new_operation_name] = service_ref
-
-    st.success(f"🔎 services_for_operations: {services_for_operations}")
-
-def definir_operaciones_internas_pipeline(pipeline_path):
-    service_refs = set()
-    services_for_operations = {}
+    st.success(f"🔍 project_path: {project_path}")
+    st.success(f"🔍 pipeline_actual: {pipeline_actual}")
+    st.success(f"🔍 operacion_actual: {operacion_actual}")
     
-    try:
-        with open(pipeline_path, 'r', encoding="utf-8") as f:
-            pipeline_content = f.read()
-            root = ET.fromstring(pipeline_content)
-            
-            namespaces = {
-                'con': 'http://www.bea.com/wli/sb/pipeline/config',
-                'con1': 'http://www.bea.com/wli/sb/stages/config',
-                'con2': 'http://www.bea.com/wli/sb/stages/routing/config',
-                'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
-                'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
-                'ref': 'http://www.bea.com/wli/sb/reference',
-                'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
-            }
-            
-            elementos_buscar = [
-                (".//con3:wsCallout", namespaces),
-                (".//con1:wsCallout", namespaces),
-                (".//con3:javaCallout", namespaces),
-                (".//con4:route", namespaces),
-                (".//con2:route", namespaces)
-            ]
-            
-            for xpath, ns in elementos_buscar:
-                for elemento in root.findall(xpath, namespaces=ns):
-                    st.success(f"🔎 elemento: {elemento}")
-                    st.success(f"🔎 ns: {ns}")
-                    st.success(f"🔎 services_for_operations: {services_for_operations}")
-                    st.success(f"🔎 service_refs: {service_refs}")
-                    procesar_elemento(elemento, ns, services_for_operations, service_refs)
-            
-            # Procesar elementos dentro de <con:flow>
-            for flow_element in root.findall(".//con:flow", namespaces):
-                for service_element in flow_element.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces):
-                    service_ref = service_element.attrib.get('ref', '')
-                    st.success(f"🔎 service_ref: {service_ref}")
-                    operation_elements = flow_element.findall(".//con1:operation", namespaces)
-                    st.success(f"🔎 operation_elements: {operation_elements}")
-                    operation_name = operation_elements[0].text.strip() if operation_elements else service_ref.split('/')[-1]
-                    st.success(f"🔎 operation_name: {operation_name}")
-                    new_operation_name = operation_name
-                    version = 2
-                    while new_operation_name in services_for_operations and services_for_operations[new_operation_name] != service_ref:
-                        new_operation_name = f"{operation_name}v{version}"
-                        version += 1
-                    
-                    services_for_operations[new_operation_name] = service_ref
-                    service_refs.add(service_ref)
-            
-        return services_for_operations
-    except FileNotFoundError:
-        st.error(f"El archivo {pipeline_path} no pudo ser encontrado.")
+    if not os.path.exists(pipeline_actual):
+        st.warning(f"Archivo no encontrado: {pipeline_actual}")
+        return
+    
+    with open(pipeline_actual, "r", encoding="utf-8") as file:
+        xml_content = file.read()
+    root = ET.fromstring(xml_content)
+    
+    referencias = []
+    
+    # Buscar la operación específica dentro de con:branch
+    branch_xpath = f".//con:branch[@name='{operacion_actual}']"
+    branch = root.find(branch_xpath, namespaces)
+    
+    if branch is not None:
+        for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
+            service_ref = service.get("ref")
+            st.success(f"🔍1 service_ref: {service_ref}")
+            if service_ref:
+                initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
+                referencias.append(initial_proxy_path)
+                procesar_pipeline(project_path, new_pipeline_path, operacion_actual)
+    
+    for route in root.findall(".//con1:route", namespaces):
+        business_service = route.find(".//con1:service", namespaces)
+        operation = route.find(".//con1:operation", namespaces)
+        
+        if business_service is not None and "ref" in business_service.attrib:
+            service_ref = business_service.attrib["ref"]
+            st.success(f"🔍2 service_ref: {service_ref}")
+            operation_name = operation.text if operation is not None else ""
+            referencias.append((service_ref, operation_name))
+            st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+    
+    if referencias:
+        services_for_operations[operacion_actual].append({pipeline_actual: referencias})
+
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
