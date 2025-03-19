@@ -1079,6 +1079,8 @@ def extract_service_for_operations_audibpel(project_path, pipeline_path, operati
             tree = ET.parse(pipeline_path)
             root = tree.getroot()
             
+            lista_proxys = []
+            lista_operaciones_proxys = []
             branch_elements = root.findall(".//con:branch", namespaces)
             for branch_element in branch_elements:
                 operation_name = branch_element.attrib.get('name', '')
@@ -1093,7 +1095,9 @@ def extract_service_for_operations_audibpel(project_path, pipeline_path, operati
                         print_with_line_number(f"proxy_referencia: {proxy_referencia}")
                         new_pipeline_path = extract_pipeline_path_from_proxy(proxy_referencia, project_path)
                         print_with_line_number(f"new_pipeline_path: {new_pipeline_path}")
-                        agregar_referencia(services_for_operations, operation_name, proxy_referencia, proxy_referencia, operation_name)
+                        lista_proxys.append(service_ref)
+                        lista_operaciones_proxys.append(operation_name)
+                        agregar_referencia(services_for_operations, service_ref, operation_name, lista_proxys, lista_operaciones_proxys)
                         
                         if new_pipeline_path and os.path.isfile(new_pipeline_path):
                             extract_service_for_operations_audibpel(project_path, new_pipeline_path, operations, services_for_operations, operacion_padre, operation_name)
