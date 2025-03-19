@@ -986,7 +986,7 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
     st.success(f"🔍 project_path: {project_path}")
     st.success(f"🔍 pipeline_actual: {pipeline_actual}")
     st.success(f"🔍 operacion_actual: {operacion_actual}")
-    
+
     if not os.path.exists(pipeline_actual):
         st.warning(f"Archivo no encontrado: {pipeline_actual}")
         return
@@ -994,6 +994,11 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
     with open(pipeline_actual, "r", encoding="utf-8") as file:
         xml_content = file.read()
     root = ET.fromstring(xml_content)
+    
+    # Buscar la etiqueta con:wsdl y obtener el atributo 'ref'
+    wsdl_element = root.find('.//con:wsdl', namespaces)
+    if wsdl_element is not None and 'ref' in wsdl_element.attrib:
+        st.success(f"{file}: {wsdl_element.attrib['ref']}")
     
     referencias = []
     

@@ -974,6 +974,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
 
 def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
     
+    services_for_operations = defaultdict(list)
     namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
               'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
               'con2': 'http://www.bea.com/wli/sb/stages/config',
@@ -1006,7 +1007,9 @@ def procesar_pipeline(project_path, pipeline_actual, operacion_actual):
             st.success(f"🔍1 service_ref: {service_ref}")
             if service_ref:
                 initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
+                st.success(f"🔍1 initial_proxy_path: {initial_proxy_path}")
                 new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
+                st.success(f"🔍1 new_pipeline_path: {new_pipeline_path}")
                 referencias.append(initial_proxy_path)
                 procesar_pipeline(project_path, new_pipeline_path, operacion_actual)
     
