@@ -979,7 +979,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         visited_proxies.add(pipeline_actual)
         st.success(f"🔍 pipeline_actual: {pipeline_actual}")
         
-        if not os.path.exists(pipeline_file):
+        if not (pipeline_file):
             st.warning(f"Archivo no encontrado: {pipeline_file}")
             return
         
