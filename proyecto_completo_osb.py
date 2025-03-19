@@ -31,7 +31,7 @@ from collections import defaultdict
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
-    print(f"Linea {line_number}: {msg}")
+    st.sucess(f"Linea {line_number}: {msg}")
     print("")
     
 def apply_format(run,fuente,size,negrita,color):
@@ -1059,10 +1059,10 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
     services_for_operations = {}
     seguir = True
     
-    st.success("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
         
     if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
-        st.success(f"pipeline_path: {pipeline_path}")
+        print_with_line_number(f"pipeline_path: {pipeline_path}")
         with open(pipeline_path, 'r', encoding="utf-8") as f:
             pipeline_content = f.read()
             root = ET.fromstring(pipeline_content)
@@ -1075,7 +1075,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                           'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
                           
 
-            st.success(f"LEYENDO ROOT OPERATIONS AUDIBPEL: {root}")
+            print_with_line_number(f"LEYENDO ROOT OPERATIONS AUDIBPEL: {root}")
             # Parsea el archivo .pipeline
             tree = ET.parse(pipeline_path)
             root = tree.getroot()
@@ -1086,19 +1086,19 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                     
                     operation_name = branch_element.attrib.get('name', '')
                     
-                    st.success(f"Operation Name Branch Elements: {operation_name}")
+                    print_with_line_number(f"Operation Name Branch Elements: {operation_name}")
                     if operation_name in operations:
                         service_element = branch_element.find(".//con1:service", namespaces)
-                        st.success(f"service_element: {service_element}")
+                        print_with_line_number(f"service_element: {service_element}")
                         
                                     
                         if service_element is not None:                            
                             service_ref = service_element.attrib.get('ref', '')
                             services_for_operations.setdefault(operation_name, []).append((service_ref))
-                            st.success("branch_elements")
-                            st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                            print_with_line_number("branch_elements")
+                            print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
                             
-                            st.success(services_for_operations)
+                            print_with_line_number(services_for_operations)
                             
                             seguir = False
                             continue
@@ -1106,7 +1106,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                             seguir = True
                             # Si service_element es None, buscar el elemento <con:request> dentro de branch_element
                             request_element = branch_element.find(".//con:request", namespaces)
-                            st.success(f"request_element: {request_element}")
+                            print_with_line_number(f"request_element: {request_element}")
                             if request_element is not None:
                                 request_value = request_element.text
                                 print("El valor del elemento <con:request> dentro de branch_element es:", request_value)
@@ -1138,15 +1138,15 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                     
 
                                     ws_callouts = pipeline.findall(".//con1:wsCallout", namespaces=ns_stage_transform_config)
-                                    #st.success(f"ws_callouts: {ws_callouts}")
+                                    #print_with_line_number(f"ws_callouts: {ws_callouts}")
                                     java_callouts = pipeline.findall(".//con1:javaCallout", namespaces=ns_stage_transform_config)
-                                    #st.success(f"java_callouts: {java_callouts}")
+                                    #print_with_line_number(f"java_callouts: {java_callouts}")
                                     routes = pipeline.findall(".//con1:route", namespaces=ns_stage_publish_config)
-                                    #st.success(f"routes: {routes}")
+                                    #print_with_line_number(f"routes: {routes}")
                                     routes2 = pipeline.findall(".//con1:route", namespaces=ns_stage_routing_config)
-                                    #st.success(f"routes2: {routes2}")
+                                    #print_with_line_number(f"routes2: {routes2}")
                                     flow_elements = pipeline.findall(".//con:flow", ns_stage_pipeline_config)
-                                    #st.success(f"flow_elements: {flow_elements}")
+                                    #print_with_line_number(f"flow_elements: {flow_elements}")
                                     
                                     
                                     for ws_callout in ws_callouts:
@@ -1155,7 +1155,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                            st.success(f"services_for_operations ws_callouts: {services_for_operations}")
+                                            print_with_line_number(f"services_for_operations ws_callouts: {services_for_operations}")
                                             seguir = False
                                             continue
                                     
@@ -1168,7 +1168,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                             if service_element is not None:
                                                 service_ref = service_element.attrib.get('ref', '')
                                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                                st.success(f"services_for_operations java_callouts: {services_for_operations}")
+                                                print_with_line_number(f"services_for_operations java_callouts: {services_for_operations}")
                                                 seguir = False
                                                 continue
 
@@ -1178,7 +1178,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                            st.success(f"services_for_operations routes: {services_for_operations}")
+                                            print_with_line_number(f"services_for_operations routes: {services_for_operations}")
                                             seguir = False
                                             continue
                                     
@@ -1188,7 +1188,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                         if service_element is not None and operation_element is not None:
                                             service_ref = service_element.attrib.get('ref', '')
                                             services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                            st.success(f"services_for_operations routes2: {services_for_operations}")
+                                            print_with_line_number(f"services_for_operations routes2: {services_for_operations}")
                                             seguir = False
                                             continue
                                             
@@ -1219,7 +1219,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                             seguir = False
                                             continue
                                                     
-                            st.success(services_for_operations)
+                            print_with_line_number(services_for_operations)
                             
 
 
@@ -1239,16 +1239,16 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                         operation_elements = flow_element.findall(".//con1:operation", namespaces)
                         for operation_element in operation_elements:
                             operation_name = operation_element.text.strip()
-                            st.success(f"Operation Name: {operation_name}")
-                            st.success(f"len(operations): {len(operations)}")
+                            print_with_line_number(f"Operation Name: {operation_name}")
+                            print_with_line_number(f"len(operations): {len(operations)}")
                             
                             if len(operations) == 1:
                                 operation_name = operations[0]  
-                            st.success(f"Operation Name: {operation_name}")
+                            print_with_line_number(f"Operation Name: {operation_name}")
                             if operation_name in operations:
                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                st.success("flow_element")
-                                st.success(f"Operation Name: {operation_name}")
+                                print_with_line_number("flow_element")
+                                print_with_line_number(f"Operation Name: {operation_name}")
                                 
                                 seguir = False
                                 continue
@@ -1259,18 +1259,18 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                         for operation_element in operation_elements:
                             
                             operation_name = operation_element.text.strip()
-                            st.success(f"Operation Name: {operation_name}")
-                            st.success(f"len(operations): {len(operations)}")
+                            print_with_line_number(f"Operation Name: {operation_name}")
+                            print_with_line_number(f"len(operations): {len(operations)}")
                             
                             if len(operations) == 1:
                                 operation_name = operations[0]
                                 
-                            st.success(f"Operation Name: {operation_name}")
+                            print_with_line_number(f"Operation Name: {operation_name}")
                             
                             if operation_name in operations:
                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                st.success("flow_element")
-                                st.success(f"Operation Name: {operation_name}")
+                                print_with_line_number("flow_element")
+                                print_with_line_number(f"Operation Name: {operation_name}")
                                 
                                 seguir = False
                                 continue
@@ -1287,8 +1287,8 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                             if service_element is not None:
                                 service_ref = service_element.attrib.get('ref', '')
                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                st.success("route_elements")
-                                st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                                print_with_line_number("route_elements")
+                                print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
                                 
                                 seguir = False
                                 continue
@@ -1308,13 +1308,13 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                         service_ref = service_element.attrib.get('ref', '')
                     if operation_name and service_ref:
                         services_for_operations.setdefault(operation_name, []).append((service_ref))
-                        st.success("callout_element")
-                        st.success(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
+                        print_with_line_number("callout_element")
+                        print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
                         
                         seguir = False
                         continue
                                 
-    st.success(f"SERVICES FOR: {services_for_operations}")
+    print_with_line_number(f"SERVICES FOR: {services_for_operations}")
     st.success("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
     
     return services_for_operations
