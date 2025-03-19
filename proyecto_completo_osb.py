@@ -31,7 +31,7 @@ from collections import defaultdict
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
-    st.sucess(f"Linea {line_number}: {msg}")
+    st.success(f"Linea {line_number}: {msg}")
     print("")
     
 def apply_format(run,fuente,size,negrita,color):
