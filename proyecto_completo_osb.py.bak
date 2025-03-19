@@ -977,8 +977,8 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         if pipeline_actual in visited_proxies:
             return
         visited_proxies.add(pipeline_actual)
+        st.success(f"🔍 pipeline_actual: {pipeline_actual}")
         
-        pipeline_file = os.path.join(project_path, pipeline_actual.replace("/", os.sep) + ".pipeline")
         if not os.path.exists(pipeline_file):
             st.warning(f"Archivo no encontrado: {pipeline_file}")
             return
@@ -991,6 +991,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         
         for service in root.findall(".//con:service", namespaces):
             service_ref = service.get("ref")
+            st.success(f"🔍 service_ref: {service_ref}")
             if service_ref and service_ref not in visited_proxies:
                 referencias.append(service_ref)
                 procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
@@ -998,12 +999,14 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         for route in root.findall(".//con:route-node", namespaces):
             for service in route.findall(".//con1:service", namespaces):
                 service_ref = service.get("ref")
+                st.success(f"🔍 service_ref: {service_ref}")
                 if service_ref and service_ref not in visited_proxies:
                     referencias.append(service_ref)
                     procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
         
         for callout in root.iter("{http://www.bea.com/wli/sb/stages/config}service-callout"):
             service_ref = callout.find("{http://www.bea.com/wli/sb/stages/config}service")
+            st.success(f"🔍 service_ref: {service_ref}")
             if service_ref is not None and "ref" in service_ref.attrib:
                 service_path = service_ref.attrib["ref"]
                 if service_path not in visited_proxies:
@@ -1013,6 +1016,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
         for branch in root.findall(".//con:branch", namespaces):
             for service in branch.findall(".//con1:service", namespaces):
                 service_ref = service.get("ref")
+                st.success(f"🔍 service_ref: {service_ref}")
                 if service_ref and service_ref not in visited_proxies:
                     referencias.append(service_ref)
                     procesar_pipeline(service_ref.replace("Proxies", "Pipeline"), operacion_actual)
@@ -1023,6 +1027,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar, pipelin
             
             if business_service is not None and "ref" in business_service.attrib:
                 service_ref = business_service.attrib["ref"]
+                st.success(f"🔍 service_ref: {service_ref}")
                 operation_name = operation.text if operation is not None else ""
                 referencias.append((service_ref, operation_name))
                 st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
