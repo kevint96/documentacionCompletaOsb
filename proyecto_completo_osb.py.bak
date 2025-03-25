@@ -969,7 +969,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
 
     for operacion_padre in operations:
         operacion_actual = operacion_padre
-        buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a_documentar)
+        buscar_branch_operacion(pipeline_path, project_path, operations, operacion_actual)
         #extract_service_for_operations_audibpel(project_path,pipeline_path,operations,services_for_operations,operacion_padre,operacion_actual)
         #procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
     
