@@ -1116,7 +1116,7 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
     return None
 
 def extract_service_for_operations_audibpel(pipeline_path, operations):
-    services_for_operations = defaultdict(list)
+    services_for_operations = defaultdict(set)
     
     print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
@@ -1147,7 +1147,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
             if operation_name in operations:
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
-                    services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                    services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                     print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
         return services_for_operations
 
@@ -1159,7 +1159,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                 for operation_element in flow.findall(".//con1:operation", namespaces):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
-                        services_for_operations[operation_name].append(service_ref)
+                        services_for_operations[operation_name].add(service_ref)
                         print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
 
@@ -1172,7 +1172,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                 if operation_name in operations:
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
-                        services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                        services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                         print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
         return services_for_operations
 
@@ -1184,7 +1184,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
             if operation_element is not None and service_element is not None:
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
-                    services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                    services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                     print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
