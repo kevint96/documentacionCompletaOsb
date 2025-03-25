@@ -963,9 +963,9 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
 
     services_for_operations = defaultdict(list)
     
-    st.success(f"🔍 project_path: {project_path}")
-    st.success(f"🔍 proxy_path: {proxy_path}")
-    st.success(f"🔍 pipeline_path: {pipeline_path}")
+    print_with_line_number(f"🔍 project_path: {project_path}")
+    print_with_line_number(f"🔍 proxy_path: {proxy_path}")
+    print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
 
     for operacion_padre in operations:
         operacion_actual = operacion_padre
@@ -973,7 +973,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
         #extract_service_for_operations_audibpel(project_path,pipeline_path,operations,services_for_operations,operacion_padre,operacion_actual)
         #procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
     
-    st.success(f"Servicios internos encontrados: {services_for_operations}")
+    print_with_line_number(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
 def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual=None, services_for_operations=None):
@@ -990,9 +990,9 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
 
-    st.success(f"🔍 project_path: {project_path}")
-    st.success(f"🔍 proxy_actual: {proxy_actual}")
-    st.success(f"🔍 pipeline_actual: {pipeline_actual}")
+    print_with_line_number(f"🔍 project_path: {project_path}")
+    print_with_line_number(f"🔍 proxy_actual: {proxy_actual}")
+    print_with_line_number(f"🔍 pipeline_actual: {pipeline_actual}")
 
     if not os.path.exists(pipeline_actual):
         st.warning(f"Archivo no encontrado: {pipeline_actual}")
@@ -1013,7 +1013,7 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
         # Iterar sobre cada operación principal del pipeline
         for operacion_padre in operations:
-            st.success(f"🔍 operacion_padre: {operacion_padre}")
+            print_with_line_number(f"🔍 operacion_padre: {operacion_padre}")
 
             # Diccionario para registrar servicios invocados en esta operación
             referencias = []
@@ -1024,12 +1024,12 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
             if branch is not None:
                 for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
                     service_ref = service.get("ref")
-                    st.success(f"🔍1 service_ref: {service_ref}")
+                    print_with_line_number(f"🔍1 service_ref: {service_ref}")
                     if service_ref:
                         initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                        st.success(f"🔍1 initial_proxy_path: {initial_proxy_path}")
+                        print_with_line_number(f"🔍1 initial_proxy_path: {initial_proxy_path}")
                         new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
-                        st.success(f"🔍1 new_pipeline_path: {new_pipeline_path}")
+                        print_with_line_number(f"🔍1 new_pipeline_path: {new_pipeline_path}")
 
                         # Recursivamente procesar el pipeline hijo
                         sub_operations = procesar_pipeline(
@@ -1046,15 +1046,15 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
                 if business_service is not None and "ref" in business_service.attrib:
                     service_ref = business_service.attrib["ref"]
-                    st.success(f"🔍2 service_ref: {service_ref}")
+                    print_with_line_number(f"🔍2 service_ref: {service_ref}")
                     operation_name = operation.text if operation is not None else ""
                     referencias.append((service_ref, operation_name))
-                    st.success(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+                    print_with_line_number(f"BusinessService detectado: {service_ref} con operación {operation_name}")
 
             # Almacenar las referencias de la operación padre en el diccionario principal
             if referencias:
                 services_for_operations[operacion_padre][pipeline_actual] = referencias
-                st.success(f"🔍 services_for_operations actualizado: {services_for_operations}")
+                print_with_line_number(f"🔍 services_for_operations actualizado: {services_for_operations}")
 
     return services_for_operations
 
@@ -1303,7 +1303,7 @@ def extract_service_for_operations_audibpel(project_path, pipeline_path, operati
                                     )
     
     print_with_line_number(f"SERVICES FOR: {services_for_operations}")
-    st.success("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
     return services_for_operations
 
 
@@ -1360,7 +1360,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Extraer ruta del proyecto desde el .jar
     jdeveloper_projects_dir = jar_path
     
-    #st.success(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
+    #print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
     
     if not jdeveloper_projects_dir:
         st.error("No se pudo determinar la ruta del proyecto desde el .jar.")
@@ -1383,7 +1383,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
         # 📌 Crear nuevamente la carpeta temporal limpia
         os.makedirs(temp_dir, exist_ok=True)
-        #st.success(f"📂 Carpeta temporal creada: {temp_dir}")
+        #print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
     
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
@@ -1404,7 +1404,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 if 'Type' in element['elemento']:
                     es_type = True
                 #operation_name = element['elemento'].replace('Request', '').replace('Response', '').replace('Type', '')
-                ##st.success(f"operation_name: {operation_name}")
+                ##print_with_line_number(f"operation_name: {operation_name}")
                 service_name = element['service_name']
                 # Agregar todas las operaciones de la lista 'operations'
                 if 'operations' in element:
@@ -1421,9 +1421,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
             
         
-        #st.success(f"unique_operations: {unique_operations}")
+        #print_with_line_number(f"unique_operations: {unique_operations}")
         
-        #st.success(f"✅ unique_operations {unique_operations}")
+        #print_with_line_number(f"✅ unique_operations {unique_operations}")
         
         operation_elements = {}
         
@@ -1441,9 +1441,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             if total_operaciones > 1:
                 progreso_actual = int((idx / total_operaciones) * 100)
                 progress_bar_general.progress(progreso_actual)  # 🔄 Actualizar barra general
-                #st.success(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
+                #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
             else:
-                st.success(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
+                print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
             
             
             if es_type:
@@ -1462,7 +1462,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             
             # Iterate through services_with_data to find matching elements
             for request_data, response_data in services_with_data:
-                #st.success(f"request_data: {request_data}")
+                #print_with_line_number(f"request_data: {request_data}")
                 # Check for request elements
                 for element in request_data:
                     elemento_nombre = element['elemento']
@@ -1497,8 +1497,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'service_name': service_name
             }
             
-        #st.success(f"operation_elements: {operation_elements}")
-        ##st.success(f"service_name: {service_name}")
+        #print_with_line_number(f"operation_elements: {operation_elements}")
+        ##print_with_line_number(f"service_name: {service_name}")
         # Print the result
         # 📂 Crear un solo ZIP para todas las operaciones
         zip_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
@@ -1511,7 +1511,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
                 st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
 
-                #st.success(f"elements['request']: {elements['request']}")
+                #print_with_line_number(f"elements['request']: {elements['request']}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
                     continue  # Si no hay request, no genera el documento
@@ -1546,14 +1546,14 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     # Contar el número de tablas en el documento
                     num_tables = len(doc.tables)
                     
-                    #st.success(f"El documento contiene {num_tables} tabla(s).")
+                    #print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
 
                     # Mostrar cada tabla
                     for i, table in enumerate(doc.tables):
-                        #st.success(f"\nTabla {i+1}:")
+                        #print_with_line_number(f"\nTabla {i+1}:")
                         for row in table.rows:
                             row_data = [cell.text for cell in row.cells]
-                            st.success('\t'.join(row_data))
+                            print_with_line_number('\t'.join(row_data))
                     
                     url = ""
                     ruta =""
