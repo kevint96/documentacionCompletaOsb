@@ -829,6 +829,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     elementos_xsd = []
     operations =[]
     operation_to_xsd = {}
+    services_for_operations = {}
     found = False  # Variable para rastrear si se encuentra la operación
     
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
@@ -928,6 +929,22 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         
                         print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
+
+                        # Recorremos services_for_operations_exp
+                        for operation, proxies in services_for_operations_exp.items():
+                            for proxy in proxies:
+                                # Inicializamos la estructura si no existe
+                                if proxy not in services_for_operations:
+                                    services_for_operations[proxy] = {}
+                                
+                                # Buscamos la operación en services_for_operations_ebs
+                                ebs_services = next((ebs for op, ebs in services_for_operations_ebs if op == operation), [])
+                                
+                                # Asignamos los servicios EBS a la estructura
+                                services_for_operations[proxy] = ebs_services
+
+                        print_with_line_number(f"services_for_operations: {services_for_operations}")
+                        
                         # Recorrer los servicios encontrados y seguir explorando hasta llegar a BusinessService
                         for operation, services in services_for_operations.items():
                             print_with_line_number(f"🔍 Analizando operación: {operation}")
@@ -1062,7 +1079,6 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
                 print_with_line_number(f"🔍 services_for_operations actualizado: {services_for_operations}")
 
     return services_for_operations
-
 
 def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a_documentar):
     if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
@@ -1212,7 +1228,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
     for operacion, paths in services_for_operations.items():
         for path2 in paths:
             print_with_line_number("********** INICIO PROCESO **********")
-            print_with_line_number(f"Operacion: {operacion}, Path: {path2}")
+            #print_with_line_number(f"Operacion: {operacion}, Path: {path2}")
             
             if 'Proxies' in path2:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, path2 + ".ProxyService")
@@ -1221,31 +1237,31 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             else:
                 continue
             
-            print_with_line_number(f"OSB File Path: {osb_file_path}")
+            #print_with_line_number(f"OSB File Path: {osb_file_path}")
             
             project_name = extract_project_name_from_proxy(osb_file_path)
             if project_name is None:
                 continue
             
             pipeline_path = osb_file_path if 'Pipeline' in path2 else extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             
             with open(osb_file_path, 'r', encoding="utf-8") as f:
                 content = f.read()
                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
                 wsdl_relative_path = extract_wsdl_relative_path(content)
             
-            print_with_line_number(f"Service Name: {service_name}")
-            print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
+            #print_with_line_number(f"Service Name: {service_name}")
+            #print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
             
             if wsdl_relative_path:
                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                 operations = extract_wsdl_operations(wsdl_path)
                 print_with_line_number(f"Operations: {operations}")
             
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-            print_with_line_number(f"Service for Operations: {service_for_operations}")
+            #print_with_line_number(f"Service for Operations: {service_for_operations}")
             
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
@@ -1306,6 +1322,8 @@ def definir_operaciones_internas_pipeline(pipeline_path):
     except Exception as e:
         print(f"Error procesando el pipeline: {e}")
         return {}
+
+def extraer_datos_business()
 
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
