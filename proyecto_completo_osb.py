@@ -1118,7 +1118,7 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
 def extract_service_for_operations_audibpel(pipeline_path, operations):
     services_for_operations = {}
     seguir = True
-    print_with_line_number("")
+    
     print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
         
     if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
@@ -1143,9 +1143,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
             branch_elements = root.findall(".//con:branch", namespaces)
             if branch_elements:
                 for branch_element in branch_elements:
-                    print_with_line_number("")
                     operation_name = branch_element.attrib.get('name', '')
-                    print_with_line_number("")
                     print_with_line_number(f"Operation Name Branch Elements: {operation_name}")
                     if operation_name in operations:
                         service_element = branch_element.find(".//con1:service", namespaces)
@@ -1157,9 +1155,9 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                             services_for_operations.setdefault(operation_name, []).append((service_ref))
                             print_with_line_number("branch_elements")
                             print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                            print_with_line_number("")
+                            
                             print_with_line_number(services_for_operations)
-                            print_with_line_number("")
+                            
                             seguir = False
                             continue
                         else:
@@ -1208,7 +1206,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                     #print_with_line_number(f"routes2: {routes2}")
                                     flow_elements = pipeline.findall(".//con:flow", ns_stage_pipeline_config)
                                     #print_with_line_number(f"flow_elements: {flow_elements}")
-                                    print_with_line_number("")
+                                    
                                     
                                     for ws_callout in ws_callouts:
                                         service_element = ws_callout.find(".//con1:service", namespaces=ns_stage_transform_config)
@@ -1281,7 +1279,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                             continue
                                                     
                             print_with_line_number(services_for_operations)
-                            print_with_line_number("")
+                            
 
 
 
@@ -1316,7 +1314,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
                                 print_with_line_number("flow_element")
                                 print_with_line_number(f"Operation Name: {operation_name}")
-                                print_with_line_number("")
+                                
                                 seguir = False
                                 continue
                     
@@ -1342,7 +1340,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
                                 print_with_line_number("flow_element")
                                 print_with_line_number(f"Operation Name: {operation_name}")
-                                print_with_line_number("")
+                                
                                 seguir = False
                                 continue
                             
@@ -1360,7 +1358,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                 services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
                                 print_with_line_number("route_elements")
                                 print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                                print_with_line_number("")
+                                
                                 seguir = False
                                 continue
                                 
@@ -1381,13 +1379,13 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                         services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
                         print_with_line_number("callout_element")
                         print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                        print_with_line_number("")
+                        
                         seguir = False
                         continue
                                 
     print_with_line_number(f"SERVICES FOR: {services_for_operations}")
     print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
-    print_with_line_number("")
+    
     return services_for_operations
 
 
