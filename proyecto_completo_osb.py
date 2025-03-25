@@ -838,27 +838,27 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        st.success(f"wsdl_path: {wsdl_path}")
-        st.success(f"operations: {operations}")
-        st.success(f"project_name: {project_name}")
-        st.success(f"service_name: {service_name}")
-        st.success(f"osb_file_path: {osb_file_path}")
-        st.success(f"pipeline_path: {pipeline_path}")
-        st.success(f"service_url: {service_url}")
-        st.success(f"capa_proyecto: {capa_proyecto}")
+        print_with_line_number(f"wsdl_path: {wsdl_path}")
+        print_with_line_number(f"operations: {operations}")
+        print_with_line_number(f"project_name: {project_name}")
+        print_with_line_number(f"service_name: {service_name}")
+        print_with_line_number(f"osb_file_path: {osb_file_path}")
+        print_with_line_number(f"pipeline_path: {pipeline_path}")
+        print_with_line_number(f"service_url: {service_url}")
+        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
         imports = extract_xsd_import_paths(wsdl_path)
-        #st.success(f"wsdl_path: {wsdl_path}")
-        #st.success(f"imports: {imports}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"imports: {imports}")
         
-        #st.success(f"project_path: {project_path}")
+        #print_with_line_number(f"project_path: {project_path}")
         # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
         wsdl_relative_base = os.path.relpath(wsdl_path, "extraccion_jar")
-        #st.success(f"wsdl_relative_base: {wsdl_relative_base}")
+        #print_with_line_number(f"wsdl_relative_base: {wsdl_relative_base}")
         operacion_business = ""
         # 🔹 Obtener la carpeta donde está el WSDL
         wsdl_dir = os.path.dirname(wsdl_relative_base)
-        #st.success(f"wsdl_dir: {wsdl_dir}")
+        #print_with_line_number(f"wsdl_dir: {wsdl_dir}")
         # 🔹 Procesar cada import y ajustar solo los que empiezan con "../Schemas"
         xsd_relative_paths = []
         # 🔹 Modificar `imports` en su lugar
@@ -867,7 +867,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
         
-        #st.success(f"imports despues: {imports}")
+        #print_with_line_number(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             for operation in operations:
@@ -889,7 +889,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     else:
                         operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
-            #st.success(f"operation_to_xsd: {operation_to_xsd}")
+            #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
             
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -900,35 +900,35 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 for operation_name, xsd in operation_to_xsd.items():
                     #
                     operation_actual = operation_name
-                    #st.success(f"operation_actual: {operation_actual}")
-                    #st.success(f"operacion_a_documentar: {operacion_a_documentar}")
+                    #print_with_line_number(f"operation_actual: {operation_actual}")
+                    #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                     if not operacion_a_documentar or operation_name == operacion_a_documentar:
-                        #st.success(f"operation_actual: {operation_actual}")
-                        st.success(f"🔍 Analizando operacion: {operation_actual}")
-                        #st.success(f"service_name: {service_name}")
-                        #st.success(f"operation_name: {operation_name}")
-                        #st.success(f"service_url: {service_url}")
-                        #st.success(f"capa_proyecto: {capa_proyecto}")
-                        #st.success(f"operacion_business: {operacion_business}")
+                        #print_with_line_number(f"operation_actual: {operation_actual}")
+                        print_with_line_number(f"🔍 Analizando operacion: {operation_actual}")
+                        #print_with_line_number(f"service_name: {service_name}")
+                        #print_with_line_number(f"operation_name: {operation_name}")
+                        #print_with_line_number(f"service_url: {service_url}")
+                        #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+                        #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #
                         #
-                        #st.success(f"xsd: {xsd}")
+                        #print_with_line_number(f"xsd: {xsd}")
                     
                         #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
-                        #st.success(f"elementos_xsd: {elementos_xsd}")
+                        #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
                         # Inicializar conjunto para evitar ciclos
                         visited_proxies = set()
                         services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
 
-                        st.success(f"services_for_operations: {services_for_operations}")
+                        print_with_line_number(f"services_for_operations: {services_for_operations}")
 
                         # Recorrer los servicios encontrados y seguir explorando hasta llegar a BusinessService
                         for operation, services in services_for_operations.items():
-                            st.success(f"🔍 Analizando operación: {operation}")
+                            print_with_line_number(f"🔍 Analizando operación: {operation}")
                             
                             for service in services:
-                                st.success(f"➡️ Servicio encontrado: {service}")
+                                print_with_line_number(f"➡️ Servicio encontrado: {service}")
                                 
                                 initial_proxy_path = os.path.join(project_path, service + ".ProxyService")
                                 if initial_proxy_path in visited_proxies:
@@ -939,7 +939,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                                 
                                 new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
                                 if new_pipeline_path:
-                                    st.success(f"🔄 Siguiendo cadena de invocación en: {new_pipeline_path}")
+                                    print_with_line_number(f"🔄 Siguiendo cadena de invocación en: {new_pipeline_path}")
                                     sub_services = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, new_pipeline_path, operations, visited_proxies)
                                     services_for_operations.update(sub_services)
 

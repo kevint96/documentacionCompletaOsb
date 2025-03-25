@@ -1958,7 +1958,7 @@ def main():
                 with st.spinner("Generando documentación..."):
                     generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor)
             else:
-                st.error("Por favor, sube todos los archivos, escribe el autor y proporciona la ruta de destino.")
+                st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
 
 if __name__ == "__main__":
