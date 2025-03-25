@@ -1250,10 +1250,10 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
                 osb_services.append((operacion, rutas_de_servicio))
-            else:
-                service_refs = extract_service_refs_from_pipeline(pipeline_path)
-                osb_services.append((operacion, path2))
-                print_with_line_number(f"Service Refs: {service_refs}")
+            #else:
+                #service_refs = extract_service_refs_from_pipeline(pipeline_path)
+                #osb_services.append((operacion, path2))
+                #print_with_line_number(f"Service Refs: {service_refs}")
     
     print_with_line_number("********** FIN PROCESO **********")
     return osb_services
