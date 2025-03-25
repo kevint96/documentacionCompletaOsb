@@ -1148,6 +1148,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                    print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
                     return True  # Encontró el servicio, no es necesario seguir buscando
         return False
 
@@ -1160,6 +1161,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
                         services_for_operations[operation_name].append(service_ref)
+                        print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
                         return True
         return False
 
@@ -1173,6 +1175,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                         return True
         return False
 
@@ -1185,11 +1188,18 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                    print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
                     return True
         return False
 
+    
+    branch_found = process_branch_elements()
+    flow_found = process_flow_elements()
+    route_found = process_route_elements()
+    callout_found = process_callout_elements()
+    
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
-    seguir = not (process_branch_elements() or process_flow_elements() or process_route_elements() or process_callout_elements())
+    seguir = True
 
     print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
     print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")

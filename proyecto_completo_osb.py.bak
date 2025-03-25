@@ -1116,267 +1116,91 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
     return None
 
 def extract_service_for_operations_audibpel(pipeline_path, operations):
-    services_for_operations = {}
-    seguir = True
+    services_for_operations = defaultdict(list)
     
     print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
-        
-    if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        with open(pipeline_path, 'r', encoding="utf-8") as f:
-            pipeline_content = f.read()
-            root = ET.fromstring(pipeline_content)
-            namespaces = {'con': 'http://www.bea.com/wli/sb/pipeline/config', 
-                          'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
-                          'con2': 'http://www.bea.com/wli/sb/stages/config',
-                          'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
-                          'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
-                          'ref': 'http://www.bea.com/wli/sb/reference',
-                          'xsi': 'http://www.w3.org/2001/XMLSchema-instance'} 
-                          
 
-            print_with_line_number(f"LEYENDO ROOT OPERATIONS AUDIBPEL: {root}")
-            # Parsea el archivo .pipeline
-            tree = ET.parse(pipeline_path)
-            root = tree.getroot()
+    if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
+        print_with_line_number("Archivo no válido o no encontrado.")
+        return services_for_operations
 
-            branch_elements = root.findall(".//con:branch", namespaces)
-            if branch_elements:
-                for branch_element in branch_elements:
-                    operation_name = branch_element.attrib.get('name', '')
-                    print_with_line_number(f"Operation Name Branch Elements: {operation_name}")
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
+
+    # Cargar el archivo XML
+    with open(pipeline_path, 'r', encoding="utf-8") as f:
+        root = ET.fromstring(f.read())
+
+    namespaces = {
+        'con': 'http://www.bea.com/wli/sb/pipeline/config',
+        'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
+        'con2': 'http://www.bea.com/wli/sb/stages/config',
+        'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
+        'con4': 'http://www.bea.com/wli/sb/stages/publish/config',
+        'ref': 'http://www.bea.com/wli/sb/reference',
+        'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+    }
+
+    def process_branch_elements():
+        """Busca servicios en elementos <con:branch>."""
+        for branch in root.findall(".//con:branch", namespaces):
+            operation_name = branch.attrib.get('name', '')
+            if operation_name in operations:
+                service_element = branch.find(".//con1:service", namespaces)
+                if service_element is not None:
+                    services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                    return True  # Encontró el servicio, no es necesario seguir buscando
+        return False
+
+    def process_flow_elements():
+        """Busca servicios en elementos <con:flow>."""
+        for flow in root.findall(".//con:flow", namespaces):
+            for service_element in flow.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces):
+                service_ref = service_element.attrib.get('ref', '')
+                for operation_element in flow.findall(".//con1:operation", namespaces):
+                    operation_name = operation_element.text.strip()
                     if operation_name in operations:
-                        service_element = branch_element.find(".//con1:service", namespaces)
-                        print_with_line_number(f"service_element: {service_element}")
-                        
-                                    
-                        if service_element is not None:                            
-                            service_ref = service_element.attrib.get('ref', '')
-                            services_for_operations.setdefault(operation_name, []).append((service_ref))
-                            print_with_line_number("branch_elements")
-                            print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                            
-                            print_with_line_number(services_for_operations)
-                            
-                            seguir = False
-                            continue
-                        else:
-                            seguir = True
+                        services_for_operations[operation_name].append(service_ref)
+                        return True
+        return False
 
-                            # Si service_element es None, buscar el elemento <con:request> dentro de branch_element
-                            request_element = branch_element.find(".//con:request", namespaces)
-                            print_with_line_number(f"request_element: {request_element}")
-                            if request_element is not None:
-                                request_value = request_element.text
-                                print("El valor del elemento <con:request> dentro de branch_element es:", request_value)
-                                
-                                
-                                # Utilizamos XPath para encontrar los elementos 'con:pipeline' con el atributo 'name' igual a 'request_value'
-                                pipelines = root.findall(".//con:pipeline[@name='" + request_value + "']", namespaces)
-
-                                # Imprimimos los elementos encontrados (si los hay)
-                                for pipeline in pipelines:
-                                    print("Se encontró un pipeline con name igual a '{}':".format(request_value))
-                                    #print(ET.tostring(pipeline, encoding='unicode'))
-                                    
-                                    ns_stage_transform_config   = {'con1': 'http://www.bea.com/wli/sb/stages/transform/config'}
-                                    ns_stage_publish_config     = {'con1': 'http://www.bea.com/wli/sb/stages/publish/config'}
-                                    ns_stage_routing_config     = {'con1': 'http://www.bea.com/wli/sb/stages/routing/config'}
-                                    ns_stage_config             = {'con1':'http://www.bea.com/wli/sb/stages/config'}
-                                    
-                                    ns_stage_pipeline_config    = {'con': 'http://www.bea.com/wli/sb/pipeline/config',
-                                                                'con1': 'http://www.bea.com/wli/sb/stages/routing/config',
-                                                                'con2': 'http://www.bea.com/wli/sb/stages/config',
-                                                                'con3': 'http://www.bea.com/wli/sb/stages/transform/config',
-                                                                'ref': 'http://www.bea.com/wli/sb/reference',
-                                                                'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-                                    
-                                    ns                           = {'con': 'http://www.example.com',
-                                                                    'con4': 'http://www.bea.com/wli/sb/stages/routing/config',
-                                                                    'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-                                    
-
-                                    ws_callouts = pipeline.findall(".//con1:wsCallout", namespaces=ns_stage_transform_config)
-                                    #print_with_line_number(f"ws_callouts: {ws_callouts}")
-                                    java_callouts = pipeline.findall(".//con1:javaCallout", namespaces=ns_stage_transform_config)
-                                    #print_with_line_number(f"java_callouts: {java_callouts}")
-                                    routes = pipeline.findall(".//con1:route", namespaces=ns_stage_publish_config)
-                                    #print_with_line_number(f"routes: {routes}")
-                                    routes2 = pipeline.findall(".//con1:route", namespaces=ns_stage_routing_config)
-                                    #print_with_line_number(f"routes2: {routes2}")
-                                    flow_elements = pipeline.findall(".//con:flow", ns_stage_pipeline_config)
-                                    #print_with_line_number(f"flow_elements: {flow_elements}")
-                                    
-                                    
-                                    for ws_callout in ws_callouts:
-                                        service_element = ws_callout.find(".//con1:service", namespaces=ns_stage_transform_config)
-                                        operation_element = ws_callout.find(".//con1:operation", namespaces=ns_stage_transform_config)
-                                        if service_element is not None and operation_element is not None:
-                                            service_ref = service_element.attrib.get('ref', '')
-                                            services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                            print_with_line_number(f"services_for_operations ws_callouts: {services_for_operations}")
-                                            seguir = False
-                                            continue
-                                    
-                                    
-                                    for java_callout in java_callouts:
-                                        method_element = java_callout.find(".//con1:method", namespaces=ns_stage_transform_config)
-                                        if method_element is not None:
-                                            method_text = method_element.text
-                                            service_element = java_callout.find(".//con1:archive", namespaces=ns_stage_transform_config)
-                                            if service_element is not None:
-                                                service_ref = service_element.attrib.get('ref', '')
-                                                services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                                print_with_line_number(f"services_for_operations java_callouts: {services_for_operations}")
-                                                seguir = False
-                                                continue
-
-                                    for route in routes:
-                                        service_element = route.find(".//con1:service", namespaces=ns_stage_publish_config)
-                                        operation_element = route.find(".//con1:operation", namespaces=ns_stage_publish_config)
-                                        if service_element is not None and operation_element is not None:
-                                            service_ref = service_element.attrib.get('ref', '')
-                                            services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                            print_with_line_number(f"services_for_operations routes: {services_for_operations}")
-                                            seguir = False
-                                            continue
-                                    
-                                    for route in routes2:
-                                        service_element = route.find(" .//con1:service", namespaces=ns_stage_routing_config)
-                                        operation_element = route.find(" .//con1:operation", namespaces=ns_stage_routing_config)
-                                        if service_element is not None and operation_element is not None:
-                                            service_ref = service_element.attrib.get('ref', '')
-                                            services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                            print_with_line_number(f"services_for_operations routes2: {services_for_operations}")
-                                            seguir = False
-                                            continue
-                                            
-                                     
-                                     # Itera sobre cada elemento <con:flow> encontrado
-                                    for flow_element in flow_elements:
-                                        # Encuentra todos los elementos <con1:service> dentro de <con:flow>
-                                        service_elements = flow_element.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", ns_stage_pipeline_config)
-                                        
-                                        # Si no se encuentra ningún servicio dentro del flujo, salta al siguiente flujo
-                                        if not service_elements:
-                                            seguir = False
-                                            continue
-                                        
-                                        # Itera sobre cada elemento <con1:service> encontrado dentro de <con:flow>
-                                        for service_element in service_elements:
-                                            # Accede al atributo 'ref' del elemento <con1:service>
-                                            service_ref = service_element.attrib.get('ref', '')
-
-                                            # Encuentra todos los elementos <con1:operation> dentro de <con:flow>
-                                            operation_elements = flow_element.findall(".//con1:operation", ns_stage_pipeline_config)
-
-
-                                            operation_element = operation_elements[0]
-
-                                            # Agrega la relación entre el nombre de la operación y la referencia del servicio al diccionario services_for_operations
-                                            services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                            seguir = False
-                                            continue
-                                                    
-                            print_with_line_number(services_for_operations)
-
-            if seguir:
-                flow_elements = root.findall(".//con:flow", namespaces)
-
-                
-                for flow_element in flow_elements:
-                    
-                    service_elements = flow_element.findall(".//con1:service[@xsi:type='ref:BusinessServiceRef']", namespaces)
-                    proxy_elements = flow_element.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces)
-                    
-                    for service_element in service_elements:
-                        service_ref = service_element.attrib.get('ref', '')
-                        operation_elements = flow_element.findall(".//con1:operation", namespaces)
-                        for operation_element in operation_elements:
-                            operation_name = operation_element.text.strip()
-                            print_with_line_number(f"Operation Name: {operation_name}")
-                            print_with_line_number(f"len(operations): {len(operations)}")
-                            
-                            if len(operations) == 1:
-                                operation_name = operations[0]
-                                
-                            print_with_line_number(f"Operation Name: {operation_name}")
-                            
-                            if operation_name in operations:
-
-                                services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                print_with_line_number("flow_element")
-                                print_with_line_number(f"Operation Name: {operation_name}")
-                                
-                                seguir = False
-                                continue
-                    
-                    for proxy_element in proxy_elements:
-                        service_ref = proxy_element.attrib.get('ref', '')
-                        operation_elements = flow_element.findall(".//con1:operation", namespaces)
-                        for operation_element in operation_elements:
-                            
-                            operation_name = operation_element.text.strip()
-                            print_with_line_number(f"Operation Name: {operation_name}")
-                            print_with_line_number(f"len(operations): {len(operations)}")
-                            
-                            if len(operations) == 1:
-                                operation_name = operations[0]
-                                
-                            print_with_line_number(f"Operation Name: {operation_name}")
-                            
-                            if operation_name in operations:
-
-                                services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                print_with_line_number("flow_element")
-                                print_with_line_number(f"Operation Name: {operation_name}")
-                                
-                                seguir = False
-                                continue
-                            
-                
-            if seguir:               
-                route_elements = root.findall(".//con:route-node", namespaces)
-                for route_element in route_elements:
-                    operation_element = route_element.find(".//con1:operation", namespaces)
-                    if operation_element is not None:
-                        operation_name = operation_element.text.strip()  
-                        if operation_name in operations:
-                            service_element = route_element.find(".//con1:service", namespaces)
-                            if service_element is not None:
-                                service_ref = service_element.attrib.get('ref', '')
-                                services_for_operations.setdefault(operation_name, []).append((service_ref))
-                                print_with_line_number("route_elements")
-                                print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                                
-                                seguir = False
-                                continue
-                                
-                # Encuentra todos los elementos <wsCallout> sin importar el prefijo del namespace
-                callout_elements = [element for element in root.iter() if element.tag.endswith('wsCallout')]
-                
-                # Itera sobre cada elemento <wsCallout> encontrado
-                for callout_element in callout_elements:
-                    operation_name = ""
-                    service_ref = ""
-                    operation_element = callout_element.find(".//con3:operation", namespaces)
-                    if operation_element is not None:
-                        operation_name = operation_element.text.strip()
-                    service_element = callout_element.find(".//con3:service", namespaces)
+    def process_route_elements():
+        """Busca servicios en elementos <con:route-node>."""
+        for route in root.findall(".//con:route-node", namespaces):
+            operation_element = route.find(".//con1:operation", namespaces)
+            if operation_element is not None:
+                operation_name = operation_element.text.strip()
+                if operation_name in operations:
+                    service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
-                        service_ref = service_element.attrib.get('ref', '')
-                    if operation_name and service_ref:
-                        services_for_operations.setdefault(operation_name, []).append((service_ref))
-                        print_with_line_number("callout_element")
-                        print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
-                        
-                        seguir = False
-                        continue
-                                
-    print_with_line_number(f"SERVICES FOR: {services_for_operations}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+                        services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                        return True
+        return False
+
+    def process_callout_elements():
+        """Busca servicios en elementos <wsCallout>."""
+        for callout in (e for e in root.iter() if e.tag.endswith('wsCallout')):
+            operation_element = callout.find(".//con3:operation", namespaces)
+            service_element = callout.find(".//con3:service", namespaces)
+            if operation_element is not None and service_element is not None:
+                operation_name = operation_element.text.strip()
+                if operation_name in operations:
+                    services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
+                    return True
+        return False
+
     
-    return services_for_operations
+    branch_found = process_branch_elements()
+    flow_found = process_flow_elements()
+    route_found = process_route_elements()
+    callout_found = process_callout_elements()
+    
+    # Ejecutar los procesamientos en orden hasta encontrar un servicio
+    seguir = True
+
+    print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
+    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+
+    return dict(services_for_operations)
 
 
 def agregar_referencia(estructura, proxy_principal, operacion_principal, proxys_referenciados, operaciones_referenciadas):
