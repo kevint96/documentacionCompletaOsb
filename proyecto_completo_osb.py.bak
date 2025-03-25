@@ -1279,10 +1279,6 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                                             continue
                                                     
                             print_with_line_number(services_for_operations)
-                            
-
-
-
 
             if seguir:
                 flow_elements = root.findall(".//con:flow", namespaces)
@@ -1307,10 +1303,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                             print_with_line_number(f"Operation Name: {operation_name}")
                             
                             if operation_name in operations:
-                                
-                                
-                                nombre_audibpel = buscar_definicion_audibpel(flow_element,operation_name,namespaces,root)
-                                
+
                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
                                 print_with_line_number("flow_element")
                                 print_with_line_number(f"Operation Name: {operation_name}")
@@ -1333,10 +1326,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                             print_with_line_number(f"Operation Name: {operation_name}")
                             
                             if operation_name in operations:
-                                
-                                
-                                nombre_audibpel = buscar_definicion_audibpel(flow_element,operation_name,namespaces,root)
-                                
+
                                 services_for_operations.setdefault(operation_name, []).append((service_ref))
                                 print_with_line_number("flow_element")
                                 print_with_line_number(f"Operation Name: {operation_name}")
@@ -1355,7 +1345,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                             service_element = route_element.find(".//con1:service", namespaces)
                             if service_element is not None:
                                 service_ref = service_element.attrib.get('ref', '')
-                                services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
+                                services_for_operations.setdefault(operation_name, []).append((service_ref))
                                 print_with_line_number("route_elements")
                                 print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
                                 
@@ -1376,7 +1366,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                     if service_element is not None:
                         service_ref = service_element.attrib.get('ref', '')
                     if operation_name and service_ref:
-                        services_for_operations.setdefault(operation_name, []).append((service_ref, 'N/A'))
+                        services_for_operations.setdefault(operation_name, []).append((service_ref))
                         print_with_line_number("callout_element")
                         print_with_line_number(f"Operation Name: {operation_name}, Service Ref: {service_ref}")
                         
