@@ -1257,7 +1257,54 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
     print_with_line_number("********** FIN PROCESO **********")
     return osb_services
 
+def definir_operaciones_internas_pipeline(pipeline_path):
+    service_refs = set()
+    services_for_operations = {}
+    
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
+    
+    namespaces = {
+        'transform': 'http://www.bea.com/wli/sb/stages/transform/config',
+        'publish': 'http://www.bea.com/wli/sb/stages/publish/config',
+        'routing': 'http://www.bea.com/wli/sb/stages/routing/config',
+        'config': 'http://www.bea.com/wli/sb/stages/config',
+        'pipeline': 'http://www.bea.com/wli/sb/pipeline/config',
+        'ref': 'http://www.bea.com/wli/sb/reference',
+        'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+    }
+    
+    try:
+        with open(pipeline_path, 'r', encoding="utf-8") as f:
+            root = ET.fromstring(f.read())
 
+        def extract_services_and_operations(elements, ns, service_tag, operation_tag):
+            for element in elements:
+                service_element = element.find(f".//{ns}:{service_tag}", namespaces)
+                operation_element = element.find(f".//{ns}:{operation_tag}", namespaces)
+                if service_element is not None and operation_element is not None:
+                    service_ref = service_element.attrib.get('ref', '')
+                    operation_name = operation_element.text.strip()
+                    service_refs.add(service_ref)
+                    
+                    new_operation_name = operation_name
+                    version = 2
+                    while new_operation_name in services_for_operations and services_for_operations[new_operation_name] != service_ref:
+                        new_operation_name = f"{operation_name}v{version}"
+                        version += 1
+                    
+                    services_for_operations[new_operation_name] = service_ref
+
+        extract_services_and_operations(root.findall(".//transform:wsCallout", namespaces), 'transform', 'service', 'operation')
+        extract_services_and_operations(root.findall(".//config:wsCallout", namespaces), 'config', 'service', 'operation')
+        extract_services_and_operations(root.findall(".//publish:route", namespaces), 'publish', 'service', 'operation')
+        extract_services_and_operations(root.findall(".//routing:route", namespaces), 'routing', 'service', 'operation')
+        extract_services_and_operations(root.findall(".//pipeline:flow", namespaces), 'pipeline', 'service', 'operation')
+        
+        return services_for_operations
+    
+    except Exception as e:
+        print(f"Error procesando el pipeline: {e}")
+        return {}
 
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
