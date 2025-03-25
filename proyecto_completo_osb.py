@@ -1243,6 +1243,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
                 operations = extract_wsdl_operations(wsdl_path)
                 print_with_line_number(f"Operations: {operations}")
             
+            print_with_line_number(f"Pipeline Path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
             print_with_line_number(f"Service for Operations: {service_for_operations}")
             
