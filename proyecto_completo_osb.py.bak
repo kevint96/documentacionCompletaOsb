@@ -920,9 +920,13 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         # Inicializar conjunto para evitar ciclos
                         visited_proxies = set()
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
-                        services_for_operations = extract_service_for_operations_audibpel(pipeline_path, operations)
+                        services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                         
-                        print_with_line_number(f"services_for_operations: {services_for_operations}")
+                        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+                        
+                        services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
+                        
+                        print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
                         # Recorrer los servicios encontrados y seguir explorando hasta llegar a BusinessService
                         for operation, services in services_for_operations.items():
@@ -1115,7 +1119,7 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
         
     return None
 
-def extract_service_for_operations_audibpel(pipeline_path, operations):
+def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
     print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
@@ -1202,50 +1206,139 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
 
     return {op: list(set(services)) for op, services in services_for_operations.items()}
 
-
-def agregar_referencia(estructura, proxy_principal, operacion_principal, proxys_referenciados, operaciones_referenciadas):
-    """
-    Agrega referencias de proxys a la estructura de datos.
-
-    :param estructura: Diccionario que almacena las referencias.
-    :param proxy_principal: Nombre del proxy principal.
-    :param operacion_principal: Nombre de la operación principal.
-    :param proxys_referenciados: Lista de nombres de los proxys referenciados.
-    :param operaciones_referenciadas: Lista de nombres de las operaciones referenciadas.
-    """
-    if proxy_principal not in estructura:
-        estructura[proxy_principal] = {
-            "operacion": operacion_principal,
-            "listaReferencias": []
-        }
-
-    print_with_line_number(f"estructura: {estructura}")
-    print_with_line_number(f"proxy_principal: {proxy_principal}")
-    print_with_line_number(f"operacion_principal: {operacion_principal}")
-    print_with_line_number(f"proxys_referenciados: {proxys_referenciados}")
-    print_with_line_number(f"operaciones_referenciadas: {operaciones_referenciadas}")
-    # Asegurar que las listas tienen la misma longitud
-    if len(proxys_referenciados) != len(operaciones_referenciadas):
-        raise ValueError("Las listas de proxys y operaciones deben tener la misma cantidad de elementos.")
-
-    # Agregar cada proxy referenciado con su operación
-    for proxy, operacion in zip(proxys_referenciados, operaciones_referenciadas):
-        estructura[proxy_principal]["listaReferencias"].append({"proxy": proxy, "operacion": operacion})
+def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_operations):
+    osb_services = []
+    for operacion, path2 in services_for_operations.items():
+        print_with_line_number("")
+        print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+        print_with_line_number("")
+        print_with_line_number(f"path2: {path2}")
+        print_with_line_number(f"Operacion: {operacion}")
+        print_with_line_number("")
+        if 'Proxies' in path2:    
+            osb_file_path = os.path.join(jdeveloper_projects_dir, path2 + ".ProxyService")
+            proxy_abc = os.path.join(jdeveloper_projects_dir, path2)
+            print_with_line_number(f"osb_file_path: {osb_file_path}")
+            print_with_line_number("")
+            project_name = extract_project_name_from_proxy(osb_file_path)
+            print_with_line_number(f"project_name: {project_name}")
+            print_with_line_number("")
+            if project_name is None:
+                continue  # Salta este registro y continúa con el siguiente
+            pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
+            print_with_line_number(f"pipeline_path: {pipeline_path}")
+            print_with_line_number("")
+            with open(osb_file_path, 'r', encoding="utf-8") as f:
+                content = f.read()
+                service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
+                wsdl_relative_path = extract_wsdl_relative_path(content)
+                print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                print_with_line_number("")
+                print_with_line_number(f"service_name: {service_name}")
+                print_with_line_number(f"wsdl_relative_path: {wsdl_relative_path}")
+                print_with_line_number("")
+                if wsdl_relative_path:
+                    wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
+                    print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                    print_with_line_number("")
+                    print_with_line_number(f"wsdl_path: {wsdl_path}")
+                    print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                    print_with_line_number("")
+                    operations = extract_wsdl_operations(wsdl_path)
+                    print_with_line_number(f"operations: {operations}")
+                    print_with_line_number("")
+                    print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                    print_with_line_number("")
+                    service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
+                    print_with_line_number(f"service_for_operations: {service_for_operations}")
+                    print_with_line_number("")
+                    if not service_for_operations:
+                        service_refs = extract_service_refs_from_pipeline(pipeline_path)
+                        print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                        print_with_line_number("")
+                        print_with_line_number(f"service_refs: {service_refs}")
+                        print_with_line_number("")
+                        print_with_line_number("")
+                        #for service_ref in service_refs:
+                            #osb_services.append((operacion, service_ref)) 
+                        osb_services.append((operacion, proxy_abc))
+                        print_with_line_number(f"osb_services: {osb_services}")
+                        print_with_line_number("")
+                    else:
+                        print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                        print_with_line_number("")
+                        rutas_de_servicio = []
+                        for ruta in service_for_operations.values():
+                            rutas_de_servicio.append(ruta)
+                        osb_services.append((operacion, rutas_de_servicio))
+                        print_with_line_number(f"osb_services: {osb_services}")
+                        print_with_line_number("")
+        
+        if 'Pipeline' in path2:    
+            osb_file_path = os.path.join(jdeveloper_projects_dir, path2 + ".Pipeline")
+            proxy_abc = os.path.join(jdeveloper_projects_dir, path2)
+            print_with_line_number(f"osb_file_path: {osb_file_path}")
+            print_with_line_number("")
+            project_name = extract_project_name_from_proxy(osb_file_path)
+            print_with_line_number(f"project_name: {project_name}")
+            print_with_line_number("")
+            if project_name is None:
+                continue  # Salta este registro y continúa con el siguiente
+            pipeline_path = osb_file_path
+            print_with_line_number(f"pipeline_path: {pipeline_path}")
+            print_with_line_number("")
+            with open(osb_file_path, 'r', encoding="utf-8") as f:
+                content = f.read()
+                service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
+                wsdl_relative_path = extract_wsdl_relative_path(content)
+                print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                print_with_line_number("")
+                print_with_line_number(f"service_name: {service_name}")
+                print_with_line_number(f"wsdl_relative_path: {wsdl_relative_path}")
+                print_with_line_number("")
+                if wsdl_relative_path:
+                    wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
+                    print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                    print_with_line_number("")
+                    print_with_line_number(f"wsdl_path: {wsdl_path}")
+                    print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                    print_with_line_number("")
+                    operations = extract_wsdl_operations(wsdl_path)
+                    print_with_line_number(f"operations: {operations}")
+                    print_with_line_number("")
+                    print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                    print_with_line_number("")
+                    service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
+                    print_with_line_number(f"service_for_operations: {service_for_operations}")
+                    print_with_line_number("")
+                    if not service_for_operations:
+                        service_refs = extract_service_refs_from_pipeline(pipeline_path)
+                        print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                        print_with_line_number("")
+                        print_with_line_number(f"service_refs: {service_refs}")
+                        print_with_line_number("")
+                        print_with_line_number("")
+                        #for service_ref in service_refs:
+                            #osb_services.append((operacion, service_ref)) 
+                        osb_services.append((operacion, proxy_abc))
+                        print_with_line_number(f"osb_services: {osb_services}")
+                        print_with_line_number("")
+                    else:
+                        print_with_line_number("*****************************INICIO EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+                        print_with_line_number("")
+                        rutas_de_servicio = []
+                        for ruta in service_for_operations.values():
+                            rutas_de_servicio.append(ruta)
+                        osb_services.append((operacion, rutas_de_servicio))
+                        print_with_line_number(f"osb_services: {osb_services}")
+                        print_with_line_number("")
     
-    print_with_line_number(f"estructura: {estructura}")
-    
+        
+    print_with_line_number("*****************************FIN EXTRACT_OSB_SERVICES_WITH_GIVEN_PATH*********************************************")
+    print_with_line_number("")
+    return osb_services
 
-def buscar_y_agregar(nodo, clave_referencia):
-    """ Busca recursivamente dónde agregar la referencia y lo hace si encuentra un nodo adecuado. """
-    if "listaReferencias" in nodo:
-        for referencia in nodo["listaReferencias"]:
-            for proxy, operacion in referencia.items():
-                if isinstance(operacion, str):  # Si es una referencia directa
-                    continue
-                if buscar_y_agregar(operacion, clave_referencia):
-                    return True
 
-    return False
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
