@@ -1149,8 +1149,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                 if service_element is not None:
                     services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
                     print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
-                    return True  # Encontró el servicio, no es necesario seguir buscando
-        return False
+        return services_for_operations
 
     def process_flow_elements():
         """Busca servicios en elementos <con:flow>."""
@@ -1162,8 +1161,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                     if operation_name in operations:
                         services_for_operations[operation_name].append(service_ref)
                         print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
-                        return True
-        return False
+        return services_for_operations
 
     def process_route_elements():
         """Busca servicios en elementos <con:route-node>."""
@@ -1176,8 +1174,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                     if service_element is not None:
                         services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
                         print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
-                        return True
-        return False
+        return services_for_operations
 
     def process_callout_elements():
         """Busca servicios en elementos <wsCallout>."""
@@ -1189,8 +1186,7 @@ def extract_service_for_operations_audibpel(pipeline_path, operations):
                 if operation_name in operations:
                     services_for_operations[operation_name].append(service_element.attrib.get('ref', ''))
                     print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
-                    return True
-        return False
+        return services_for_operations
 
     
     branch_found = process_branch_elements()
