@@ -1345,7 +1345,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
                 if os.path.exists(biz_path):
                     service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                     if service_refs:
-                        informacion_business[f"Datos_business_{os.path.basename(referencia)}"] = service_refs
+                        informacion_business[f"DATOS_BS_{os.path.basename(referencia)}"] = service_refs
         
         service_data.update(informacion_business)
         print_with_line_number(f"service_data: {service_data}")
@@ -1374,7 +1374,7 @@ def extract_uri_and_provider_id_from_bix(bix_path):
         
         #print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
         lista_uri_provider.append((uri_value, provider_id_value))
-        return lista_uri_provider
+        return uri_value, provider_id_value
 
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
