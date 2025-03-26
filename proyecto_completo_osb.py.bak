@@ -1338,10 +1338,6 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     referencia_business_service ={}
     
     def buscar_recursivamente_operaciones(referencia):
-        informacion_business = {}
-        referencias = {}
-        referencia_proxy ={}
-        referencia_business_service ={}
         referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
         referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
         print_with_line_number(f"🔍 referencia_base: {referencia_base}")
@@ -1400,6 +1396,10 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         combined_services[service_name].update(referencias)
         combined_services[service_name].update(informacion_business)
         print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
+        informacion_business = {}
+        referencias = {}
+        referencia_proxy ={}
+        referencia_business_service ={}
 
 def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
     

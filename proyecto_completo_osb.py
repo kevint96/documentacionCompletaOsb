@@ -1400,7 +1400,9 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         referencias = {}
         referencia_proxy ={}
         referencia_business_service ={}
-
+    
+    return combined_services
+    
 def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
     
     for service_name, service_data in combined_services.items():
