@@ -2016,15 +2016,19 @@ def plantuml_encode(plantuml_code):
     print_with_line_number("🔹 Texto original:")
     print_with_line_number(plantuml_code)
 
-    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Eliminar cabecera y checksum
-    print_with_line_number("\n🔹 Comprimido (sin cabecera ni checksum):")
+    # Comprimir con DEFLATE sin cabecera ni checksum
+    compressor = zlib.compressobj(level=9, wbits=-15)  # wbits=-15 evita cabecera ZLIB
+    compressed = compressor.compress(plantuml_code.encode("utf-8")) + compressor.flush()
+    print_with_line_number("\n🔹 Comprimido (DEFLATE sin cabecera ni checksum):")
     print_with_line_number(compressed)
 
+    # Codificar en Base64 URL-safe
     encoded = base64.b64encode(compressed).decode("utf-8")
     encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
     print_with_line_number("\n🔹 Codificado en Base64 URL-safe:")
     print_with_line_number(encoded)
 
+    # Generar URL final
     final_url = f"https://www.plantuml.com/plantuml/png/~1{encoded}"
     print_with_line_number("\n🔹 URL generada:")
     print_with_line_number(final_url)
