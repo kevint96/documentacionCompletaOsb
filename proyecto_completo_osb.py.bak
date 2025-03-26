@@ -1330,6 +1330,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
     
     for service_name, service_data in combined_services.items():
         informacion_business = {}
+        referencias = {}
         print_with_line_number(f"service_name: {service_name}")
         
         #for proxy in service_data.get("Proxy", []):
@@ -1339,6 +1340,21 @@ def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
         for referencia in service_data.get("Referencia", []):
             print_with_line_number(f"referencia: {referencia}")
             
+            if "Proxies" in referencia:
+                osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
+                if os.path.exists(osb_file_path):
+                    print_with_line_number(f"🔍1 osb_file_path: {osb_file_path}")
+                    project_name = extract_project_name_from_proxy(osb_file_path)
+                    pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, project_name)
+                    print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
+                    service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
+                    print_with_line_number(f"🔍service_for_operations: {service_for_operations}")
+                
+                    if service_for_operations:
+                        rutas_de_servicio = list(service_for_operations.values())
+                        referencias[f"REFERENCIA_{os.path.basename(referencia)}"] = rutas_de_servicio
+                        
+            
             if "BusinessServices" in referencia:
                 biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
                 
@@ -1347,6 +1363,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
                     if service_refs:
                         informacion_business[f"INFORMACION_{os.path.basename(referencia)}"] = service_refs
         
+        service_data.update(referencias)
         service_data.update(informacion_business)
         print_with_line_number(f"service_data: {service_data}")
     print_with_line_number(f"combined_services: {combined_services}")
