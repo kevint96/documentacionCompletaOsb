@@ -2001,14 +2001,10 @@ def obtener_operaciones(project_path):
     return operations
 
 def encode_plantuml(plantuml_code):
-    """Codifica el código PlantUML con compresión Deflate (sin encabezado zlib)."""
-    compressed = zlib.compress(plantuml_code.encode("utf-8"), 9)
-    compressed = compressed[2:-4]  # Eliminar encabezado y checksum
-
-    # Convertir a URL safe base64 para PlantUML
+    """Codifica el código PlantUML con compresión Deflate raw y encoding compatible con URLs."""
+    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # QUITAR encabezado y checksum
     encoded = base64.b64encode(compressed).decode("utf-8")
-    encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")
-
+    encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
     return encoded
 
 def generar_diagrama_secuencia(service_name, operacion_abc):

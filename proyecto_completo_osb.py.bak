@@ -2001,10 +2001,15 @@ def obtener_operaciones(project_path):
     return operations
 
 def encode_plantuml(plantuml_code):
-    """Codifica el código PlantUML usando Deflate (sin encabezado zlib)."""
-    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Eliminar encabezado y checksum
+    """Codifica el código PlantUML con compresión Deflate (sin encabezado zlib)."""
+    compressed = zlib.compress(plantuml_code.encode("utf-8"), 9)
+    compressed = compressed[2:-4]  # Eliminar encabezado y checksum
+
+    # Convertir a URL safe base64 para PlantUML
     encoded = base64.b64encode(compressed).decode("utf-8")
-    return encoded.replace("+", "-").replace("/", "_").replace("=", "")
+    encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")
+
+    return encoded
 
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""
@@ -2019,9 +2024,8 @@ def generar_diagrama_secuencia(service_name, operacion_abc):
     Operacion -> Servicio: Retorna respuesta
     Servicio -> Usuario: Respuesta final
     @enduml
-    """
-    
-    # Codificar el código UML y generar la URL
+    """.strip()
+
     encoded_code = encode_plantuml(plantuml_code)
     return f"{PLANTUML_SERVER}{encoded_code}"
 
