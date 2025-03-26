@@ -843,7 +843,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     
     url = get_plantuml_url(plantuml_code)
     
-    print_with_line_number("🔹 URL generada:", url)
+    print_with_line_number(f"URL generada: {url}")
 
     
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
@@ -2046,11 +2046,17 @@ def get_plantuml_url(plantuml_code):
     
     response = requests.post(url, data=data)
     
+    print_with_line_number(f"response: {response}")
+    
     if response.status_code == 200:
         # Extraer el código de la imagen generado por PlantUML
         start_idx = response.text.find("src=\"") + 5
+        print_with_line_number(f"start_idx: {start_idx}")
         end_idx = response.text.find("\"", start_idx)
+        print_with_line_number(f"end_idx: {end_idx}")
         plantuml_path = response.text[start_idx:end_idx]
+        
+        print_with_line_number(f"plantuml_path: {plantuml_path}")
         
         return f"https://www.plantuml.com{plantuml_path}"
     
