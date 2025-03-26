@@ -1326,7 +1326,47 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         print(f"Error procesando el pipeline: {e}")
         return {}
 
-def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
+def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, services_dict=None, servicio_raiz=None, service_data=None):
+    if services_dict is None:
+        services_dict = {}  # Inicializar si no se proporciona
+    if service_data is None:
+        service_data = {}  # Inicializar si no se proporciona
+    
+    def buscar_servicios_recursivos(services_dict, servicio):
+        if servicio not in services_dict:
+            return []  # Si el servicio no tiene dependencias, devolver lista vacía
+        
+        servicios_encontrados = services_dict[servicio]
+        resultado_recursivo = []
+        
+        for sub_servicio in servicios_encontrados:
+            print_with_line_number(f"sub_servicio: {sub_servicio}")
+            resultado_recursivo.append(sub_servicio)
+            resultado_recursivo.extend(buscar_servicios_recursivos(services_dict, sub_servicio))  
+
+            # Simular obtención de información (ajustar según tu lógica real)
+            referencias = {sub_servicio: f"REFERENCIA_{sub_servicio}"}
+            informacion_business = {sub_servicio: f"INFORMACION_{sub_servicio}"}
+
+            # Actualizar service_data con la información encontrada
+            service_data.update(referencias)
+            service_data.update(informacion_business)
+
+        return resultado_recursivo
+    
+    if servicio_raiz:
+        # Si se proporciona un servicio raíz, buscar desde él
+        servicios_recursivos = {servicio_raiz: buscar_servicios_recursivos(services_dict, servicio_raiz)}
+    else:
+        # Si no hay servicio raíz, procesar todos los servicios en combined_services
+        servicios_recursivos = {}
+        for servicio in combined_services:
+            print_with_line_number(f"servicio: {servicio}")
+            servicios_recursivos[servicio] = buscar_servicios_recursivos(services_dict, servicio)
+    
+    return servicios_recursivos, service_data
+
+def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
     
     for service_name, service_data in combined_services.items():
         informacion_business = {}
