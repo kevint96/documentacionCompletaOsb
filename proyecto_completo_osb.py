@@ -2036,7 +2036,7 @@ def plantuml_encode(plantuml_code):
 def encode_plantuml(plantuml_code):
     """Comprime y codifica el código PlantUML para generar la URL."""
     compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Quita la cabecera y el checksum
-    encoded = base64.urlsafe_b64encode(compressed).decode("utf-8")
+    encoded = base64.urlsafe_b64encode(compressed).decode("utf-8").rstrip("=")
     
     # 🔍 Depuración: Mostrar los valores en cada paso
     print_with_line_number(f"🔹 Texto original:\n{plantuml_code}\n")

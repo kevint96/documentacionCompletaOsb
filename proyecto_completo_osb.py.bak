@@ -841,7 +841,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     
     plantuml_code = "@startuml\nAlice -> Bob: Test\n@enduml"
     
-    url = get_plantuml_url(plantuml_code)
+    get_plantuml_direct_url(plantuml_code)
     
     #print_with_line_number(f"URL generada: {url}")
 
@@ -2034,18 +2034,25 @@ def plantuml_encode(plantuml_code):
 
 
 def encode_plantuml(plantuml_code):
-    """Codifica el código PlantUML con compresión Deflate raw y encoding compatible con URLs."""
-    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # QUITAR encabezado y checksum
-    encoded = base64.b64encode(compressed).decode("utf-8")
-    encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
+    """Comprime y codifica el código PlantUML para generar la URL."""
+    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Quita la cabecera y el checksum
+    encoded = base64.urlsafe_b64encode(compressed).decode("utf-8")
+    
+    # 🔍 Depuración: Mostrar los valores en cada paso
+    print_with_line_number(f"🔹 Texto original:\n{plantuml_code}\n")
+    print_with_line_number(f"🔹 Comprimido (sin cabecera ni checksum):\n{compressed}\n")
+    print_with_line_number(f"🔹 Codificado en Base64 URL-safe:\n{encoded}\n")
+    
     return encoded
 
-def get_plantuml_url(plantuml_code):
-    url = "https://www.plantuml.com/plantuml/form"
+def get_plantuml_direct_url(plantuml_code):
+    encoded = encode_plantuml(plantuml_code)
+    url = f"https://www.plantuml.com/plantuml/png/{encoded}"
     
-    response = requests.get(url)
-    print_with_line_number(f"response: {response.text[:500]}")  # Muestra los primeros 500 caracteres de la respuesta
-
+    print_with_line_number(f"🔹 URL generada:\n{url}\n")  # 🔍 Depuración
+    
+    return url
+    
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""
     plantuml_code = f"""
