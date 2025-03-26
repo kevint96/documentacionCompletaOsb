@@ -29,7 +29,6 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from lxml import etree
 import json
-from plantuml import PlantUML
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
