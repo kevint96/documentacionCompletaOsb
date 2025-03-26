@@ -28,6 +28,7 @@ import sys
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from lxml import etree
+import json
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
@@ -930,20 +931,18 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
 
-                        # Recorremos services_for_operations_exp
-                        for operation, proxies in services_for_operations_exp.items():
-                            for proxy in proxies:
-                                # Inicializamos la estructura si no existe
-                                if proxy not in services_for_operations:
-                                    services_for_operations[proxy] = {}
-                                
-                                # Buscamos la operación en services_for_operations_ebs
-                                ebs_services = next((ebs for op, ebs in services_for_operations_ebs if op == operation), [])
-                                
-                                # Asignamos los servicios EBS a la estructura
-                                services_for_operations[proxy] = ebs_services
+                        combined_services = {}
 
-                        print_with_line_number(f"services_for_operations: {services_for_operations}")
+                        for operation, proxy_list in services_for_operations_exp.items():
+                            combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
+
+                        for operation, reference_list in services_for_operations_ebs:
+                            if operation in combined_services:
+                                combined_services[operation]['Referencia'] = reference_list
+                            else:
+                                combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
+                        
+                        print_with_line_number(f"combined_services: {json.dumps(combined_services, indent=4)}")
                         
                         # Recorrer los servicios encontrados y seguir explorando hasta llegar a BusinessService
                         for operation, services in services_for_operations.items():
