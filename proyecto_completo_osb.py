@@ -29,6 +29,7 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from lxml import etree
 import json
+from plantuml import PlantUML
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
@@ -913,14 +914,11 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
                         #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                        #
-                        #
                         #print_with_line_number(f"xsd: {xsd}")
                     
                         #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
-                        # Inicializar conjunto para evitar ciclos
-                        visited_proxies = set()
+
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
                         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                         
@@ -948,29 +946,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         
                         print_with_line_number(f"combined_services2: {combined_services2}")
                         
-                        # Recorrer los servicios encontrados y seguir explorando hasta llegar a BusinessService
-                        for operation, services in services_for_operations.items():
-                            print_with_line_number(f"🔍 Analizando operación: {operation}")
-                            
-                            for service in services:
-                                print_with_line_number(f"➡️ Servicio encontrado: {service}")
-                                
-                                initial_proxy_path = os.path.join(project_path, service + ".ProxyService")
-                                if initial_proxy_path in visited_proxies:
-                                    st.warning(f"🔁 Ciclo detectado, omitiendo: {initial_proxy_path}")
-                                    continue  # Evita procesar servicios ya visitados
-                                
-                                visited_proxies.add(initial_proxy_path)
-                                
-                                new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
-                                if new_pipeline_path:
-                                    print_with_line_number(f"🔄 Siguiendo cadena de invocación en: {new_pipeline_path}")
-                                    sub_services = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, new_pipeline_path, operations, visited_proxies)
-                                    services_for_operations.update(sub_services)
-
-                        st.success(f"🔎 Servicios finales encontrados: {services_for_operations}")
                         
-                        #elementos_completos = list(elementos_xsd) + list(operations) + [operation_actual]
                         osb_services.append(elementos_xsd)
                     
                         if operacion_a_documentar:
@@ -1471,7 +1447,6 @@ def extract_uri_and_provider_id_from_bix(bix_path):
         #print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
         lista_uri_provider.append((uri_value, provider_id_value))
         return lista_uri_provider
-
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
@@ -1981,7 +1956,6 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             key="download_all",
         )
 
-
 def obtener_operaciones(project_path):
 
     operations =[]
@@ -2018,6 +1992,59 @@ def obtener_operaciones(project_path):
                                 for operation in operaciones_especificas:
                                     operations.append(operation)
     return operations
+
+def generar_diagrama_secuencia(service_name, operacion_abc, save_path="diagrams"):
+    """
+    Genera un diagrama de secuencia en formato PNG usando PlantUML.
+    """
+    plantuml_code = f"""
+    @startuml
+    participant Usuario
+    participant "{service_name}" as Servicio
+    participant "{operacion_abc}" as Operacion
+
+    Usuario -> Servicio: Llamada a {operacion_abc}
+    Servicio -> Operacion: Procesa solicitud
+    Operacion -> Servicio: Retorna respuesta
+    Servicio -> Usuario: Respuesta final
+    @enduml
+    """
+    
+    # Crear carpeta si no existe
+    os.makedirs(save_path, exist_ok=True)
+    
+    # Guardar el código en un archivo
+    txt_file = os.path.join(save_path, f"diagram_{service_name}_{operacion_abc}.txt")
+    with open(txt_file, "w") as file:
+        file.write(plantuml_code)
+    
+    # Generar imagen con PlantUML
+    png_file = txt_file.replace(".txt", ".png")
+    subprocess.run(["plantuml", "-tpng", txt_file])
+    
+    return png_file
+
+def generar_diagramas_operaciones(combined_services2):
+    """
+    Genera diagramas de secuencia para cada operación en combined_services2.
+    """
+    for service_name, operaciones in combined_services2.items():
+        print_with_line_number(f"🔍 service_name: {service_name}")
+        for operacion_abc in operaciones:
+            print_with_line_number(f"🔍 operacion_abc: {operacion_abc}")
+            file_path = generar_diagrama_secuencia(service_name, operacion_abc)
+            
+            # Mostrar la imagen en Streamlit
+            st.image(file_path, caption=f"Diagrama {service_name['operacion']}", use_column_width=True)
+            
+            # Agregar botón de descarga
+            with open(file_path, "rb") as file:
+                st.download_button(
+                    label=f"Descargar {service_name['operacion']}",
+                    data=file,
+                    file_name=os.path.basename(file_path),
+                    mime="image/png"
+                )
 
 
 def main():
