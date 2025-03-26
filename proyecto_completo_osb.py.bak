@@ -1345,7 +1345,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
                 if os.path.exists(biz_path):
                     service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                     if service_refs:
-                        informacion_business[f"DATOS_BS_{os.path.basename(referencia)}"] = service_refs
+                        informacion_business[f"INFORMACION_{os.path.basename(referencia)}"] = service_refs
         
         service_data.update(informacion_business)
         print_with_line_number(f"service_data: {service_data}")
