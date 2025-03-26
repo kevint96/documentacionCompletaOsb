@@ -1350,6 +1350,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
         for referencia in referencias_lista:
             referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
             referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
+            print_with_line_number(f"🔍 referencia_base: {referencia_base}")
             if "Proxies" in referencia:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
                 if os.path.exists(osb_file_path):
