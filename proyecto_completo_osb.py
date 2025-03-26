@@ -1331,24 +1331,14 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
     Recorre recursivamente las referencias de un servicio en busca de dependencias,
     actualizando `combined_services` con referencias y detalles de BusinessServices.
     """
-    if servicio_actual is None:
-        # Si no se pasa un servicio específico, empezar con todos los servicios en combined_services
-        servicios_pendientes = list(combined_services.keys())
-    else:
-        # Si ya estamos en una llamada recursiva, solo procesamos el servicio actual
-        servicios_pendientes = [servicio_actual]
-
-    for servicio in servicios_pendientes:
-        print_with_line_number(f"🔍 servicio: {servicio}")
-        referencias = {}
-        informacion_business = {}
-
-        # Obtener datos del servicio
-        service_data = combined_services.get(servicio, {})
-        referencias_lista = service_data.get("Referencia", [])
-
-        for referencia in referencias_lista:
-            referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
+    
+    informacion_business = {}
+    referencias = {}
+    referencia_proxy ={}
+    referencia_business_service ={}
+    
+    def buscar_recursivamente_operaciones(referencia):
+        referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
             referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
             print_with_line_number(f"🔍 referencia_base: {referencia_base}")
             if "Proxies" in referencia:
@@ -1363,15 +1353,23 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
                     print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
                     if service_for_operations:
-                        rutas_de_servicio = list(service_for_operations.values())
-                        print_with_line_number(f"🔍 rutas_de_servicio: {rutas_de_servicio}")
-                        referencias[f"REFERENCIA_{referencia_base}"] = rutas_de_servicio
+                        referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
+
+                        if "BusinessServices" in list(service_for_operations.values()):
+                            referencia_business_service = list(service_for_operations.values())
+                            print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                            biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
+                            print_with_line_number(f"🔍 biz_path: {biz_path}")
+                            if os.path.exists(biz_path):
+                                service_refs = extract_uri_and_provider_id_from_bix(biz_path)
+                                if service_refs:
+                                    informacion_business[f"INFORMACION_{referencia_business_service}"] = service_refs
+                                    #return informacion_business
                     
-                    
-                    # Llamada recursiva para seguir explorando este Proxy
-                    if referencia_base in combined_services:
-                        print_with_line_number(f"🔍 referencia in combined_services: {referencia_base}")
-                        separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, referencia_base)
+                        elif "Proxies" in list(service_for_operations.values()):
+                            referencia_proxy = list(service_for_operations.values())
+                            print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                            separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, referencia_base)
 
             elif "BusinessServices" in referencia:
                 biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
@@ -1380,7 +1378,27 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
                     service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                     if service_refs:
                         informacion_business[f"INFORMACION_{referencia_base}"] = service_refs
+                        #return informacion_business
+    
+    
+    
+    if servicio_actual is None:
+        # Si no se pasa un servicio específico, empezar con todos los servicios en combined_services
+        servicios_pendientes = list(combined_services.keys())
+    else:
+        # Si ya estamos en una llamada recursiva, solo procesamos el servicio actual
+        servicios_pendientes = [servicio_actual]
 
+    for servicio in servicios_pendientes:
+        print_with_line_number(f"🔍 servicio: {servicio}")
+
+        # Obtener datos del servicio
+        service_data = combined_services.get(servicio, {})
+        referencias_lista = service_data.get("Referencia", [])
+        
+
+        for referencia in referencias_lista:
+            operacion = buscar_recursivamente_operaciones(referencia)
         # Actualizar el servicio actual en combined_services con la nueva información
         combined_services[servicio].update(referencias)
         combined_services[servicio].update(informacion_business)
