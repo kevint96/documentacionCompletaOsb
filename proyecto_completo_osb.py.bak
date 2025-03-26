@@ -1343,9 +1343,10 @@ def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
             if "Proxies" in referencia:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
                 if os.path.exists(osb_file_path):
-                    print_with_line_number(f"🔍1 osb_file_path: {osb_file_path}")
+                    print_with_line_number(f"🔍osb_file_path: {osb_file_path}")
                     project_name = extract_project_name_from_proxy(osb_file_path)
-                    pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, project_name)
+                    print_with_line_number(f"🔍project_name: {project_name}")
+                    pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
                     print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
                     service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
                     print_with_line_number(f"🔍service_for_operations: {service_for_operations}")
