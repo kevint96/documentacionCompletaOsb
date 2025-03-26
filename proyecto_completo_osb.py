@@ -946,6 +946,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         
                         combined_services2 = separar_ebs_abc_business(project_path,combined_services)
                         
+                        print_with_line_number(f"combined_services2: {combined_services2}")
                         
                         # Recorrer los servicios encontrados y seguir explorando hasta llegar a BusinessService
                         for operation, services in services_for_operations.items():

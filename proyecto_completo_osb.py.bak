@@ -942,7 +942,10 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                             else:
                                 combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
                         
-                        print_with_line_number(f"combined_services: {json.dumps(combined_services, indent=4)}")
+                        print_with_line_number(f"combined_services: {combined_services}")
+                        
+                        combined_services2 = separar_ebs_abc_business(project_path,combined_services)
+                        
                         
                         # Recorrer los servicios encontrados y seguir explorando hasta llegar a BusinessService
                         for operation, services in services_for_operations.items():
@@ -1321,6 +1324,56 @@ def definir_operaciones_internas_pipeline(pipeline_path):
     except Exception as e:
         print(f"Error procesando el pipeline: {e}")
         return {}
+
+def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
+    
+    for service_name, service_data in combined_services.items():
+        informacion_business = {}
+        print_with_line_number(f"service_name: {service_name}")
+        
+        #for proxy in service_data.get("Proxy", []):
+            #print_with_line_number(f"proxy: {proxy}")
+
+        # Recorrer las Referencias
+        for referencia in service_data.get("Referencia", []):
+            print_with_line_number(f"referencia: {referencia}")
+            
+            if "BusinessServices" in referencia:
+                biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
+                
+                if os.path.exists(biz_path):
+                    service_refs = extract_uri_and_provider_id_from_bix(biz_path)
+                    if service_refs:
+                        nuevas_referencias[f"Datos_business_{os.path.basename(referencia)}"] = service_refs
+        
+        service_data.update(nuevas_referencias)
+        print_with_line_number(f"service_data: {service_data}")
+
+def extract_uri_and_provider_id_from_bix(bix_path):
+    lista_uri_provider = []
+    with open(bix_path, 'r', encoding="utf-8") as f:
+        content = f.read()
+        # Buscar el valor dentro de las etiquetas <env:value>
+        uri_match = re.search(r'<env:value>(.*?)</env:value>', content, re.DOTALL)
+        
+        #print_with_line_number(f"MATCH: {uri_match}")
+        if uri_match:
+            uri_value = uri_match.group(1)
+        else:
+            uri_value = None
+
+        #print_with_line_number(f"URI VALUE: {uri_value}")
+        # Buscar el valor dentro de las etiquetas <tran:provider-id>
+        provider_id_match = re.search(r'<tran:provider-id>(.*?)</tran:provider-id>', content, re.DOTALL)
+        #print_with_line_number(f"PROVIDER_ID: {provider_id_match}")
+        if provider_id_match:
+            provider_id_value = provider_id_match.group(1)
+        else:
+            provider_id_value = None
+        
+        #print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
+        lista_uri_provider.append((uri_value, provider_id_value))
+        return lista_uri_provider
 
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
