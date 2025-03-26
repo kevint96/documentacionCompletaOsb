@@ -29,6 +29,11 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from lxml import etree
 import json
+import zlib
+import urllib.parse
+
+# URL del servidor público de PlantUML
+PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
@@ -1995,10 +2000,14 @@ def obtener_operaciones(project_path):
                                     operations.append(operation)
     return operations
 
-def generar_diagrama_secuencia(service_name, operacion_abc, save_path="diagrams"):
-    """
-    Genera un diagrama de secuencia en formato PNG usando PlantUML.
-    """
+def encode_plantuml(plantuml_code):
+    """Codifica el código PlantUML en formato URL para la API."""
+    compressed = zlib.compress(plantuml_code.encode("utf-8"))
+    encoded = base64.urlsafe_b64encode(compressed).decode("utf-8")
+    return encoded
+
+def generar_diagrama_secuencia(service_name, operacion_abc):
+    """Genera la URL del diagrama de secuencia usando PlantUML online."""
     plantuml_code = f"""
     @startuml
     participant Usuario
@@ -2012,19 +2021,9 @@ def generar_diagrama_secuencia(service_name, operacion_abc, save_path="diagrams"
     @enduml
     """
     
-    # Crear carpeta si no existe
-    os.makedirs(save_path, exist_ok=True)
-    
-    # Guardar el código en un archivo
-    txt_file = os.path.join(save_path, f"diagram_{service_name}_{operacion_abc}.txt")
-    with open(txt_file, "w") as file:
-        file.write(plantuml_code)
-    
-    # Generar imagen con PlantUML
-    png_file = txt_file.replace(".txt", ".png")
-    subprocess.run(["plantuml", "-tpng", txt_file])
-    
-    return png_file
+    # Codificar el código UML y generar la URL
+    encoded_code = encode_plantuml(plantuml_code)
+    return f"{PLANTUML_SERVER}{encoded_code}"
 
 def generar_diagramas_operaciones(combined_services2):
     """
@@ -2034,19 +2033,11 @@ def generar_diagramas_operaciones(combined_services2):
         print_with_line_number(f"🔍 service_name: {service_name}")
         for operacion_abc in operaciones:
             print_with_line_number(f"🔍 operacion_abc: {operacion_abc}")
-            file_path = generar_diagrama_secuencia(service_name, operacion_abc)
-            
-            # Mostrar la imagen en Streamlit
-            st.image(file_path, caption=f"Diagrama {service_name['operacion']}", use_column_width=True)
-            
-            # Agregar botón de descarga
-            with open(file_path, "rb") as file:
-                st.download_button(
-                    label=f"Descargar {service_name['operacion']}",
-                    data=file,
-                    file_name=os.path.basename(file_path),
-                    mime="image/png"
-                )
+            img_url = generar_diagrama_secuencia(service_name, operacion_abc)
+
+            # Mostrar en Streamlit
+            st.image(img_url, caption=f"Diagrama de {operacion_abc}", use_column_width=True)
+            st.markdown(f"[Descargar {operacion_abc}]({img_url})", unsafe_allow_html=True)
 
 
 def main():

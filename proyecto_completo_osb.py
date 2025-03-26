@@ -2001,10 +2001,10 @@ def obtener_operaciones(project_path):
     return operations
 
 def encode_plantuml(plantuml_code):
-    """Codifica el código PlantUML en formato URL para la API."""
-    compressed = zlib.compress(plantuml_code.encode("utf-8"))
-    encoded = base64.urlsafe_b64encode(compressed).decode("utf-8")
-    return encoded
+    """Codifica el código PlantUML usando Deflate (sin encabezado zlib)."""
+    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Eliminar encabezado y checksum
+    encoded = base64.b64encode(compressed).decode("utf-8")
+    return encoded.replace("+", "-").replace("/", "_").replace("=", "")
 
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""
@@ -2036,7 +2036,7 @@ def generar_diagramas_operaciones(combined_services2):
             img_url = generar_diagrama_secuencia(service_name, operacion_abc)
 
             # Mostrar en Streamlit
-            st.image(img_url, caption=f"Diagrama de {operacion_abc}", use_column_width=True)
+            st.image(img_url, caption=f"Diagrama de {operacion_abc}", use_container_width=True)
             st.markdown(f"[Descargar {operacion_abc}]({img_url})", unsafe_allow_html=True)
 
 
