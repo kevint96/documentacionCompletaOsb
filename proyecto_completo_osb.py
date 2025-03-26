@@ -1323,8 +1323,6 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         print(f"Error procesando el pipeline: {e}")
         return {}
 
-def extraer_datos_business()
-
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
