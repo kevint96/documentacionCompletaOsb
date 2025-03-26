@@ -838,6 +838,19 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     services_for_operations = {}
     found = False  # Variable para rastrear si se encuentra la operación
     
+    plantuml_code = """
+    @startuml
+    Alice -> Bob: Test
+    @enduml
+    """.strip()
+
+    encoded_code = encode_plantuml(plantuml_code)
+
+    print_with_line_number("Código comprimido y codificado:")
+    print_with_line_number(encoded_code)
+    print_with_line_number("\nURL generada:")
+    print_with_line_number(f"https://www.plantuml.com/plantuml/png/{encoded_code}")
+    
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
@@ -2006,6 +2019,8 @@ def encode_plantuml(plantuml_code):
     encoded = base64.b64encode(compressed).decode("utf-8")
     encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
     return encoded
+
+
 
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""
