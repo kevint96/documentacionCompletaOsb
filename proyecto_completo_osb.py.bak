@@ -1326,45 +1326,50 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         print(f"Error procesando el pipeline: {e}")
         return {}
 
-def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, services_dict=None, servicio_raiz=None, service_data=None):
-    if services_dict is None:
-        services_dict = {}  # Inicializar si no se proporciona
-    if service_data is None:
-        service_data = {}  # Inicializar si no se proporciona
-    
-    def buscar_servicios_recursivos(services_dict, servicio):
-        if servicio not in services_dict:
-            return []  # Si el servicio no tiene dependencias, devolver lista vacía
-        
-        servicios_encontrados = services_dict[servicio]
-        resultado_recursivo = []
-        
-        for sub_servicio in servicios_encontrados:
-            print_with_line_number(f"sub_servicio: {sub_servicio}")
-            resultado_recursivo.append(sub_servicio)
-            resultado_recursivo.extend(buscar_servicios_recursivos(services_dict, sub_servicio))  
+def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
+    """
+    Recorre recursivamente las referencias de todos los servicios en busca de dependencias.
+    """
+    referencias = {}
+    informacion_business = {}
 
-            # Simular obtención de información (ajustar según tu lógica real)
-            referencias = {sub_servicio: f"REFERENCIA_{sub_servicio}"}
-            informacion_business = {sub_servicio: f"INFORMACION_{sub_servicio}"}
+    def explorar_referencias(referencia):
+        if "Proxies" in referencia:
+            osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
+            if os.path.exists(osb_file_path):
+                print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
+                project_name = extract_project_name_from_proxy(osb_file_path)
+                print_with_line_number(f"🔍 project_name: {project_name}")
+                pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
+                print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+                service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
+                print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
-            # Actualizar service_data con la información encontrada
-            service_data.update(referencias)
-            service_data.update(informacion_business)
+                if service_for_operations:
+                    rutas_de_servicio = list(service_for_operations.values())
+                    referencias[f"REFERENCIA_{os.path.basename(referencia)}"] = rutas_de_servicio
 
-        return resultado_recursivo
+                # Llamada recursiva para seguir explorando este Proxy
+                if referencia in combined_services:
+                    for sub_referencia in combined_services[referencia].get("Referencia", []):
+                        explorar_referencias(sub_referencia)
+
+        elif "BusinessServices" in referencia:
+            biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
+            print_with_line_number(f"🔍 biz_path: {biz_path}")
+            if os.path.exists(biz_path):
+                service_refs = extract_uri_and_provider_id_from_bix(biz_path)
+                if service_refs:
+                    informacion_business[f"INFORMACION_{os.path.basename(referencia)}"] = service_refs
+
+    for servicio, service_data in combined_services.items():
+        for referencia in service_data.get("Referencia", []):
+            explorar_referencias(referencia)
     
-    if servicio_raiz:
-        # Si se proporciona un servicio raíz, buscar desde él
-        servicios_recursivos = {servicio_raiz: buscar_servicios_recursivos(services_dict, servicio_raiz)}
-    else:
-        # Si no hay servicio raíz, procesar todos los servicios en combined_services
-        servicios_recursivos = {}
-        for servicio in combined_services:
-            print_with_line_number(f"servicio: {servicio}")
-            servicios_recursivos[servicio] = buscar_servicios_recursivos(services_dict, servicio)
     
-    return servicios_recursivos, service_data
+        service_data.update(referencias)
+        service_data.update(informacion_business)
+    return combined_services
 
 def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
     
