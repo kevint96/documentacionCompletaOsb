@@ -1230,7 +1230,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
     
     for operacion, paths in services_for_operations.items():
         for path2 in paths:
-            print_with_line_number("********** INICIO PROCESO **********")
+            #print_with_line_number("********** INICIO PROCESO **********")
             #print_with_line_number(f"Operacion: {operacion}, Path: {path2}")
             
             if 'Proxies' in path2:
@@ -1260,7 +1260,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             if wsdl_relative_path:
                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                 operations = extract_wsdl_operations(wsdl_path)
-                print_with_line_number(f"Operations: {operations}")
+                #print_with_line_number(f"Operations: {operations}")
             
             #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
@@ -1274,7 +1274,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
                 #osb_services.append((operacion, path2))
                 #print_with_line_number(f"Service Refs: {service_refs}")
     
-    print_with_line_number("********** FIN PROCESO **********")
+    #print_with_line_number("********** FIN PROCESO **********")
     return osb_services
 
 def definir_operaciones_internas_pipeline(pipeline_path):
