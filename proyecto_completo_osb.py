@@ -1326,7 +1326,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         print(f"Error procesando el pipeline: {e}")
         return {}
 
-def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servicio_actual=None):
+def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     """
     Recorre recursivamente las referencias de un servicio en busca de dependencias,
     actualizando `combined_services` con referencias y detalles de BusinessServices.
@@ -1385,23 +1385,13 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
     
     
     
-    if servicio_actual is None:
-        # Si no se pasa un servicio específico, empezar con todos los servicios en combined_services
-        servicios_pendientes = list(combined_services.keys())
-    else:
-        # Si ya estamos en una llamada recursiva, solo procesamos el servicio actual
-        servicios_pendientes = [servicio_actual]
-
-    for servicio in servicios_pendientes:
-        print_with_line_number(f"🔍 servicio: {servicio}")
-
-        # Obtener datos del servicio
-        service_data = combined_services.get(servicio, {})
-        referencias_lista = service_data.get("Referencia", [])
-        
-
-        for referencia in referencias_lista:
-            operacion = buscar_recursivamente_operaciones(referencia)
+    for service_name, service_data in combined_services.items():
+        print_with_line_number(f"🔍 servicio: {service_name}")
+        for proxy in service_data.get("Proxy", []):
+            for referencia in service_data.get("Referencia", []):
+                if proxy not in referencia:
+                    operacion = buscar_recursivamente_operaciones(referencia)
+                
         # Actualizar el servicio actual en combined_services con la nueva información
         combined_services[servicio].update(referencias)
         combined_services[servicio].update(informacion_business)
