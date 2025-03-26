@@ -844,12 +844,9 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     @enduml
     """.strip()
 
-    encoded_code = encode_plantuml(plantuml_code)
+    debug_compression(plantuml_code)
 
-    print_with_line_number("Código comprimido y codificado:")
-    print_with_line_number(encoded_code)
-    print_with_line_number("\nURL generada:")
-    print_with_line_number(f"https://www.plantuml.com/plantuml/png/{encoded_code}")
+
     
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
@@ -2013,6 +2010,8 @@ def obtener_operaciones(project_path):
                                     operations.append(operation)
     return operations
 
+
+
 def encode_plantuml(plantuml_code):
     """Codifica el código PlantUML con compresión Deflate raw y encoding compatible con URLs."""
     compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # QUITAR encabezado y checksum
@@ -2020,7 +2019,26 @@ def encode_plantuml(plantuml_code):
     encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
     return encoded
 
+def debug_compression(plantuml_code):
+    """Prueba la compresión y muestra cada paso"""
+    print_with_line_number("🔹 Texto original:")
+    print_with_line_number(plantuml_code)
+    
+    compressed = zlib.compress(plantuml_code.encode("utf-8"))
+    print_with_line_number("\n🔹 Comprimido (bytes):")
+    print_with_line_number(compressed)
 
+    compressed_raw = compressed[2:-4]  # Se eliminan los primeros 2 bytes y los últimos 4 (cabecera y checksum)
+    print_with_line_number("\n🔹 Comprimido (sin cabecera ni checksum):")
+    print_with_line_number(compressed_raw)
+
+    encoded = base64.b64encode(compressed_raw).decode("utf-8")
+    encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
+    print_with_line_number("\n🔹 Codificado en Base64 URL-safe:")
+    print_with_line_number(encoded)
+
+    print_with_line_number("\n🔹 URL generada:")
+    print_with_line_number(f"https://www.plantuml.com/plantuml/png/{encoded}")
 
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""
