@@ -2042,25 +2042,9 @@ def encode_plantuml(plantuml_code):
 
 def get_plantuml_url(plantuml_code):
     url = "https://www.plantuml.com/plantuml/form"
-    data = {"text": plantuml_code}
     
-    response = requests.post(url, data=data)
-    
-    print_with_line_number(f"response: {response}")
-    
-    if response.status_code == 200:
-        # Extraer el código de la imagen generado por PlantUML
-        start_idx = response.text.find("src=\"") + 5
-        print_with_line_number(f"start_idx: {start_idx}")
-        end_idx = response.text.find("\"", start_idx)
-        print_with_line_number(f"end_idx: {end_idx}")
-        plantuml_path = response.text[start_idx:end_idx]
-        
-        print_with_line_number(f"plantuml_path: {plantuml_path}")
-        
-        return f"https://www.plantuml.com{plantuml_path}"
-    
-    return None
+    response = requests.get(url)
+    print_with_line_number(f"response: {response.text[:500]}")  # Muestra los primeros 500 caracteres de la respuesta
 
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""
