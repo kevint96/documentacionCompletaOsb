@@ -1339,6 +1339,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
         servicios_pendientes = [servicio_actual]
 
     for servicio in servicios_pendientes:
+        print_with_line_number(f"🔍 servicio: {servicio}")
         referencias = {}
         informacion_business = {}
 
@@ -1369,6 +1370,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
 
             elif "BusinessServices" in referencia:
                 biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
+                print_with_line_number(f"🔍 biz_path: {biz_path}")
                 if os.path.exists(biz_path):
                     service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                     if service_refs:
