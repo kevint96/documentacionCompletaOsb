@@ -1354,6 +1354,8 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
 
                 if service_for_operations:
                     referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
+                    valor_buscado = list(service_for_operations.values())
+                    print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
 
                     if "BusinessServices" in list(service_for_operations.values()):
                         referencia_business_service = list(service_for_operations.values())
