@@ -843,7 +843,8 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     Alice -> Bob: Test
     @enduml
     """.strip()
-
+    
+    plantuml_encode(plantuml_code)
     debug_compression(plantuml_code)
 
 
@@ -2010,6 +2011,25 @@ def obtener_operaciones(project_path):
                                     operations.append(operation)
     return operations
 
+def plantuml_encode(plantuml_code):
+    """Codifica el texto en formato correcto para PlantUML"""
+    print("🔹 Texto original:")
+    print(plantuml_code)
+
+    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Eliminar cabecera y checksum
+    print("\n🔹 Comprimido (sin cabecera ni checksum):")
+    print(compressed)
+
+    encoded = base64.b64encode(compressed).decode("utf-8")
+    encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
+    print("\n🔹 Codificado en Base64 URL-safe:")
+    print(encoded)
+
+    final_url = f"https://www.plantuml.com/plantuml/png/~1{encoded}"
+    print("\n🔹 URL generada:")
+    print(final_url)
+
+    return final_url
 
 
 def encode_plantuml(plantuml_code):

@@ -2013,21 +2013,21 @@ def obtener_operaciones(project_path):
 
 def plantuml_encode(plantuml_code):
     """Codifica el texto en formato correcto para PlantUML"""
-    print("🔹 Texto original:")
-    print(plantuml_code)
+    print_with_line_number("🔹 Texto original:")
+    print_with_line_number(plantuml_code)
 
     compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Eliminar cabecera y checksum
-    print("\n🔹 Comprimido (sin cabecera ni checksum):")
-    print(compressed)
+    print_with_line_number("\n🔹 Comprimido (sin cabecera ni checksum):")
+    print_with_line_number(compressed)
 
     encoded = base64.b64encode(compressed).decode("utf-8")
     encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
-    print("\n🔹 Codificado en Base64 URL-safe:")
-    print(encoded)
+    print_with_line_number("\n🔹 Codificado en Base64 URL-safe:")
+    print_with_line_number(encoded)
 
     final_url = f"https://www.plantuml.com/plantuml/png/~1{encoded}"
-    print("\n🔹 URL generada:")
-    print(final_url)
+    print_with_line_number("\n🔹 URL generada:")
+    print_with_line_number(final_url)
 
     return final_url
 
