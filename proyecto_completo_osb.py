@@ -1393,8 +1393,9 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                     operacion = buscar_recursivamente_operaciones(referencia)
                 
         # Actualizar el servicio actual en combined_services con la nueva información
-        combined_services[servicio].update(referencias)
-        combined_services[servicio].update(informacion_business)
+        combined_services[service_name].update(referencias)
+        combined_services[service_name].update(informacion_business)
+        print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
 
 def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
     
