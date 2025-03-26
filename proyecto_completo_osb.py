@@ -893,6 +893,35 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
             
             #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
             
+            services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
+                        
+            print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+            
+            services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
+            
+            print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+
+
+            combined_services = {}
+
+            for operation, proxy_list in services_for_operations_exp.items():
+                combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
+
+            for operation, reference_list in services_for_operations_ebs:
+                if operation in combined_services:
+                    combined_services[operation]['Referencia'] = reference_list
+                else:
+                    combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
+            
+            print_with_line_number(f"combined_services: {combined_services}")
+            
+            combined_services2 = separar_ebs_abc_business(project_path,combined_services)
+            
+            print_with_line_number(f"combined_services2: {combined_services2}")
+            
+            generar_diagramas_operaciones(combined_services2)
+            
+            
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
                 continue
@@ -919,33 +948,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
 
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
-                        services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
-                        
-                        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
-                        
-                        services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
-                        
-                        print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
-
-                        combined_services = {}
-
-                        for operation, proxy_list in services_for_operations_exp.items():
-                            combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
-
-                        for operation, reference_list in services_for_operations_ebs:
-                            if operation in combined_services:
-                                combined_services[operation]['Referencia'] = reference_list
-                            else:
-                                combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
-                        
-                        print_with_line_number(f"combined_services: {combined_services}")
-                        
-                        combined_services2 = separar_ebs_abc_business(project_path,combined_services)
-                        
-                        print_with_line_number(f"combined_services2: {combined_services2}")
-                        
-                        
                         osb_services.append(elementos_xsd)
                     
                         if operacion_a_documentar:
