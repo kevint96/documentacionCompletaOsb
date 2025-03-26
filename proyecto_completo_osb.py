@@ -1349,7 +1349,8 @@ def separar_ebs_abc_business(jdeveloper_projects_dir,combined_services):
         
         service_data.update(informacion_business)
         print_with_line_number(f"service_data: {service_data}")
-
+    print_with_line_number(f"combined_services: {combined_services}")
+    
 def extract_uri_and_provider_id_from_bix(bix_path):
     lista_uri_provider = []
     with open(bix_path, 'r', encoding="utf-8") as f:
@@ -1374,7 +1375,7 @@ def extract_uri_and_provider_id_from_bix(bix_path):
         
         #print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
         lista_uri_provider.append((uri_value, provider_id_value))
-        return uri_value, provider_id_value
+        return lista_uri_provider
 
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
