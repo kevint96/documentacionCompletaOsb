@@ -1348,6 +1348,8 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
         referencias_lista = service_data.get("Referencia", [])
 
         for referencia in referencias_lista:
+            referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
+            referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
             if "Proxies" in referencia:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
                 if os.path.exists(osb_file_path):
@@ -1361,12 +1363,14 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
 
                     if service_for_operations:
                         rutas_de_servicio = list(service_for_operations.values())
-                        referencias[f"REFERENCIA_{os.path.basename(referencia)}"] = rutas_de_servicio
-
+                        print_with_line_number(f"🔍 rutas_de_servicio: {rutas_de_servicio}")
+                        referencias[f"REFERENCIA_{referencia_base}"] = rutas_de_servicio
+                    
+                    
                     # Llamada recursiva para seguir explorando este Proxy
-                    if referencia in combined_services:
-                        print_with_line_number(f"🔍 referencia in combined_services: {referencia}")
-                        separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, referencia)
+                    if referencia_base in combined_services:
+                        print_with_line_number(f"🔍 referencia in combined_services: {referencia_base}")
+                        separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, referencia_base)
 
             elif "BusinessServices" in referencia:
                 biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
@@ -1374,7 +1378,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services, servici
                 if os.path.exists(biz_path):
                     service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                     if service_refs:
-                        informacion_business[f"INFORMACION_{os.path.basename(referencia)}"] = service_refs
+                        informacion_business[f"INFORMACION_{referencia_base}"] = service_refs
 
         # Actualizar el servicio actual en combined_services con la nueva información
         combined_services[servicio].update(referencias)
