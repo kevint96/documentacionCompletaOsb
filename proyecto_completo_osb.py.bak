@@ -848,11 +848,10 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     
     # URL final
     plantuml_url_png = f"https://www.plantuml.com/plantuml/png/{hex_string}"
+    st.image(plantuml_url_png)
     print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
     #print_with_line_number(f"URL generada: {url}")
-
-    
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario

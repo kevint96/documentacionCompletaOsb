@@ -852,8 +852,6 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
     #print_with_line_number(f"URL generada: {url}")
-
-    
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
@@ -2036,7 +2034,7 @@ def generar_diagrama_secuencia(service_name, operacion_abc):
     @enduml
     """.strip()
 
-    encoded_code = encode_plantuml(plantuml_code)
+    encoded_code = plantuml_to_hex(plantuml_code)
     return f"{PLANTUML_SERVER}{encoded_code}"
 
 def generar_diagramas_operaciones(combined_services2):
