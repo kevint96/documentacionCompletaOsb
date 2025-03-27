@@ -2273,14 +2273,19 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         
         plantuml_url_png = uml_url
         # Descargar la imagen del servidor de PlantUML
-        response = requests.get(plantuml_url_png)
-
-        if response.status_code == 200:
-            with open(diagrama_path, "wb") as file:
-                file.write(response.content)
-            print_with_line_number(f"Diagrama guardado en: {diagrama_path}")
-        else:
-            print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
+        output_dir = "diagramas"
+        os.makedirs(output_dir, exist_ok=True)
+        diagrama_path = os.path.join(output_dir, f"{project_name}_{operacion}.png")
+        
+        try:
+            response = requests.get(plantuml_url_png)
+            if response.status_code == 200:
+                with open(diagrama_path, "wb") as file:
+                    file.write(response.content)
+            else:
+                print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
+        except Exception as e:
+            print_with_line_number(f"Error en la solicitud de la imagen: {e}")
 
 
 def main():
