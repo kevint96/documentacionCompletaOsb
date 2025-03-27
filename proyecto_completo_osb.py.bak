@@ -938,7 +938,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
             
             print_with_line_number(f"combined_services2: {combined_services2}")
             
-            generar_diagramas_operaciones(combined_services2)
+            generar_diagramas_operaciones(project_name,combined_services2)
             
             
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
@@ -2037,19 +2037,58 @@ def generar_diagrama_secuencia(service_name, operacion_abc):
     encoded_code = plantuml_to_hex(plantuml_code)
     return f"{PLANTUML_SERVER}{encoded_code}"
 
-def generar_diagramas_operaciones(combined_services2):
+def generar_diagramas_operaciones(project_name,combined_services2):
     """
     Genera diagramas de secuencia para cada operación en combined_services2.
     """
-    for service_name, operaciones in combined_services2.items():
-        print_with_line_number(f"🔍 service_name: {service_name}")
-        for operacion_abc in operaciones:
-            print_with_line_number(f"🔍 operacion_abc: {operacion_abc}")
-            img_url = generar_diagrama_secuencia(service_name, operacion_abc)
+    # 🔹 Recorremos el diccionario
+    for operacion, detalles in combined_services2.items():
+        print_with_line_number(f"\n🔹 Operacion: {operacion}")
+        
+        for key, value in detalles.items():
+            print_with_line_number(f"  - {key}:")
+            
+            # Si el valor es una lista, imprimimos cada elemento
+            if isinstance(value, list):
+                for item in value:
+                    print_with_line_number(f"    ➝ {item}")
+            else:
+                print_with_line_number(f"    ➝ {value}")
+                
+                
+            """Genera la URL del diagrama de secuencia usando PlantUML online."""
+            plantuml_code = f"""
+            @startuml
+            participant Usuario
+            participant "{project_name}" as EXP
+            participant "{operacion}" as operacion
+            participant "{value}" as EBS
+            participant "{value}" as ABC
 
-            # Mostrar en Streamlit
+            Usuario -> EXP: Llamada a {operacion}
+            EXP -> EBS: Llamada a {operacion}
+            EBS -> ABC: Llamada a {operacion}
+            ABC -> EBS: Procesa solicitud
+            EBS -> EXP: Retorna respuesta
+            EXP -> Usuario: Respuesta final
+            @enduml
+            """.strip()
+
+            encoded_code = plantuml_to_hex(plantuml_code)
+            img_url = f"{PLANTUML_SERVER}{encoded_code}"    
+            
             st.image(img_url, caption=f"Diagrama de {operacion_abc}", use_container_width=True)
             st.markdown(f"[Descargar {operacion_abc}]({img_url})", unsafe_allow_html=True)
+    
+    # for service_name, operaciones in combined_services2.items():
+        # print_with_line_number(f"🔍 service_name: {service_name}")
+        # for operacion_abc in operaciones:
+            # print_with_line_number(f"🔍 operacion_abc: {operacion_abc}")
+            # img_url = generar_diagrama_secuencia(service_name, operacion_abc)
+
+            # # Mostrar en Streamlit
+            # st.image(img_url, caption=f"Diagrama de {operacion_abc}", use_container_width=True)
+            # st.markdown(f"[Descargar {operacion_abc}]({img_url})", unsafe_allow_html=True)
 
 
 def main():
