@@ -32,6 +32,7 @@ import json
 import zlib
 import urllib.parse
 import requests
+import plantuml_encoding
 
 # URL del servidor público de PlantUML
 PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
@@ -2014,18 +2015,12 @@ def obtener_operaciones(project_path):
     return operations
 
 def decode_plantuml(encoded_str):
-    """Decodifica un string de PlantUML a su contenido descomprimido."""
-    encoded_str += "=" * ((4 - len(encoded_str) % 4) % 4)  # Añade padding si falta
-    compressed = base64.b64decode(encoded_str.replace("-", "+").replace("_", "/"))
-
-    print_with_line_number(f"🔹 Base64 decodificado (bytes): {compressed.hex()}")  # Ver en HEX
-    print_with_line_number(f"🔹 Longitud de datos comprimidos: {len(compressed)} bytes")
-
+    """Decodifica un string de PlantUML usando la librería oficial."""
     try:
-        decompressed = zlib.decompress(compressed, -15)  # -15 para formato raw
+        decompressed = plantuml_encoding.decode(encoded_str)
         print_with_line_number("✅ Descompresión exitosa")
-        return decompressed.decode("utf-8")
-    except zlib.error as e:
+        return decompressed
+    except Exception as e:
         print_with_line_number(f"❌ Error al descomprimir: {e}")
         return None
 
