@@ -11,6 +11,7 @@ from docx.shared import Pt
 from docx.shared import RGBColor
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.oxml import OxmlElement
+from docx.shared import Inches
 import inspect
 import os
 import xml.etree.ElementTree as ET
@@ -206,6 +207,21 @@ def replace_text_in_doc(doc, replacements):
     
     return doc
 
+def reemplazar_texto_con_imagen(doc_path, img_path, marcador="{Imagen_diagrama}"):
+    doc = Document(doc_path)
+
+    for para in doc.paragraphs:
+        if marcador in para.text:
+            # Borrar el texto del marcador
+            para.text = para.text.replace(marcador, "")
+
+            # Insertar la imagen en el mismo párrafo
+            run = para.add_run()
+            run.add_picture(img_path, width=Inches(6))  # Ajusta el tamaño si es necesario
+            break  # Detenernos después de la primera coincidencia
+
+    doc.save(doc_path)
+    print(f"Diagrama insertado en: {doc_path}")
    
 def service_refs_ruta_pipeline(pipeline_path, project_path):
     
@@ -811,24 +827,25 @@ def extraer_operaciones_expuestas_http(project_path):
                     ##st.success(f"✅ pipeline_path {pipeline_path}")
                     with open(osb_file_path, 'r', encoding="utf-8") as f:
                         content = f.read()
-                        if has_http_provider_id(content):
-                            service_name = os.path.splitext(file)[0]
-                            st.success(f"✅ project_name {project_name}")
-                            st.success(f"✅ service_name {service_name}")
-                            service_url = extract_service_url(content)
-                            st.success(f"✅ service_url {service_url}")
-                            wsdl_relative_path = extract_wsdl_relative_path(content)
-                            if wsdl_relative_path:
-                                wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
-                                capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
-                                
-                                st.success(f"capa_proyecto: {capa_proyecto}")
-                                
-                                st.success(f"wsdl_path: {wsdl_path}")
-                                operations = extract_wsdl_operations(wsdl_path)
-                                wsdl_operations_map[wsdl_path] = (
-                                    operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
-                                )
+                        if "EBS" not in project_name and "ABC" not in project_name:
+                            if has_http_provider_id(content):
+                                service_name = os.path.splitext(file)[0]
+                                st.success(f"✅ project_name {project_name}")
+                                st.success(f"✅ service_name {service_name}")
+                                service_url = extract_service_url(content)
+                                st.success(f"✅ service_url {service_url}")
+                                wsdl_relative_path = extract_wsdl_relative_path(content)
+                                if wsdl_relative_path:
+                                    wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
+                                    capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
+                                    
+                                    st.success(f"capa_proyecto: {capa_proyecto}")
+                                    
+                                    st.success(f"wsdl_path: {wsdl_path}")
+                                    operations = extract_wsdl_operations(wsdl_path)
+                                    wsdl_operations_map[wsdl_path] = (
+                                        operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
+                                    )
     st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
     return wsdl_operations_map
 
@@ -2055,25 +2072,6 @@ def generate_plantuml_url(uml_text):
     encoded_diagram = encode_plantuml(uml_text)
     return f"https://www.plantuml.com/plantuml/png/{encoded_diagram}"
 
-
-def generar_diagrama_secuencia(service_name, operacion_abc):
-    """Genera la URL del diagrama de secuencia usando PlantUML online."""
-    plantuml_code = f"""
-    @startuml
-    participant Usuario
-    participant "{service_name}" as Servicio
-    participant "{operacion_abc}" as Operacion
-
-    Usuario -> Servicio: Llamada a {operacion_abc}
-    Servicio -> Operacion: Procesa solicitud
-    Operacion -> Servicio: Retorna respuesta
-    Servicio -> Usuario: Respuesta final
-    @enduml
-    """.strip()
-
-    encoded_code = plantuml_to_hex(plantuml_code)
-    return f"{PLANTUML_SERVER}{encoded_code}"
-
 def contiene_valor(valor_a_buscar, diccionario, profundidad=0, limite=50):
     if profundidad > limite:  # Limite de recursión para evitar desbordamiento
         return False
@@ -2096,6 +2094,17 @@ def contiene_valor(valor_a_buscar, diccionario, profundidad=0, limite=50):
                 return True
     
     return False
+
+def descargar_diagrama(uml_url, ruta_destino):
+    response = requests.get(uml_url)
+    if response.status_code == 200:
+        with open(ruta_destino, "wb") as file:
+            file.write(response.content)
+        print(f"Diagrama guardado en: {ruta_destino}")
+        return ruta_destino
+    else:
+        print(f"Error al descargar diagrama: {response.status_code}")
+        return None
 
 
 def generar_diagramas_operaciones(project_name, combined_services2):
@@ -2252,6 +2261,15 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         
         st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
         st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
+        
+        # Generar URL
+        uml_url = generate_plantuml_url("\n".join(uml))
+        print_with_line_number(f"URL del diagrama: {uml_url}")
+        
+        # URL final
+        plantuml_url_png = {uml_url}
+        st.image(plantuml_url_png)
+        print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
 
 def main():
