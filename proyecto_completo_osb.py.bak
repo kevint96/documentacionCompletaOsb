@@ -35,6 +35,8 @@ import requests
 
 # URL del servidor público de PlantUML
 PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
+# Mapeo especial de caracteres para la codificación de PlantUML
+PLANTUML_ENCODING = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
@@ -848,6 +850,21 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     
     # URL final
     plantuml_url_png = f"https://www.plantuml.com/plantuml/png/{hex_string}"
+    st.image(plantuml_url_png)
+    print("🔹 URL de la imagen PNG:", plantuml_url_png)
+    
+    
+    uml_example = """@startuml
+    Alice -> Bob: Authentication Request
+    Bob --> Alice: Authentication Response
+    @enduml"""
+
+    # Generar URL
+    uml_url = generate_plantuml_url(uml_example)
+    print_with_line_number(f"URL del diagrama:", {uml_url})
+    
+    # URL final
+    plantuml_url_png = {uml_url}
     st.image(plantuml_url_png)
     print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
@@ -2018,7 +2035,27 @@ def plantuml_to_hex(plantuml_code):
     hex_encoded = plantuml_code.encode("utf-8").hex()
     print_with_line_number(f"hex_encoded: {hex_encoded}")
     return f"~h{hex_encoded}"  # Se agrega "~h" como indica la documentación
+
+def encode_plantuml(text):
+    """Codifica un diagrama de PlantUML en la versión comprimida para usar en URLs."""
+    # Convertir a bytes en UTF-8
+    data = text.encode("utf-8")
     
+    # Comprimir con Deflate
+    compressed_data = zlib.compress(data)[2:-4]  # Quitar cabecera y checksum
+    
+    # Convertir en Base64 modificada
+    encoded = base64.b64encode(compressed_data).decode("utf-8")
+    
+    # Reemplazar caracteres según la tabla de PlantUML
+    return encoded.translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", PLANTUML_ENCODING))
+
+def generate_plantuml_url(uml_text):
+    """Genera una URL de PlantUML para visualizar el diagrama."""
+    encoded_diagram = encode_plantuml(uml_text)
+    return f"https://www.plantuml.com/plantuml/png/{encoded_diagram}"
+
+
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""
     plantuml_code = f"""

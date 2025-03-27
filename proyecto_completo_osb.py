@@ -861,7 +861,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
 
     # Generar URL
     uml_url = generate_plantuml_url(uml_example)
-    print_with_line_number(f"URL del diagrama:", {uml_url})
+    print_with_line_number(f"URL del diagrama: {uml_url}")
     
     # URL final
     plantuml_url_png = {uml_url}
