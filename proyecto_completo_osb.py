@@ -2070,10 +2070,10 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
-                if "ReglasNegocio" in data["Referencia"]
+                if "ReglasNegocio" in data["Referencia"]:
                     print_with_line_number(f"Existe ReglasNegocio")
                     add_participant("ReglasNegocio", "ReglasNegocio")
-                if "BPEL" in data["Referencia"]
+                if "BPEL" in data["Referencia"]:
                     add_participant("BPEL", "BPEL")
                     print_with_line_number(f"Existe BPEL")
                 if len(partes) >= 3:
