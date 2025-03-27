@@ -2091,16 +2091,19 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         print_with_line_number(f"proxy_name: {proxy_name}")
         print_with_line_number(f"participantes: {participantes}")
     
+        if contiene_valor("ReglasNegocio",data):
+            print_with_line_number(f"Existe ReglasNegocio")
+            add_participant("ReglasNegocio", "ReglasNegocio")
+        if contiene_valor("BPEL",data):
+            print_with_line_number(f"Existe BPEL")
+            add_participant("BPEL", "BPEL")
+            print_with_line_number(f"Existe BPEL")
+        
+        print_with_line_number(f"participantes: {participantes}")
+    
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
-                if contiene_valor("ReglasNegocio",data):
-                    print_with_line_number(f"Existe ReglasNegocio")
-                    add_participant("ReglasNegocio", "ReglasNegocio")
-                if contiene_valor("BPEL",data):
-                    print_with_line_number(f"Existe BPEL")
-                    add_participant("BPEL", "BPEL")
-                    print_with_line_number(f"Existe BPEL")
                 if len(partes) >= 3:
                     proyecto = partes[0]
                     business = partes[1]
