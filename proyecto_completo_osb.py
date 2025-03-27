@@ -2271,6 +2271,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         st.image(plantuml_url_png)
         print("🔹 URL de la imagen PNG:", plantuml_url_png)
         
+        plantuml_url_png = uml_url
         # Descargar la imagen del servidor de PlantUML
         response = requests.get(plantuml_url_png)
 
