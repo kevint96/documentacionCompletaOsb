@@ -843,6 +843,11 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     
     get_plantuml_direct_url(plantuml_code)
     
+    plantuml_encoded = "SoWkIImgAStDuNBCoKnELT2rKt3AJx9I24ajBk5oICrB0Ke10000"
+    decoded_plantuml = decode_plantuml(plantuml_encoded)
+
+    print_with_line_number(decoded_plantuml)
+    
     #print_with_line_number(f"URL generada: {url}")
 
     
@@ -2008,30 +2013,12 @@ def obtener_operaciones(project_path):
                                     operations.append(operation)
     return operations
 
-def plantuml_encode(plantuml_code):
-    """Codifica el texto en formato correcto para PlantUML"""
-    print_with_line_number("🔹 Texto original:")
-    print_with_line_number(plantuml_code)
-
-    # Comprimir con DEFLATE sin cabecera ni checksum
-    compressor = zlib.compressobj(level=9, wbits=-15)  # wbits=-15 evita cabecera ZLIB
-    compressed = compressor.compress(plantuml_code.encode("utf-8")) + compressor.flush()
-    print_with_line_number("\n🔹 Comprimido (DEFLATE sin cabecera ni checksum):")
-    print_with_line_number(compressed)
-
-    # Codificar en Base64 URL-safe
-    encoded = base64.b64encode(compressed).decode("utf-8")
-    encoded = encoded.replace("+", "-").replace("/", "_").replace("=", "")  # Hacerlo URL-safe
-    print_with_line_number("\n🔹 Codificado en Base64 URL-safe:")
-    print_with_line_number(encoded)
-
-    # Generar URL final
-    final_url = f"https://www.plantuml.com/plantuml/png/~1{encoded}"
-    print_with_line_number("\n🔹 URL generada:")
-    print_with_line_number(final_url)
-
-    return final_url
-
+def decode_plantuml(encoded_str):
+    """Decodifica un string de PlantUML a su contenido descomprimido."""
+    encoded_str += "=" * ((4 - len(encoded_str) % 4) % 4)  # Añade padding si falta
+    compressed = base64.b64decode(encoded_str.replace("-", "+").replace("_", "/"))
+    decompressed = zlib.decompress(compressed, -15)  # -15 para formato raw
+    return decompressed.decode("utf-8")
 
 def encode_plantuml(plantuml_code):
     """Comprime y codifica el código PlantUML para generar la URL."""
