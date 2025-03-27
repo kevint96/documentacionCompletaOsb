@@ -2017,8 +2017,17 @@ def decode_plantuml(encoded_str):
     """Decodifica un string de PlantUML a su contenido descomprimido."""
     encoded_str += "=" * ((4 - len(encoded_str) % 4) % 4)  # Añade padding si falta
     compressed = base64.b64decode(encoded_str.replace("-", "+").replace("_", "/"))
-    decompressed = zlib.decompress(compressed, -15)  # -15 para formato raw
-    return decompressed.decode("utf-8")
+
+    print_with_line_number(f"🔹 Base64 decodificado (bytes): {compressed.hex()}")  # Ver en HEX
+    print_with_line_number(f"🔹 Longitud de datos comprimidos: {len(compressed)} bytes")
+
+    try:
+        decompressed = zlib.decompress(compressed, -15)  # -15 para formato raw
+        print_with_line_number("✅ Descompresión exitosa")
+        return decompressed.decode("utf-8")
+    except zlib.error as e:
+        print_with_line_number(f"❌ Error al descomprimir: {e}")
+        return None
 
 def encode_plantuml(plantuml_code):
     """Comprime y codifica el código PlantUML para generar la URL."""
