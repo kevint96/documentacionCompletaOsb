@@ -2135,11 +2135,11 @@ def generar_diagramas_operaciones(project_name,combined_services2):
             # @enduml
             # """.strip()
 
-            encoded_code = plantuml_to_hex("\n".join(uml))
-            img_url = f"{PLANTUML_SERVER}{encoded_code}"    
-            
-            st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
-            st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
+        encoded_code = plantuml_to_hex("\n".join(uml))
+        img_url = f"{PLANTUML_SERVER}{encoded_code}"    
+        
+        st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
+        st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
     
     # for service_name, operaciones in combined_services2.items():
         # print_with_line_number(f"🔍 service_name: {service_name}")

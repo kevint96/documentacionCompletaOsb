@@ -2045,36 +2045,97 @@ def generar_diagramas_operaciones(project_name,combined_services2):
     for operacion, detalles in combined_services2.items():
         print_with_line_number(f"\n🔹 Operacion: {operacion}")
         
-        for key, value in detalles.items():
-            print_with_line_number(f"  - {key}:")
+        uml = ["@startuml"]
+    
+        # Participantes base
+        participantes = {"Usuario": "Usuario", "EXP": project_name}
+        
+        data = combined_services2[operacion]
+        
+        # Identificar participantes dinámicamente según la estructura de la operación
+        for ref in data.get("Proxy", []) + data.get("Referencia", []):
+            alias = ref.split("/")[0]  # Obtiene STAR4U_ABC, ProductoInmuebleEBS, etc.
+            if "STAR4U_ABC" in alias:
+                participantes["ABC1"] = "STAR4U_ABC"
+            elif "ProductoInmuebleEBS" in alias:
+                participantes["EBS"] = "ProductoInmuebleEBS"
+            elif "ReglasNegocio" in alias:
+                participantes["ReglasNegocio"] = "ReglasNegocio"
+            elif "ComponentesComunes" in alias:
+                participantes["ABC2"] = "ComponentesComunes"
+        
+        # Si hay referencias a BusinessServices, lo agregamos
+        for key in data.keys():
+            if key.startswith("REFERENCIA_"):
+                participantes["Business"] = "BusinessServices"
+
+        # Agregar participantes al UML
+        for alias, nombre in participantes.items():
+            uml.append(f"participant {nombre} as {alias}")
+
+        # Usuario inicia la llamada
+        uml.append(f"Usuario -> EXP: Llamada a {operacion}")
+        
+        # Obtener las referencias y construir llamadas dinámicamente
+        for proxy in data.get("Proxy", []):
+            alias = proxy.split("/")[0]  # Obtiene STAR4U_ABC, ProductoInmuebleEBS, etc.
+            servicio = proxy.split("/")[-1]  # Obtiene PS_CONSULTAR_NOVEDADES_LEGALIZACIONDAV2.1
+            target = "ABC1" if "STAR4U_ABC" in alias else "EBS"
+            uml.append(f"EXP -> {target}: Llamada a {servicio}")
+        
+        for ref in data.get("Referencia", []):
+            alias = ref.split("/")[0]
+            servicio = ref.split("/")[-1]
+            origen = "EBS" if "ProductoInmuebleEBS" in alias else "ABC1"
+            target = "Business" if "BusinessServices" in ref else origen
+            uml.append(f"{origen} -> {target}: Llamada a {servicio}")
+
+        # Agregar llamadas a BusinessServices si aplica
+        for key, value in data.items():
+            if key.startswith("REFERENCIA_"):
+                for sub_key, sub_value in value.items():
+                    alias = sub_value.split("/")[0]
+                    servicio = sub_key
+                    uml.append(f"{alias} -> Business: Llamada a {servicio}")
+                    uml.append(f"Business -> {alias}: Retorna respuesta")
+                    uml.append(f"{alias} -> EXP: Retorna respuesta")
+
+        # Retorno final
+        uml.append("EXP -> Usuario: Respuesta final")
+        uml.append("@enduml")
+
+        print_with_line_number("\n".join(uml))
+        
+        # for key, value in detalles.items():
+            # print_with_line_number(f"  - {key}:")
             
-            # Si el valor es una lista, imprimimos cada elemento
-            if isinstance(value, list):
-                for item in value:
-                    print_with_line_number(f"    ➝ {item}")
-            else:
-                print_with_line_number(f"    ➝ {value}")
+            # # Si el valor es una lista, imprimimos cada elemento
+            # if isinstance(value, list):
+                # for item in value:
+                    # print_with_line_number(f"    ➝ {item}")
+            # else:
+                # print_with_line_number(f"    ➝ {value}")
                 
                 
-            """Genera la URL del diagrama de secuencia usando PlantUML online."""
-            plantuml_code = f"""
-            @startuml
-            participant Usuario
-            participant "{project_name}" as EXP
-            participant "{operacion}" as operacion
-            participant "{value}" as EBS
-            participant "{value}" as ABC
+            # """Genera la URL del diagrama de secuencia usando PlantUML online."""
+            # plantuml_code = f"""
+            # @startuml
+            # participant Usuario
+            # participant "{project_name}" as EXP
+            # participant "{operacion}" as operacion
+            # participant "{value}" as EBS
+            # participant "{value}" as ABC
 
-            Usuario -> EXP: Llamada a {operacion}
-            EXP -> EBS: Llamada a {operacion}
-            EBS -> ABC: Llamada a {operacion}
-            ABC -> EBS: Procesa solicitud
-            EBS -> EXP: Retorna respuesta
-            EXP -> Usuario: Respuesta final
-            @enduml
-            """.strip()
+            # Usuario -> EXP: Llamada a {operacion}
+            # EXP -> EBS: Llamada a {operacion}
+            # EBS -> ABC: Llamada a {operacion}
+            # ABC -> EBS: Procesa solicitud
+            # EBS -> EXP: Retorna respuesta
+            # EXP -> Usuario: Respuesta final
+            # @enduml
+            # """.strip()
 
-            encoded_code = plantuml_to_hex(plantuml_code)
+            encoded_code = plantuml_to_hex("\n".join(uml))
             img_url = f"{PLANTUML_SERVER}{encoded_code}"    
             
             st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
