@@ -839,15 +839,17 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     services_for_operations = {}
     found = False  # Variable para rastrear si se encuentra la operación
     
-    plantuml_code = "@startuml\nAlice -> Bob: Test\n@enduml"
+    plantuml_code = """@startuml
+    Alice->Bob : I am using hex
+    @enduml"""
     
-    get_plantuml_direct_url(plantuml_code)
+    hex_string = plantuml_to_hex(plantuml_code)
+    print_with_line_number(f"hex_string: {hex_string}")
     
-    plantuml_encoded = "SoWkIImgAStDuNBCoKnELT2rKt3AJx9I24ajBk5oICrB0Ke10000"
-    decoded_plantuml = decode_plantuml(plantuml_encoded)
+    # URL final
+    plantuml_url = f"https://www.plantuml.com/plantuml/uml/{hex_string}"
+    print_with_line_number(f"plantuml_url: {plantuml_url}")
 
-    print_with_line_number(decoded_plantuml)
-    
     #print_with_line_number(f"URL generada: {url}")
 
     
@@ -2013,41 +2015,10 @@ def obtener_operaciones(project_path):
                                     operations.append(operation)
     return operations
 
-def decode_plantuml(encoded_str):
-    """Decodifica un string de PlantUML a su contenido descomprimido."""
-    encoded_str += "=" * ((4 - len(encoded_str) % 4) % 4)  # Añade padding si falta
-    compressed = base64.b64decode(encoded_str.replace("-", "+").replace("_", "/"))
-
-    print_with_line_number(f"🔹 Base64 decodificado (bytes): {compressed.hex()}")  # Ver en HEX
-    print_with_line_number(f"🔹 Longitud de datos comprimidos: {len(compressed)} bytes")
-
-    try:
-        decompressed = zlib.decompress(compressed, -15)  # -15 para formato raw
-        print_with_line_number("✅ Descompresión exitosa")
-        return decompressed.decode("utf-8")
-    except zlib.error as e:
-        print_with_line_number(f"❌ Error al descomprimir: {e}")
-        return None
-
-def encode_plantuml(plantuml_code):
-    """Comprime y codifica el código PlantUML para generar la URL."""
-    compressed = zlib.compress(plantuml_code.encode("utf-8"))[2:-4]  # Quita la cabecera y el checksum
-    encoded = base64.urlsafe_b64encode(compressed).decode("utf-8").rstrip("=")
-    
-    # 🔍 Depuración: Mostrar los valores en cada paso
-    print_with_line_number(f"🔹 Texto original:\n{plantuml_code}\n")
-    print_with_line_number(f"🔹 Comprimido (sin cabecera ni checksum):\n{compressed}\n")
-    print_with_line_number(f"🔹 Codificado en Base64 URL-safe:\n{encoded}\n")
-    
-    return encoded
-
-def get_plantuml_direct_url(plantuml_code):
-    encoded = encode_plantuml(plantuml_code)
-    url = f"https://www.plantuml.com/plantuml/png/{encoded}"
-    
-    print_with_line_number(f"🔹 URL generada:\n{url}\n")  # 🔍 Depuración
-    
-    return url
+def plantuml_to_hex(plantuml_code):
+    hex_encoded = plantuml_code.encode("utf-8").hex()
+    print_with_line_number(f"hex_encoded: {hex_encoded}")
+    return f"~h{hex_encoded}"  # Se agrega "~h" como indica la documentación
     
 def generar_diagrama_secuencia(service_name, operacion_abc):
     """Genera la URL del diagrama de secuencia usando PlantUML online."""

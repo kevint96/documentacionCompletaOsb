@@ -847,7 +847,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     print_with_line_number(f"hex_string: {hex_string}")
     
     # URL final
-    plantuml_url = f"https://www.plantuml.com/plantuml/uml/{hex_string}"
+    plantuml_url = f"https://www.plantuml.com/plantuml/png/{hex_string}"
     print_with_line_number(f"plantuml_url: {plantuml_url}")
 
     #print_with_line_number(f"URL generada: {url}")
