@@ -2037,6 +2037,29 @@ def generar_diagrama_secuencia(service_name, operacion_abc):
     encoded_code = plantuml_to_hex(plantuml_code)
     return f"{PLANTUML_SERVER}{encoded_code}"
 
+def contiene_valor(valor_a_buscar,diccionario):
+    for clave, valor in diccionario.items():
+        # Verificar en claves
+        if valor_a_buscar in clave:
+            return True
+        
+        # Verificar en valores (si es lista, diccionario o string)
+        if isinstance(valor, str) and valor_a_buscar in valor:
+            return True
+        elif isinstance(valor, list):
+            for item in valor:
+                if isinstance(item, str) and valor_a_buscar in item:
+                    return True
+                elif isinstance(item, tuple):
+                    if any(valor_a_buscar in str(subitem) for subitem in item):
+                        return True
+        elif isinstance(valor, dict):
+            if contiene_reglas_negocio(valor):  # Llamada recursiva si hay diccionario anidado
+                return True
+    
+    return False
+
+
 def generar_diagramas_operaciones(project_name, combined_services2):
     """
     Genera diagramas de secuencia para cada operación en combined_services2.
@@ -2070,10 +2093,11 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
-                if "ReglasNegocio" in data["Referencia"]:
+                if contiene_valor("ReglasNegocio",data):
                     print_with_line_number(f"Existe ReglasNegocio")
                     add_participant("ReglasNegocio", "ReglasNegocio")
-                if "BPEL" in data["Referencia"]:
+                if contiene_valor("BPEL",data):
+                    print_with_line_number(f"Existe BPEL")
                     add_participant("BPEL", "BPEL")
                     print_with_line_number(f"Existe BPEL")
                 if len(partes) >= 3:
