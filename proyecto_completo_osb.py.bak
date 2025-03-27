@@ -2046,62 +2046,65 @@ def generar_diagramas_operaciones(project_name,combined_services2):
         print_with_line_number(f"\n🔹 Operacion: {operacion}")
         
         uml = ["@startuml"]
-    
-        # Participantes base
-        participantes = {"Usuario": "Usuario", "EXP": project_name}
         
         data = combined_services2[operacion]
-        
-        # Identificar participantes dinámicamente según la estructura de la operación
-        for ref in data.get("Proxy", []) + data.get("Referencia", []):
-            alias = ref.split("/")[0]  # Obtiene STAR4U_ABC, ProductoInmuebleEBS, etc.
-            if "STAR4U_ABC" in alias:
-                participantes["ABC1"] = "STAR4U_ABC"
-            elif "ProductoInmuebleEBS" in alias:
-                participantes["EBS"] = "ProductoInmuebleEBS"
-            elif "ReglasNegocio" in alias:
-                participantes["ReglasNegocio"] = "ReglasNegocio"
-            elif "ComponentesComunes" in alias:
-                participantes["ABC2"] = "ComponentesComunes"
-        
-        # Si hay referencias a BusinessServices, lo agregamos
-        for key in data.keys():
-            if key.startswith("REFERENCIA_"):
-                participantes["Business"] = "BusinessServices"
+    
+        # Conjunto para almacenar los participantes sin duplicados
+        participantes = set()
 
-        # Agregar participantes al UML
-        for alias, nombre in participantes.items():
+        # Agregar siempre el usuario y el EXP con el nombre dinámico
+        participantes.add(("Usuario", "Usuario"))
+        participantes.add(("EXP", project_name))
+
+        # Verificar los datos en la estructura y agregar solo si no existen
+        if "Proxy" in data:
+            for proxy in data["Proxy"]:
+                proxy_name = proxy.split("/")[0]
+                participantes.add((proxy_name, proxy_name))
+        
+        print_with_line_number(f"participantes: {participantes}")
+
+        if "Referencia" in data:
+            for referencia in data["Referencia"]:
+                ref_name = referencia.split("/")[0]
+                participantes.add((ref_name, ref_name))
+        
+        print_with_line_number(f"participantes: {participantes}")
+        
+        if any(key.startswith("REFERENCIA_") for key in data):
+            for key in data:
+                print_with_line_number(f"key: {key}")
+                if key.startswith("REFERENCIA_"):
+                    for sub_ref in data[key]:
+                        print_with_line_number(f"sub_ref: {sub_ref}")
+                        ref_name = data[key][sub_ref].split("/")[0]
+                        print_with_line_number(f"ref_name: {ref_name}")
+                        participantes.add((ref_name, ref_name))
+        
+        print_with_line_number(f"participantes: {participantes}")
+        
+        # Agregar los participantes al diagrama
+        for alias, nombre in sorted(participantes):  # Se ordena para mantener consistencia
             uml.append(f"participant {nombre} as {alias}")
 
-        # Usuario inicia la llamada
+        print_with_line_number(f"uml: {uml}")
+        # Generar las interacciones (simulación)
         uml.append(f"Usuario -> EXP: Llamada a {operacion}")
+        if "Proxy" in data:
+            for proxy in data["Proxy"]:
+                proxy_name = proxy.split("/")[0]
+                uml.append(f"EXP -> {proxy_name}: Llamada a {proxy.split('/')[-1]}")
+        print_with_line_number(f"uml: {uml}")
         
-        # Obtener las referencias y construir llamadas dinámicamente
-        for proxy in data.get("Proxy", []):
-            alias = proxy.split("/")[0]  # Obtiene STAR4U_ABC, ProductoInmuebleEBS, etc.
-            servicio = proxy.split("/")[-1]  # Obtiene PS_CONSULTAR_NOVEDADES_LEGALIZACIONDAV2.1
-            target = "ABC1" if "STAR4U_ABC" in alias else "EBS"
-            uml.append(f"EXP -> {target}: Llamada a {servicio}")
+        if "Referencia" in data:
+            for referencia in data["Referencia"]:
+                ref_name = referencia.split("/")[0]
+                uml.append(f"{proxy_name} -> {ref_name}: Llamada a {referencia.split('/')[-1]}")
+                uml.append(f"{ref_name} -> {proxy_name}: Retorna respuesta")
         
-        for ref in data.get("Referencia", []):
-            alias = ref.split("/")[0]
-            servicio = ref.split("/")[-1]
-            origen = "EBS" if "ProductoInmuebleEBS" in alias else "ABC1"
-            target = "Business" if "BusinessServices" in ref else origen
-            uml.append(f"{origen} -> {target}: Llamada a {servicio}")
-
-        # Agregar llamadas a BusinessServices si aplica
-        for key, value in data.items():
-            if key.startswith("REFERENCIA_"):
-                for sub_key, sub_value in value.items():
-                    alias = sub_value.split("/")[0]
-                    servicio = sub_key
-                    uml.append(f"{alias} -> Business: Llamada a {servicio}")
-                    uml.append(f"Business -> {alias}: Retorna respuesta")
-                    uml.append(f"{alias} -> EXP: Retorna respuesta")
-
-        # Retorno final
-        uml.append("EXP -> Usuario: Respuesta final")
+        print_with_line_number(f"uml: {uml}")
+        # Finalizar el diagrama
+        uml.append("EXP -> Usuario : Respuesta final")
         uml.append("@enduml")
 
         print_with_line_number("\n".join(uml))
@@ -2140,16 +2143,6 @@ def generar_diagramas_operaciones(project_name,combined_services2):
         
         st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
         st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
-    
-    # for service_name, operaciones in combined_services2.items():
-        # print_with_line_number(f"🔍 service_name: {service_name}")
-        # for operacion_abc in operaciones:
-            # print_with_line_number(f"🔍 operacion_abc: {operacion_abc}")
-            # img_url = generar_diagrama_secuencia(service_name, operacion_abc)
-
-            # # Mostrar en Streamlit
-            # st.image(img_url, caption=f"Diagrama de {operacion_abc}", use_container_width=True)
-            # st.markdown(f"[Descargar {operacion_abc}]({img_url})", unsafe_allow_html=True)
 
 
 def main():
