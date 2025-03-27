@@ -2110,7 +2110,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                     proxy = partes[-1]
                     print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
                     add_participant(proyecto, proyecto)
-                    if "BusinessServices" in business:
+                    if "FCV" in business:
                         add_participant(business, business)
         
         print_with_line_number(f"participantes: {participantes}")
@@ -2123,9 +2123,9 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                         print_with_line_number(f"sub_ref: {sub_ref}")
                         clave = data[key][sub_ref]
                         print_with_line_number(f"clave: {clave}")
-                        if "ReglasNegocio" in clave:
-                            regla_negocio = clave.split("/")[2]
-                            add_participant(regla_negocio, regla_negocio)
+                        if "BusinessServices" in clave:
+                            business = clave.split("/")[1]
+                            add_participant(business, business)
                         ref_name = data[key][sub_ref].split("/")[0]
                         print_with_line_number(f"ref_name: {ref_name}")
                         add_participant(ref_name, ref_name)
