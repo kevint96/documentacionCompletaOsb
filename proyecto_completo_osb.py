@@ -2037,13 +2037,14 @@ def generar_diagrama_secuencia(service_name, operacion_abc):
     encoded_code = plantuml_to_hex(plantuml_code)
     return f"{PLANTUML_SERVER}{encoded_code}"
 
-def contiene_valor(valor_a_buscar,diccionario):
+def contiene_valor(valor_a_buscar, diccionario, profundidad=0, limite=50):
+    if profundidad > limite:  # Limite de recursión para evitar desbordamiento
+        return False
+    
     for clave, valor in diccionario.items():
-        # Verificar en claves
         if valor_a_buscar in clave:
             return True
         
-        # Verificar en valores (si es lista, diccionario o string)
         if isinstance(valor, str) and valor_a_buscar in valor:
             return True
         elif isinstance(valor, list):
@@ -2054,7 +2055,7 @@ def contiene_valor(valor_a_buscar,diccionario):
                     if any(valor_a_buscar in str(subitem) for subitem in item):
                         return True
         elif isinstance(valor, dict):
-            if contiene_valor(valor_a_buscar,valor):  # Llamada recursiva si hay diccionario anidado
+            if contiene_valor(valor_a_buscar, valor, profundidad+1, limite):  # Aumentar profundidad
                 return True
     
     return False
