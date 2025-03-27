@@ -2116,18 +2116,22 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                     if "BusinessServices" in business:
                         uml.append(f"{proyecto} -> {business}: Llamada a {proxy}")
                         uml.append(f"{business} -> {proyecto}: Retorna respuesta")
+                        uml.append(f"{proyecto} -> EXP: Retorna respuesta")
                     else:
                         referencia_key = f"REFERENCIA_{proxy}"
                         if referencia_key in data:
                             print_with_line_number(f"  - {referencia_key} encontrado:")
                             for key, value in data[referencia_key].items():
+                                proyecto_business = value.split("/")[1]
                                 business_name = value.split("/")[-1]
                                 print_with_line_number(f"    - {key}: {value}")
-                                uml.append(f"{proyecto} -> {value}: Llamada a {business_name}")
-                                uml.append(f"{value} -> {proyecto}: Retorna respuesta")
+                                uml.append(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
+                                uml.append(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
+                                uml.append(f"{proyecto} -> EXP: Retorna respuesta")
                         else:
                             uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                             uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                            uml.append(f"{proxy_name} -> EXP: Retorna respuesta")
         print_with_line_number(f"uml: {uml}")
         
         uml.append("EXP -> Usuario : Respuesta final")

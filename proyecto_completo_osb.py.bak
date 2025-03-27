@@ -2037,45 +2037,47 @@ def generar_diagrama_secuencia(service_name, operacion_abc):
     encoded_code = plantuml_to_hex(plantuml_code)
     return f"{PLANTUML_SERVER}{encoded_code}"
 
-def generar_diagramas_operaciones(project_name,combined_services2):
+def generar_diagramas_operaciones(project_name, combined_services2):
     """
     Genera diagramas de secuencia para cada operación en combined_services2.
     """
-    # 🔹 Recorremos el diccionario
     for operacion, detalles in combined_services2.items():
         print_with_line_number(f"\n🔹 Operacion: {operacion}")
         
         uml = ["@startuml"]
-        
         data = combined_services2[operacion]
     
-        # Conjunto para almacenar los participantes sin duplicados
-        participantes = set()
-
+        # Lista para almacenar los participantes manteniendo el orden
+        participantes = []
+        
+        def add_participant(alias, nombre):
+            if (alias, nombre) not in participantes:
+                participantes.append((alias, nombre))
+        
         # Agregar siempre el usuario y el EXP con el nombre dinámico
-        participantes.add(("Usuario", "Usuario"))
-        participantes.add(("EXP", project_name))
-
+        add_participant("Usuario", "Usuario")
+        add_participant("EXP", project_name)
+        
         # Verificar los datos en la estructura y agregar solo si no existen
         if "Proxy" in data:
             for proxy in data["Proxy"]:
                 proxy_name = proxy.split("/")[0]
-                participantes.add((proxy_name, proxy_name))
+                add_participant(proxy_name, proxy_name)
         
         print_with_line_number(f"proxy_name: {proxy_name}")
         print_with_line_number(f"participantes: {participantes}")
-
+    
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
-                if len(partes) >= 3:  # Asegura que haya suficientes partes en la ruta
+                if len(partes) >= 3:
                     proyecto = partes[0]
                     business = partes[1]
-                    proxy = partes[-1]  # Último elemento
+                    proxy = partes[-1]
                     print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
-                    participantes.add((proyecto, proyecto))
+                    add_participant(proyecto, proyecto)
                     if "BusinessServices" in business:
-                        participantes.add((business, business))
+                        add_participant(business, business)
         
         print_with_line_number(f"participantes: {participantes}")
         
@@ -2087,16 +2089,16 @@ def generar_diagramas_operaciones(project_name,combined_services2):
                         print_with_line_number(f"sub_ref: {sub_ref}")
                         ref_name = data[key][sub_ref].split("/")[0]
                         print_with_line_number(f"ref_name: {ref_name}")
-                        participantes.add((ref_name, ref_name))
+                        add_participant(ref_name, ref_name)
         
         print_with_line_number(f"participantes: {participantes}")
         
         # Agregar los participantes al diagrama
-        for alias, nombre in participantes:  # Se ordena para mantener consistencia
+        for alias, nombre in participantes:
             uml.append(f"participant {nombre} as {alias}")
-
+    
         print_with_line_number(f"uml: {uml}")
-        # Generar las interacciones (simulación)
+        
         uml.append(f"Usuario -> EXP: Llamada a {operacion}")
         if "Proxy" in data:
             for proxy in data["Proxy"]:
@@ -2107,15 +2109,14 @@ def generar_diagramas_operaciones(project_name,combined_services2):
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
-                if len(partes) >= 3:  # Asegura que haya suficientes partes en la ruta
+                if len(partes) >= 3:
                     proyecto = partes[0]
                     business = partes[1]
-                    proxy = partes[-1]  # Último elemento
+                    proxy = partes[-1]
                     if "BusinessServices" in business:
                         uml.append(f"{proyecto} -> {business}: Llamada a {proxy}")
                         uml.append(f"{business} -> {proyecto}: Retorna respuesta")
                     else:
-                         # Buscar "REFERENCIA_" + proxy en data
                         referencia_key = f"REFERENCIA_{proxy}"
                         if referencia_key in data:
                             print_with_line_number(f"  - {referencia_key} encontrado:")
@@ -2128,41 +2129,12 @@ def generar_diagramas_operaciones(project_name,combined_services2):
                             uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                             uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
         print_with_line_number(f"uml: {uml}")
-        # Finalizar el diagrama
+        
         uml.append("EXP -> Usuario : Respuesta final")
         uml.append("@enduml")
-
+    
         print_with_line_number("\n".join(uml))
-        
-        # for key, value in detalles.items():
-            # print_with_line_number(f"  - {key}:")
-            
-            # # Si el valor es una lista, imprimimos cada elemento
-            # if isinstance(value, list):
-                # for item in value:
-                    # print_with_line_number(f"    ➝ {item}")
-            # else:
-                # print_with_line_number(f"    ➝ {value}")
-                
-                
-            # """Genera la URL del diagrama de secuencia usando PlantUML online."""
-            # plantuml_code = f"""
-            # @startuml
-            # participant Usuario
-            # participant "{project_name}" as EXP
-            # participant "{operacion}" as operacion
-            # participant "{value}" as EBS
-            # participant "{value}" as ABC
-
-            # Usuario -> EXP: Llamada a {operacion}
-            # EXP -> EBS: Llamada a {operacion}
-            # EBS -> ABC: Llamada a {operacion}
-            # ABC -> EBS: Procesa solicitud
-            # EBS -> EXP: Retorna respuesta
-            # EXP -> Usuario: Respuesta final
-            # @enduml
-            # """.strip()
-
+    
         encoded_code = plantuml_to_hex("\n".join(uml))
         img_url = f"{PLANTUML_SERVER}{encoded_code}"    
         
