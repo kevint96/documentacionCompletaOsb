@@ -2252,6 +2252,15 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         
         st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
         st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
+        
+        # Generar URL
+        uml_url = generate_plantuml_url("\n".join(uml))
+        print_with_line_number(f"URL del diagrama: {uml_url}")
+        
+        # URL final
+        plantuml_url_png = {uml_url}
+        st.image(plantuml_url_png)
+        print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
 
 def main():
