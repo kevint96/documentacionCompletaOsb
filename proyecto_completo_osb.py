@@ -2054,7 +2054,7 @@ def contiene_valor(valor_a_buscar,diccionario):
                     if any(valor_a_buscar in str(subitem) for subitem in item):
                         return True
         elif isinstance(valor, dict):
-            if contiene_reglas_negocio(valor):  # Llamada recursiva si hay diccionario anidado
+            if contiene_valor(valor_a_buscar,valor):  # Llamada recursiva si hay diccionario anidado
                 return True
     
     return False

@@ -2054,7 +2054,7 @@ def contiene_valor(valor_a_buscar,diccionario):
                     if any(valor_a_buscar in str(subitem) for subitem in item):
                         return True
         elif isinstance(valor, dict):
-            if contiene_reglas_negocio(valor):  # Llamada recursiva si hay diccionario anidado
+            if contiene_valor(valor):  # Llamada recursiva si hay diccionario anidado
                 return True
     
     return False
@@ -2093,10 +2093,11 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
-                if "ReglasNegocio" in data["Referencia"]:
+                if contiene_valor("ReglasNegocio",data):
                     print_with_line_number(f"Existe ReglasNegocio")
                     add_participant("ReglasNegocio", "ReglasNegocio")
-                if "BPEL" in data["Referencia"]:
+                if contiene_valor("BPEL",data):
+                    print_with_line_number(f"Existe BPEL")
                     add_participant("BPEL", "BPEL")
                     print_with_line_number(f"Existe BPEL")
                 if len(partes) >= 3:
