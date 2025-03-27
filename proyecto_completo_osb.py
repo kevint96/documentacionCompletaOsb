@@ -2087,6 +2087,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                 if key.startswith("REFERENCIA_"):
                     for sub_ref in data[key]:
                         print_with_line_number(f"sub_ref: {sub_ref}")
+                        print_with_line_number(f"clave: {data[key][sub_ref]}")
                         ref_name = data[key][sub_ref].split("/")[0]
                         print_with_line_number(f"ref_name: {ref_name}")
                         add_participant(ref_name, ref_name)
