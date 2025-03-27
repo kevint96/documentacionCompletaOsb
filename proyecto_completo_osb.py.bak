@@ -2270,6 +2270,16 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         plantuml_url_png = {uml_url}
         st.image(plantuml_url_png)
         print("🔹 URL de la imagen PNG:", plantuml_url_png)
+        
+        # Descargar la imagen del servidor de PlantUML
+        response = requests.get(plantuml_url_png)
+
+        if response.status_code == 200:
+            with open(diagrama_path, "wb") as file:
+                file.write(response.content)
+            print(f"Diagrama guardado en: {diagrama_path}")
+        else:
+            print(f"Error al generar el diagrama: {response.status_code}")
 
 
 def main():
