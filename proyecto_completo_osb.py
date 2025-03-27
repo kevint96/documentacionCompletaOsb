@@ -2070,6 +2070,12 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
+                if "ReglasNegocio" in data["Referencia"]
+                    print_with_line_number(f"Existe ReglasNegocio")
+                    add_participant("ReglasNegocio", "ReglasNegocio")
+                if "BPEL" in data["Referencia"]
+                    add_participant("BPEL", "BPEL")
+                    print_with_line_number(f"Existe BPEL")
                 if len(partes) >= 3:
                     proyecto = partes[0]
                     business = partes[1]
@@ -2137,6 +2143,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                                     uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
                                     print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
                                     uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
+                                    print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
                                 else:
                                     uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                                     print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
