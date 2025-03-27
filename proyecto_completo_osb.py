@@ -2276,6 +2276,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
         output_dir = "diagramas"
         os.makedirs(output_dir, exist_ok=True)
         diagrama_path = os.path.join(output_dir, f"{project_name}_{operacion}.png")
+        print_with_line_number(f"diagrama_path: {diagrama_path}")
         
         try:
             response = requests.get(plantuml_url_png)
