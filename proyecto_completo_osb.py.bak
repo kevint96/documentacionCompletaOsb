@@ -2092,7 +2092,7 @@ def generar_diagramas_operaciones(project_name,combined_services2):
         print_with_line_number(f"participantes: {participantes}")
         
         # Agregar los participantes al diagrama
-        for alias, nombre in sorted(participantes):  # Se ordena para mantener consistencia
+        for alias, nombre in participantes:  # Se ordena para mantener consistencia
             uml.append(f"participant {nombre} as {alias}")
 
         print_with_line_number(f"uml: {uml}")
