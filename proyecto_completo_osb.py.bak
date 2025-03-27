@@ -2110,7 +2110,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                     proxy = partes[-1]
                     print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
                     add_participant(proyecto, proyecto)
-                    if "FCV" in business:
+                    if "BusinessServices" in business:
                         add_participant(business, business)
         
         print_with_line_number(f"participantes: {participantes}")
