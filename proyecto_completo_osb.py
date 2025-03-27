@@ -2106,6 +2106,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                 uml.append(f"EXP -> {proxy_name}: Llamada a {proxy.split('/')[-1]}")
         print_with_line_number(f"uml: {uml}")
         
+        proyecto =""
         if "Referencia" in data:
             for referencia in data["Referencia"]:
                 partes = referencia.split("/")
@@ -2142,8 +2143,8 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                             #uml.append(f"{proxy_name} -> EXP: Retorna respuesta")
                             #print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
                     
-                    uml.append(f"{proyecto} -> EXP: Retorna respuesta")
-                    print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
+            uml.append(f"{proyecto} -> EXP: Retorna respuesta")
+            print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
         print_with_line_number(f"uml: {uml}")
         
         uml.append("EXP -> Usuario : Respuesta final")

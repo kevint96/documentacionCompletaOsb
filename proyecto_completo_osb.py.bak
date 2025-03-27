@@ -2118,8 +2118,6 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                         print_with_line_number(f"{proyecto} -> {business}: Llamada a {proxy}")
                         uml.append(f"{business} -> {proyecto}: Retorna respuesta")
                         print_with_line_number(f"{business} -> {proyecto}: Retorna respuesta")
-                        uml.append(f"{proyecto} -> EXP: Retorna respuesta")
-                        print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
                     else:
                         referencia_key = f"REFERENCIA_{proxy}"
                         if referencia_key in data:
@@ -2128,12 +2126,14 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                                 proyecto_business = value.split("/")[1]
                                 business_name = value.split("/")[-1]
                                 print_with_line_number(f"    - {key}: {value}")
+                                uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                                 uml.append(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
                                 print_with_line_number(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
                                 uml.append(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
                                 print_with_line_number(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
-                                uml.append(f"{proyecto} -> EXP: Retorna respuesta")
-                                print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
+                                uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                         else:
                             uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                             print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
@@ -2141,6 +2141,9 @@ def generar_diagramas_operaciones(project_name, combined_services2):
                             print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                             #uml.append(f"{proxy_name} -> EXP: Retorna respuesta")
                             #print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
+                    
+                    uml.append(f"{proyecto} -> EXP: Retorna respuesta")
+                    print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
         print_with_line_number(f"uml: {uml}")
         
         uml.append("EXP -> Usuario : Respuesta final")
