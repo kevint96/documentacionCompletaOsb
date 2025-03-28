@@ -12,6 +12,8 @@ from docx.shared import RGBColor
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.shared import Inches
+from docx.enum.section import WD_ORIENT
+from docx.shared import Cm
 import inspect
 import os
 import xml.etree.ElementTree as ET
@@ -1541,6 +1543,39 @@ def extract_uri_and_provider_id_from_bix(bix_path):
         lista_uri_provider.append((uri_value, provider_id_value))
         return lista_uri_provider
 
+def reemplazar_marcador_con_imagen(doc, marcador, diagrama_path):
+    """
+    Busca un marcador en el documento y lo reemplaza con una imagen en una página completa en orientación horizontal.
+    Retorna el documento modificado.
+    """
+    for para in doc.paragraphs:
+        if marcador in para.text:
+            # Agregar una nueva sección con orientación horizontal
+            section = para._element.getparent().addnext(doc.add_section()._element)
+            new_section = doc.sections[-1]
+            new_section.orientation = WD_ORIENT.LANDSCAPE
+            new_section.page_width = Cm(29.7)  # A4 Horizontal
+            new_section.page_height = Cm(21.0)
+            new_section.left_margin = Cm(1.0)
+            new_section.right_margin = Cm(1.0)
+            new_section.top_margin = Cm(1.0)
+            new_section.bottom_margin = Cm(1.0)
+
+            # Limpiar el marcador
+            para.text = para.text.replace(marcador, "")
+
+            # Insertar imagen en la nueva sección
+            paragraph = doc.add_paragraph()
+            run = paragraph.add_run()
+            if os.path.exists(diagrama_path):
+                run.add_picture(diagrama_path, width=Cm(27))  # Ajusta el tamaño de la imagen
+            else:
+                print(f"ERROR: No se encontró la imagen {diagrama_path}")
+
+            return doc  # Retornar el documento modificado
+    return doc  # Retornar el documento si no se encontró el marcador
+
+
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
     
@@ -1780,14 +1815,17 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     print_with_line_number(f"diagrama_path: {diagrama_path}")
                     
                     if os.path.exists(diagrama_path):
-                        marcador = "{Imagen_diagrama}"
-                        for para in doc.paragraphs:
-                            if marcador in para.text:
-                                print_with_line_number(f"marcador: {marcador}")
-                                para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
-                                run = para.add_run()
-                                run.add_picture(diagrama_path, width=Inches(6))  # Ajusta el tamaño si es necesario
-                                break  # Solo reemplazamos la primera coincidencia
+                        doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
+                    
+                    # if os.path.exists(diagrama_path):
+                        # marcador = "{Imagen_diagrama}"
+                        # for para in doc.paragraphs:
+                            # if marcador in para.text:
+                                # print_with_line_number(f"marcador: {marcador}")
+                                # para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
+                                # run = para.add_run()
+                                # run.add_picture(diagrama_path, width=Inches(6))  # Ajusta el tamaño si es necesario
+                                # break  # Solo reemplazamos la primera coincidencia
                     
                     
                     #st.success(f"operation: {operation}")
