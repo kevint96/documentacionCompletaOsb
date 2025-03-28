@@ -2062,7 +2062,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     if total_operaciones == 1:
                         progress_bar_general.progress(75)
                     
-                    st.success("___________________________________________")
+                    #st.success("___________________________________________")
                     
                     #st.success(f"✅ temp_dir  {temp_dir }")
                     #st.success(f"✅ ruta_temporal  {ruta_temporal }")
