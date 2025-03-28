@@ -2296,6 +2296,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             if "Proxies" in value:
                                 nueva_referencia_key = f"REFERENCIA_{business_name}"
                                 print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                                proxy_name = proyecto
                                 
                                 if not nueva_referencia_key in data:
                                     uml.append(f"{proxy_name} -> {project}: Llamada a {business_name}")
@@ -2303,7 +2304,6 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
                                     print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                 else:
-                                    proxy_name = proyecto
                                     uml.append(f"{proxy_name} -> {project}: Llamada a {business_name}")
                                     print_with_line_number(f"{proxy_name} -> {project}: Llamada a {business_name}")
 

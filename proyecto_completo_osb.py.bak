@@ -2311,8 +2311,6 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     procesar_referencias(value,business_name, project, data, uml, profundidad + 1)
 
                             else:
-                                uml.append(f"{proxy_name} -> {project}: Llamada a {proxy}")
-                                print_with_line_number(f"{proxy_name} -> {project}: Llamada a {proxy}")
                                 uml.append(f"{project} -> {proyecto_business}: Llamada a {business_name}")
                                 print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
                                 uml.append(f"{proyecto_business} -> {project}: Retorna respuesta")
