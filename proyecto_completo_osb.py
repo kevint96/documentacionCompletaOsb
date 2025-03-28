@@ -1444,7 +1444,35 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                 if service_refs:
                     informacion_business[f"INFORMACION_{referencia_base}"] = service_refs
                     #return informacion_business
-    
+        
+        
+        elif "Pipeline" in referencia:
+            pipeline_path = os.path.join(jdeveloper_projects_dir, referencia + ".Pipeline")
+            print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+            service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
+            print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
+
+            if service_for_operations:
+                referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
+                for valor in service_for_operations.values():
+                    valor_buscado = valor
+                    print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
+
+                    if "BusinessServices" in valor_buscado:
+                        referencia_business_service = valor_buscado
+                        print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                        biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
+                        print_with_line_number(f"🔍 biz_path: {biz_path}")
+                        if os.path.exists(biz_path):
+                            service_refs = extract_uri_and_provider_id_from_bix(biz_path)
+                            if service_refs:
+                                informacion_business[f"INFORMACION_{referencia_business_service}"] = service_refs
+                                #return informacion_business
+                
+                    elif "Proxies" in valor_buscado:
+                        referencia_proxy = valor_buscado
+                        print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                        buscar_recursivamente_operaciones(referencia_proxy)
     
     
     for service_name, service_data in combined_services.items():
