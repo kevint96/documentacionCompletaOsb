@@ -2219,7 +2219,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
     diagrama_path =""
     for operacion, detalles in combined_services2.items():
         
-        if operacion_a_documentar in operacion:
+        if operacion_a_documentar == operacion:
         
             #print_with_line_number(f"\n🔹 Operacion: {operacion}")
             

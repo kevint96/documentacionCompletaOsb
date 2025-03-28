@@ -911,7 +911,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
 
                 else:  # Solo ejecuta este bloque si el `for xsd in imports` no encontró nada
                     xsd_names = [os.path.basename(x).lower() for x in imports]  # Lista de nombres de archivos XSD
-                    closest_match = difflib.get_close_matches(operation.lower() + ".xsd", xsd_names, n=1, cutoff=0.7)
+                    closest_match = difflib.get_close_matches(operation.lower() + ".xsd", xsd_names, n=1, cutoff=0.9)
 
                     if closest_match:
                         matched_xsd = next(x for x in imports if os.path.basename(x).lower() == closest_match[0])
