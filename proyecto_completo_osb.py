@@ -2226,7 +2226,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             uml = ["@startuml"]
             data = combined_services2[operacion]
         
-            uml.append("skinparam maxMessageSize 50")
+            uml.append("skinparam maxMessageSize 270")
             # Lista para almacenar los participantes manteniendo el orden
             participantes = []
             
@@ -2294,7 +2294,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
         
             #print_with_line_number(f"uml: {uml}")
             
-            uml.append(f"Usuario -> EXP: Llamada a {operacion} en {service_name}")
+            uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
             if "Proxy" in data:
                 for proxy in data["Proxy"]:
                     proxy_name = proxy.split("/")[0]
