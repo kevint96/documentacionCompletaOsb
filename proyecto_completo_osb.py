@@ -1200,9 +1200,9 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
                 #print_with_line_number(f"📂 Nuevo pipeline detectado: {new_pipeline_path}")
 
                 return new_pipeline_path
-            else:
+            #else:
                 #print_with_line_number("⚠️ No se encontró un <con1:service> dentro del branch.")
-        else:
+        #else:
             #print_with_line_number(f"❌ No se encontró el branch con name='{operacion_a_documentar}' en el pipeline.")
         
     return None
