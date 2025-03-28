@@ -1578,7 +1578,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
-    sys.stdout.write(f"✅ services_with_data {services_with_data}")
+    print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -1739,11 +1739,11 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     #print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
 
                     # Mostrar cada tabla
-                    for i, table in enumerate(doc.tables):
-                        #print_with_line_number(f"\nTabla {i+1}:")
-                        for row in table.rows:
-                            row_data = [cell.text for cell in row.cells]
-                            print_with_line_number('\t'.join(row_data))
+                    # for i, table in enumerate(doc.tables):
+                        # #print_with_line_number(f"\nTabla {i+1}:")
+                        # for row in table.rows:
+                            # row_data = [cell.text for cell in row.cells]
+                            # print_with_line_number('\t'.join(row_data))
                     
                     url = ""
                     ruta =""
