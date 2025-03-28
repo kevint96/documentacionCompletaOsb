@@ -1815,12 +1815,11 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     print_with_line_number(f"diagrama_path: {diagrama_path}")
                     
                     if os.path.exists(diagrama_path):
-                        doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
-                    
-                    if os.path.exists(diagrama_path):
+                        #doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
                         marcador = "{Imagen_diagrama}"
                         # Obtener el ancho de la página disponible
                         section = doc.sections[0]  # Suponemos que la plantilla tiene una sola sección horizontal
+                        print_with_line_number(f"section: {section}")
                         page_width = section.page_width
                         left_margin = section.left_margin
                         right_margin = section.right_margin
@@ -1830,7 +1829,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                         for para in doc.paragraphs:
                             if marcador in para.text:
-                                print(f"Insertando imagen en el marcador: {marcador}")
+                                print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
                                 para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
                                 run = para.add_run()
                                 run.add_picture(diagrama_path, width=max_width)  # Ajustar la imagen al ancho máximo
