@@ -2301,17 +2301,11 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
                                     print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                 else:
-                                    uml.append(f"{proxy_name} -> {project}: Llamada a {proxy}")
-                                    print_with_line_number(f"{proxy_name} -> {project}: Llamada a {proxy}")
-                                    uml.append(f"{project} -> {business_name}: Llamada a {business_name}")
-                                    print_with_line_number(f"{project} -> {business_name}: Llamada a {business_name}")
-                                    uml.append(f"{business_name} -> {project}: Retorna respuesta")
-                                    print_with_line_number(f"{business_name} -> {project}: Retorna respuesta")
-                                    uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
-                                    print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
-                                    
+                                    uml.append(f"{proxy_name} -> {project}: Llamada a {business_name}")
+                                    print_with_line_number(f"{proxy_name} -> {project}: Llamada a {business_name}")
+
                                     # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
-                                    procesar_referencias(referencia,business_name, proxy_name, data, uml, profundidad + 1)
+                                    procesar_referencias(referencia,business_name, project, data, uml, profundidad + 1)
 
                             else:
                                 uml.append(f"{proxy_name} -> {project}: Llamada a {proxy}")
