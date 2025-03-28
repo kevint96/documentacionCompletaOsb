@@ -1209,7 +1209,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
         #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+    #print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1233,7 +1233,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                    #print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
         return services_for_operations
 
     def process_flow_elements():
@@ -1245,7 +1245,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
                         services_for_operations[operation_name].add(service_ref)
-                        print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
+                        #print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
 
     def process_route_elements():
@@ -1258,7 +1258,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                        #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
         return services_for_operations
 
     def process_callout_elements():
@@ -1270,7 +1270,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
+                    #print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
     
@@ -1302,31 +1302,31 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             else:
                 continue
             
-            print_with_line_number(f"OSB File Path: {osb_file_path}")
+            #print_with_line_number(f"OSB File Path: {osb_file_path}")
             
             project_name = extract_project_name_from_proxy(osb_file_path)
             if project_name is None:
                 continue
             
             pipeline_path = osb_file_path if 'Pipeline' in path2 else extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             
             with open(osb_file_path, 'r', encoding="utf-8") as f:
                 content = f.read()
                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
                 wsdl_relative_path = extract_wsdl_relative_path(content)
             
-            print_with_line_number(f"Service Name: {service_name}")
-            print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
+            #print_with_line_number(f"Service Name: {service_name}")
+            #print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
             
             if wsdl_relative_path:
                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                 operations = extract_wsdl_operations(wsdl_path)
-                print_with_line_number(f"Operations: {operations}")
+                #print_with_line_number(f"Operations: {operations}")
             
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-            print_with_line_number(f"Service for Operations: {service_for_operations}")
+            #print_with_line_number(f"Service for Operations: {service_for_operations}")
             
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
@@ -1402,29 +1402,29 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     def buscar_recursivamente_operaciones(referencia):
         referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
         referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
-        #print_with_line_number(f"🔍 referencia_base: {referencia_base}")
+        print_with_line_number(f"🔍 referencia_base: {referencia_base}")
         if "Proxies" in referencia:
             osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
             if os.path.exists(osb_file_path):
-                #print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
+                print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
                 project_name = extract_project_name_from_proxy(osb_file_path)
-                #print_with_line_number(f"🔍 project_name: {project_name}")
+                print_with_line_number(f"🔍 project_name: {project_name}")
                 pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+                print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
                 service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-                #print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
+                print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
                 if service_for_operations:
                     referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
                     for valor in service_for_operations.values():
                         valor_buscado = valor
-                        #print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
+                        print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
 
                         if "BusinessServices" in valor_buscado:
                             referencia_business_service = valor_buscado
-                            #print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                            print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
                             biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
-                            #print_with_line_number(f"🔍 biz_path: {biz_path}")
+                            print_with_line_number(f"🔍 biz_path: {biz_path}")
                             if os.path.exists(biz_path):
                                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                                 if service_refs:
@@ -1433,12 +1433,12 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                     
                         elif "Proxies" in valor_buscado:
                             referencia_proxy = valor_buscado
-                            #print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                            print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
                             buscar_recursivamente_operaciones(referencia_proxy)
 
         elif "BusinessServices" in referencia:
             biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
-            #print_with_line_number(f"🔍 biz_path: {biz_path}")
+            print_with_line_number(f"🔍 biz_path: {biz_path}")
             if os.path.exists(biz_path):
                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                 if service_refs:
@@ -1448,7 +1448,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     
     
     for service_name, service_data in combined_services.items():
-        #print_with_line_number(f"🔍 servicio: {service_name}")
+        print_with_line_number(f"🔍 servicio: {service_name}")
         for proxy in service_data.get("Proxy", []):
             for referencia in service_data.get("Referencia", []):
                 if proxy not in referencia:
@@ -1457,7 +1457,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         # Actualizar el servicio actual en combined_services con la nueva información
         combined_services[service_name].update(referencias)
         combined_services[service_name].update(informacion_business)
-        #print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
+        print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
         informacion_business = {}
         referencias = {}
         referencia_proxy ={}
