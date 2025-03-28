@@ -1013,18 +1013,9 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
         #print_with_line_number(f"service_url: {service_url}")
         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
-        imports = extract_xsd_import_paths(wsdl_path)
-        #print_with_line_number(f"wsdl_path: {wsdl_path}")
-        #print_with_line_number(f"imports: {imports}")
-        
-        #print_with_line_number(f"project_path: {project_path}")
-        # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
-        wsdl_relative_base = os.path.relpath(wsdl_path, "extraccion_jar")
-        #print_with_line_number(f"wsdl_relative_base: {wsdl_relative_base}")
-        operacion_business = ""
-        # 🔹 Obtener la carpeta donde está el WSDL
-        wsdl_dir = os.path.dirname(wsdl_relative_base)
-        #print_with_line_number(f"wsdl_dir: {wsdl_dir}")
+        # for operation in operations:
+        if operacion_a_documentar:
+            operations = operacion_a_documentar
 
         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                     

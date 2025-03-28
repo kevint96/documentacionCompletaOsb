@@ -1019,11 +1019,11 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
 
         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                     
-        #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
         
         services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
         
-        #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+        print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
         for operation, proxy_list in services_for_operations_exp.items():
             combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1209,7 +1209,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
         #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    #print_with_line_number(f"pipeline_path: {pipeline_path}")
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1233,7 +1233,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    ##print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                    print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
         return services_for_operations
 
     def process_flow_elements():
@@ -1245,7 +1245,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
                         services_for_operations[operation_name].add(service_ref)
-                        ##print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
+                        print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
 
     def process_route_elements():
@@ -1258,7 +1258,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        ##print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
         return services_for_operations
 
     def process_callout_elements():
@@ -1270,7 +1270,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    ##print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
+                    print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
     
@@ -1302,31 +1302,31 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             else:
                 continue
             
-            #print_with_line_number(f"OSB File Path: {osb_file_path}")
+            print_with_line_number(f"OSB File Path: {osb_file_path}")
             
             project_name = extract_project_name_from_proxy(osb_file_path)
             if project_name is None:
                 continue
             
             pipeline_path = osb_file_path if 'Pipeline' in path2 else extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            print_with_line_number(f"Pipeline Path: {pipeline_path}")
             
             with open(osb_file_path, 'r', encoding="utf-8") as f:
                 content = f.read()
                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
                 wsdl_relative_path = extract_wsdl_relative_path(content)
             
-            #print_with_line_number(f"Service Name: {service_name}")
-            #print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
+            print_with_line_number(f"Service Name: {service_name}")
+            print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
             
             if wsdl_relative_path:
                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                 operations = extract_wsdl_operations(wsdl_path)
-                #print_with_line_number(f"Operations: {operations}")
+                print_with_line_number(f"Operations: {operations}")
             
-            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            print_with_line_number(f"Pipeline Path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-            #print_with_line_number(f"Service for Operations: {service_for_operations}")
+            print_with_line_number(f"Service for Operations: {service_for_operations}")
             
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
