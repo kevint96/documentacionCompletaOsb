@@ -2226,6 +2226,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             uml = ["@startuml"]
             data = combined_services2[operacion]
         
+            uml.append("skinparam maxMessageSize 50")
             # Lista para almacenar los participantes manteniendo el orden
             participantes = []
             
