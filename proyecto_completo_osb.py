@@ -1819,7 +1819,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         marcador = "{Imagen_diagrama}"
                         # Obtener el ancho de la página disponible
                         section = doc.sections[0]  # Suponemos que la plantilla tiene una sola sección horizontal
-                        print_with_line_number(f"section: {section}")
+                        #print_with_line_number(f"section: {section}")
                         page_width = section.page_width
                         left_margin = section.left_margin
                         right_margin = section.right_margin
@@ -1829,7 +1829,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                         for para in doc.paragraphs:
                             if marcador in para.text:
-                                print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
+                                #print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
                                 para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
                                 run = para.add_run()
                                 run.add_picture(diagrama_path, width=max_width)  # Ajustar la imagen al ancho máximo
@@ -2155,7 +2155,7 @@ def obtener_operaciones(project_path):
 
 def plantuml_to_hex(plantuml_code):
     hex_encoded = plantuml_code.encode("utf-8").hex()
-    print_with_line_number(f"hex_encoded: {hex_encoded}")
+    #print_with_line_number(f"hex_encoded: {hex_encoded}")
     return f"~h{hex_encoded}"  # Se agrega "~h" como indica la documentación
 
 def encode_plantuml(text):
@@ -2368,8 +2368,8 @@ def generar_diagramas_operaciones(project_name, combined_services2, operacion_a_
             encoded_code = plantuml_to_hex("\n".join(uml))
             img_url = f"{PLANTUML_SERVER}{encoded_code}"    
             
-            st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
-            st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
+            #st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
+            #st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
             
             # Generar URL
             uml_url = generate_plantuml_url("\n".join(uml))
