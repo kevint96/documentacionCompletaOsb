@@ -1810,7 +1810,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     #print_with_line_number(f"operation: {operation}")
                     
-                    diagrama_path = generar_diagramas_operaciones(ruta_proyecto, combined_services, operation)
+                    diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
                     
                     print_with_line_number(f"diagrama_path: {diagrama_path}")
                     
@@ -2212,7 +2212,7 @@ def descargar_diagrama(uml_url, ruta_destino):
         return None
 
 
-def generar_diagramas_operaciones(project_name, combined_services2, operacion_a_documentar=None):
+def generar_diagramas_operaciones(project_name, service_name, combined_services2, operacion_a_documentar=None):
     """
     Genera diagramas de secuencia para cada operación en combined_services2.
     """
@@ -2293,7 +2293,7 @@ def generar_diagramas_operaciones(project_name, combined_services2, operacion_a_
         
             #print_with_line_number(f"uml: {uml}")
             
-            uml.append(f"Usuario -> EXP: Llamada a {operacion}")
+            uml.append(f"Usuario -> EXP: Llamada a {operacion} en {service_name}")
             if "Proxy" in data:
                 for proxy in data["Proxy"]:
                     proxy_name = proxy.split("/")[0]

@@ -1025,6 +1025,8 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
         # 🔹 Obtener la carpeta donde está el WSDL
         wsdl_dir = os.path.dirname(wsdl_relative_base)
         #print_with_line_number(f"wsdl_dir: {wsdl_dir}")
+        
+        pipeline_exp = pipeline_path
 
         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                     
@@ -1613,7 +1615,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
-    #print_with_line_number(f"✅ services_with_data {services_with_data}")
+    print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -1806,7 +1808,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    #print_with_line_number(f"combined_services: {combined_services}")
+                    print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     
@@ -2062,7 +2064,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     if total_operaciones == 1:
                         progress_bar_general.progress(75)
                     
-                    st.success("___________________________________________")
+                    #st.success("___________________________________________")
                     
                     #st.success(f"✅ temp_dir  {temp_dir }")
                     #st.success(f"✅ ruta_temporal  {ruta_temporal }")
