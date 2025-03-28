@@ -1545,14 +1545,16 @@ def extract_uri_and_provider_id_from_bix(bix_path):
 
 def reemplazar_marcador_con_imagen(doc, marcador, diagrama_path):
     """
-    Busca un marcador en el documento y lo reemplaza con una imagen en una página completa en orientación horizontal.
+    Reemplaza un marcador con una imagen en una página horizontal completa.
     Retorna el documento modificado.
     """
     for para in doc.paragraphs:
         if marcador in para.text:
-            # Agregar una nueva sección con orientación horizontal
-            section = para._element.getparent().addnext(doc.add_section()._element)
-            new_section = doc.sections[-1]
+            # Limpiar el marcador
+            para.text = para.text.replace(marcador, "")
+
+            # Agregar una nueva sección en orientación horizontal
+            new_section = doc.add_section()
             new_section.orientation = WD_ORIENT.LANDSCAPE
             new_section.page_width = Cm(29.7)  # A4 Horizontal
             new_section.page_height = Cm(21.0)
@@ -1561,20 +1563,16 @@ def reemplazar_marcador_con_imagen(doc, marcador, diagrama_path):
             new_section.top_margin = Cm(1.0)
             new_section.bottom_margin = Cm(1.0)
 
-            # Limpiar el marcador
-            para.text = para.text.replace(marcador, "")
-
-            # Insertar imagen en la nueva sección
+            # Insertar la imagen en la nueva sección
             paragraph = doc.add_paragraph()
             run = paragraph.add_run()
             if os.path.exists(diagrama_path):
-                run.add_picture(diagrama_path, width=Cm(27))  # Ajusta el tamaño de la imagen
+                run.add_picture(diagrama_path, width=Cm(27))  # Ajustar tamaño
             else:
                 print(f"ERROR: No se encontró la imagen {diagrama_path}")
 
             return doc  # Retornar el documento modificado
-    return doc  # Retornar el documento si no se encontró el marcador
-
+    return doc  # Si no encuentra el marcador, retorna el doc original
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
