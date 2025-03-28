@@ -1779,14 +1779,15 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     print_with_line_number(f"diagrama_path: {diagrama_path}")
                     
-                    marcador = "{Imagen_diagrama}"
-                    for para in doc.paragraphs:
-                        if marcador in para.text:
-                            print_with_line_number(f"marcador: {marcador}")
-                            para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
-                            run = para.add_run()
-                            run.add_picture(diagrama_path, width=Inches(6))  # Ajusta el tamaño si es necesario
-                            break  # Solo reemplazamos la primera coincidencia
+                    if os.path.exists(diagrama_path):
+                        marcador = "{Imagen_diagrama}"
+                        for para in doc.paragraphs:
+                            if marcador in para.text:
+                                print_with_line_number(f"marcador: {marcador}")
+                                para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
+                                run = para.add_run()
+                                run.add_picture(diagrama_path, width=Inches(6))  # Ajusta el tamaño si es necesario
+                                break  # Solo reemplazamos la primera coincidencia
                     
                     
                     #st.success(f"operation: {operation}")

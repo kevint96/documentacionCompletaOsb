@@ -1775,7 +1775,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     print_with_line_number(f"operation: {operation}")
                     
-                    diagrama_path = generar_diagramas_operaciones(jdeveloper_projects_dir, combined_services, operation)
+                    diagrama_path = generar_diagramas_operaciones(ruta_proyecto, combined_services, operation)
                     
                     print_with_line_number(f"diagrama_path: {diagrama_path}")
                     
