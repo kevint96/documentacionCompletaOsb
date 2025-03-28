@@ -2385,6 +2385,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                 for referencia in data["Referencia"]:
                     partes = referencia.split("/")
                     if len(partes) >= 3:
+                        print_with_line_number(f"referencia: {referencia}")
                         proyecto = partes[0]
                         print_with_line_number(f"proyecto: {proyecto}")
                         business = partes[1]

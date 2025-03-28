@@ -2257,6 +2257,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             def procesar_referencias(proxy, proxy_name, data, uml, profundidad=0):
                 referencia_key = f"REFERENCIA_{proxy}"
+                print_with_line_number(f"referencia_key: {referencia_key}")
                 
                 if referencia_key in data:
                     print_with_line_number(f"{'  ' * profundidad}- {referencia_key} encontrado:")
