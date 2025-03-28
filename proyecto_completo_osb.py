@@ -2274,7 +2274,6 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     print_with_line_number(f"{'  ' * profundidad}- {referencia_key} encontrado:")
                     uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                     print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                    proxy_name = proyecto
                     
                     for key, value in data[referencia_key].items():
                         partes = value.split("/")
@@ -2304,6 +2303,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
                                     print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                 else:
+                                    proxy_name = proyecto
                                     uml.append(f"{proxy_name} -> {project}: Llamada a {business_name}")
                                     print_with_line_number(f"{proxy_name} -> {project}: Llamada a {business_name}")
 
