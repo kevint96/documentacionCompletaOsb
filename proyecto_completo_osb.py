@@ -1806,7 +1806,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    #print_with_line_number(f"combined_services: {combined_services}")
+                    print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     
@@ -2221,7 +2221,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
         
         if operacion_a_documentar == operacion:
         
-            #print_with_line_number(f"\n🔹 Operacion: {operacion}")
+            print_with_line_number(f"\n🔹 Operacion: {operacion}")
             
             uml = ["@startuml"]
             data = combined_services2[operacion]
@@ -2244,18 +2244,18 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     proxy_name = proxy.split("/")[0]
                     add_participant(proxy_name, proxy_name)
             
-            #print_with_line_number(f"proxy_name: {proxy_name}")
-            #print_with_line_number(f"participantes: {participantes}")
+            print_with_line_number(f"proxy_name: {proxy_name}")
+            print_with_line_number(f"participantes: {participantes}")
         
             if contiene_valor("ReglasNegocio",data):
-                #print_with_line_number(f"Existe ReglasNegocio")
+                print_with_line_number(f"Existe ReglasNegocio")
                 add_participant("ReglasNegocio", "ReglasNegocio")
             if contiene_valor("BPEL",data):
-                #print_with_line_number(f"Existe BPEL")
+                print_with_line_number(f"Existe BPEL")
                 add_participant("BPEL", "BPEL")
-                #print_with_line_number(f"Existe BPEL")
+                print_with_line_number(f"Existe BPEL")
             
-            #print_with_line_number(f"participantes: {participantes}")
+            print_with_line_number(f"participantes: {participantes}")
         
             if "Referencia" in data:
                 for referencia in data["Referencia"]:
@@ -2264,42 +2264,42 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         proyecto = partes[0]
                         business = partes[1]
                         proxy = partes[-1]
-                        #print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
+                        print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
                         add_participant(proyecto, proyecto)
                         if "BusinessServices" in business:
                             add_participant(business, business)
             
-            #print_with_line_number(f"participantes: {participantes}")
+            print_with_line_number(f"participantes: {participantes}")
             
             if any(key.startswith("REFERENCIA_") for key in data):
                 for key in data:
-                    #print_with_line_number(f"key: {key}")
+                    print_with_line_number(f"key: {key}")
                     if key.startswith("REFERENCIA_"):
                         for sub_ref in data[key]:
-                            #print_with_line_number(f"sub_ref: {sub_ref}")
+                            print_with_line_number(f"sub_ref: {sub_ref}")
                             clave = data[key][sub_ref]
-                            #print_with_line_number(f"clave: {clave}")
+                            print_with_line_number(f"clave: {clave}")
                             if "BusinessServices" in clave:
                                 business = clave.split("/")[1]
                                 add_participant(business, business)
                             ref_name = data[key][sub_ref].split("/")[0]
-                            #print_with_line_number(f"ref_name: {ref_name}")
+                            print_with_line_number(f"ref_name: {ref_name}")
                             add_participant(ref_name, ref_name)
             
-            #print_with_line_number(f"participantes: {participantes}")
+            print_with_line_number(f"participantes: {participantes}")
             
             # Agregar los participantes al diagrama
             for alias, nombre in participantes:
                 uml.append(f"participant {nombre} as {alias}")
         
-            #print_with_line_number(f"uml: {uml}")
+            print_with_line_number(f"uml: {uml}")
             
             uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
             if "Proxy" in data:
                 for proxy in data["Proxy"]:
                     proxy_name = proxy.split("/")[0]
                     uml.append(f"EXP -> {proxy_name}: Llamada a {proxy.split('/')[-1]}")
-            #print_with_line_number(f"uml: {uml}")
+            print_with_line_number(f"uml: {uml}")
             
             proyecto =""
             if "Referencia" in data:
@@ -2311,60 +2311,60 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         proxy = partes[-1]
                         if "BusinessServices" in business:
                             uml.append(f"{proyecto} -> {business}: Llamada a {proxy}")
-                            #print_with_line_number(f"{proyecto} -> {business}: Llamada a {proxy}")
+                            print_with_line_number(f"{proyecto} -> {business}: Llamada a {proxy}")
                             uml.append(f"{business} -> {proyecto}: Retorna respuesta")
-                            #print_with_line_number(f"{business} -> {proyecto}: Retorna respuesta")
+                            print_with_line_number(f"{business} -> {proyecto}: Retorna respuesta")
                         else:
                             referencia_key = f"REFERENCIA_{proxy}"
                             if referencia_key in data:
-                                #print_with_line_number(f"  - {referencia_key} encontrado:")
+                                print_with_line_number(f"  - {referencia_key} encontrado:")
                                 for key, value in data[referencia_key].items():
                                     project = value.split("/")[0]
                                     proyecto_business = value.split("/")[1]
                                     business_name = value.split("/")[-1]
-                                    #print_with_line_number(f"    - {key}: {value}")
+                                    print_with_line_number(f"    - {key}: {value}")
                                     if "ReglasNegocio" in value:
                                         regla_negocio = value.split("/")[2]
                                         uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                                        #print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
+                                        print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
                                         uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
-                                        #print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
+                                        print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
                                     else:
                                         if "Proxies" in proyecto_business:
                                             uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                                            #print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                            print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                                             uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                            #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                            print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
                                             uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                            #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                            print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                             uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                                            #print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                            print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
 
                                         else:
                                             uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                                            #print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                            print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                                             uml.append(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
-                                            #print_with_line_number(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
+                                            print_with_line_number(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
                                             uml.append(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
-                                            #print_with_line_number(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
+                                            print_with_line_number(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
                                             uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                                            #print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                            print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                             else:
                                 uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                                #print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                                 uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                                #print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                                 #uml.append(f"{proxy_name} -> EXP: Retorna respuesta")
-                                #print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
+                                print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
                         
                 uml.append(f"{proyecto} -> EXP: Retorna respuesta")
-                #print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
-            #print_with_line_number(f"uml: {uml}")
+                print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
+            print_with_line_number(f"uml: {uml}")
             
             uml.append("EXP -> Usuario : Respuesta final")
             uml.append("@enduml")
         
-            #print_with_line_number("\n".join(uml))
+            print_with_line_number("\n".join(uml))
         
             encoded_code = plantuml_to_hex("\n".join(uml))
             img_url = f"{PLANTUML_SERVER}{encoded_code}"    
