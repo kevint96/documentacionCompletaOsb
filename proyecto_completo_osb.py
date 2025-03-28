@@ -972,7 +972,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     @enduml"""
     
     hex_string = plantuml_to_hex(plantuml_code)
-    print_with_line_number(f"hex_string: {hex_string}")
+    #print_with_line_number(f"hex_string: {hex_string}")
     
     # URL final
     plantuml_url_png = f"https://www.plantuml.com/plantuml/png/{hex_string}"
@@ -987,14 +987,14 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
 
     # Generar URL
     uml_url = generate_plantuml_url(uml_example)
-    print_with_line_number(f"URL del diagrama: {uml_url}")
+    #print_with_line_number(f"URL del diagrama: {uml_url}")
     
     # URL final
     plantuml_url_png = {uml_url}
     st.image(plantuml_url_png)
     print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
-    #print_with_line_number(f"URL generada: {url}")
+    ##print_with_line_number(f"URL generada: {url}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
@@ -1002,14 +1002,14 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
-        print_with_line_number(f"project_name: {project_name}")
-        print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number(f"osb_file_path: {osb_file_path}")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        print_with_line_number(f"service_url: {service_url}")
-        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"operations: {operations}")
+        #print_with_line_number(f"project_name: {project_name}")
+        #print_with_line_number(f"service_name: {service_name}")
+        #print_with_line_number(f"osb_file_path: {osb_file_path}")
+        #print_with_line_number(f"pipeline_path: {pipeline_path}")
+        #print_with_line_number(f"service_url: {service_url}")
+        #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
         imports = extract_xsd_import_paths(wsdl_path)
         #print_with_line_number(f"wsdl_path: {wsdl_path}")
@@ -1026,11 +1026,11 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
 
         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                     
-        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+        #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
         
         services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
         
-        print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+        #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
         for operation, proxy_list in services_for_operations_exp.items():
             combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1041,11 +1041,11 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
             else:
                 combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
         
-        print_with_line_number(f"combined_services: {combined_services}")
+        #print_with_line_number(f"combined_services: {combined_services}")
         
         combined_services2 = separar_ebs_abc_business(project_path,combined_services)
         
-        print_with_line_number(f"combined_services2: {combined_services2}")
+        #print_with_line_number(f"combined_services2: {combined_services2}")
         
         #generar_diagramas_operaciones(project_name,combined_services2)
             
@@ -1057,9 +1057,9 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
 
     services_for_operations = defaultdict(list)
     
-    print_with_line_number(f"🔍 project_path: {project_path}")
-    print_with_line_number(f"🔍 proxy_path: {proxy_path}")
-    print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+    #print_with_line_number(f"🔍 project_path: {project_path}")
+    #print_with_line_number(f"🔍 proxy_path: {proxy_path}")
+    #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
 
     for operacion_padre in operations:
         operacion_actual = operacion_padre
@@ -1067,7 +1067,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
         #extract_service_for_operations_audibpel(project_path,pipeline_path,operations,services_for_operations,operacion_padre,operacion_actual)
         #procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
     
-    print_with_line_number(f"Servicios internos encontrados: {services_for_operations}")
+    #print_with_line_number(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
 def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual=None, services_for_operations=None):
@@ -1084,9 +1084,9 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
 
-    print_with_line_number(f"🔍 project_path: {project_path}")
-    print_with_line_number(f"🔍 proxy_actual: {proxy_actual}")
-    print_with_line_number(f"🔍 pipeline_actual: {pipeline_actual}")
+    #print_with_line_number(f"🔍 project_path: {project_path}")
+    #print_with_line_number(f"🔍 proxy_actual: {proxy_actual}")
+    #print_with_line_number(f"🔍 pipeline_actual: {pipeline_actual}")
 
     if not os.path.exists(pipeline_actual):
         st.warning(f"Archivo no encontrado: {pipeline_actual}")
@@ -1107,7 +1107,7 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
         # Iterar sobre cada operación principal del pipeline
         for operacion_padre in operations:
-            print_with_line_number(f"🔍 operacion_padre: {operacion_padre}")
+            #print_with_line_number(f"🔍 operacion_padre: {operacion_padre}")
 
             # Diccionario para registrar servicios invocados en esta operación
             referencias = []
@@ -1118,12 +1118,12 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
             if branch is not None:
                 for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
                     service_ref = service.get("ref")
-                    print_with_line_number(f"🔍1 service_ref: {service_ref}")
+                    #print_with_line_number(f"🔍1 service_ref: {service_ref}")
                     if service_ref:
                         initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                        print_with_line_number(f"🔍1 initial_proxy_path: {initial_proxy_path}")
+                        #print_with_line_number(f"🔍1 initial_proxy_path: {initial_proxy_path}")
                         new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
-                        print_with_line_number(f"🔍1 new_pipeline_path: {new_pipeline_path}")
+                        #print_with_line_number(f"🔍1 new_pipeline_path: {new_pipeline_path}")
 
                         # Recursivamente procesar el pipeline hijo
                         sub_operations = procesar_pipeline(
@@ -1140,21 +1140,21 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
                 if business_service is not None and "ref" in business_service.attrib:
                     service_ref = business_service.attrib["ref"]
-                    print_with_line_number(f"🔍2 service_ref: {service_ref}")
+                    #print_with_line_number(f"🔍2 service_ref: {service_ref}")
                     operation_name = operation.text if operation is not None else ""
                     referencias.append((service_ref, operation_name))
-                    print_with_line_number(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+                    #print_with_line_number(f"BusinessService detectado: {service_ref} con operación {operation_name}")
 
             # Almacenar las referencias de la operación padre en el diccionario principal
             if referencias:
                 services_for_operations[operacion_padre][pipeline_actual] = referencias
-                print_with_line_number(f"🔍 services_for_operations actualizado: {services_for_operations}")
+                #print_with_line_number(f"🔍 services_for_operations actualizado: {services_for_operations}")
 
     return services_for_operations
 
 def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a_documentar):
     if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
-        print_with_line_number(f"📂 Analizando pipeline: {pipeline_path}")
+        #print_with_line_number(f"📂 Analizando pipeline: {pipeline_path}")
 
         # Leer el contenido del pipeline
         with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1182,41 +1182,41 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
         branch_element = root.find(branch_xpath, namespaces)
         
         if branch_element is not None:
-            print_with_line_number(f"✅ Se encontró el branch: {operacion_a_documentar}")
+            #print_with_line_number(f"✅ Se encontró el branch: {operacion_a_documentar}")
             
             # Buscar el <con1:service> dentro del branch encontrado
             service_element = branch_element.find(".//con1:service", namespaces)
             
             if service_element is not None:
                 service_ref = service_element.attrib.get('ref', '')
-                print_with_line_number(f"🔗 Referencia al servicio: {service_ref}")
+                #print_with_line_number(f"🔗 Referencia al servicio: {service_ref}")
                 
                 # Construir la ruta al ProxyService
                 proxy_referencia = os.path.join(project_path, service_ref + ".ProxyService")
-                print_with_line_number(f"📄 Proxy referencia: {proxy_referencia}")
+                #print_with_line_number(f"📄 Proxy referencia: {proxy_referencia}")
                 
                 # Obtener el pipeline asociado al proxy
                 new_pipeline_path = extract_pipeline_path_from_proxy(proxy_referencia, project_path)
-                print_with_line_number(f"📂 Nuevo pipeline detectado: {new_pipeline_path}")
+                #print_with_line_number(f"📂 Nuevo pipeline detectado: {new_pipeline_path}")
 
                 return new_pipeline_path
             else:
-                print_with_line_number("⚠️ No se encontró un <con1:service> dentro del branch.")
+                #print_with_line_number("⚠️ No se encontró un <con1:service> dentro del branch.")
         else:
-            print_with_line_number(f"❌ No se encontró el branch con name='{operacion_a_documentar}' en el pipeline.")
+            #print_with_line_number(f"❌ No se encontró el branch con name='{operacion_a_documentar}' en el pipeline.")
         
     return None
 
 def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
-    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+    #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
-        print_with_line_number("Archivo no válido o no encontrado.")
+        #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+    #print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1240,7 +1240,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    #print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                    ##print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
         return services_for_operations
 
     def process_flow_elements():
@@ -1252,7 +1252,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
                         services_for_operations[operation_name].add(service_ref)
-                        #print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
+                        ##print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
 
     def process_route_elements():
@@ -1265,7 +1265,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                        ##print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
         return services_for_operations
 
     def process_callout_elements():
@@ -1277,7 +1277,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    #print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
+                    ##print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
     
@@ -1289,8 +1289,8 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
     seguir = True
 
-    print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+    #print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
+    #print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
 
     return {op: list(set(services)) for op, services in services_for_operations.items()}
 
@@ -1409,29 +1409,29 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     def buscar_recursivamente_operaciones(referencia):
         referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
         referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
-        print_with_line_number(f"🔍 referencia_base: {referencia_base}")
+        #print_with_line_number(f"🔍 referencia_base: {referencia_base}")
         if "Proxies" in referencia:
             osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
             if os.path.exists(osb_file_path):
-                print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
+                #print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
                 project_name = extract_project_name_from_proxy(osb_file_path)
-                print_with_line_number(f"🔍 project_name: {project_name}")
+                #print_with_line_number(f"🔍 project_name: {project_name}")
                 pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+                #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
                 service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-                print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
+                #print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
                 if service_for_operations:
                     referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
                     for valor in service_for_operations.values():
                         valor_buscado = valor
-                        print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
+                        #print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
 
                         if "BusinessServices" in valor_buscado:
                             referencia_business_service = valor_buscado
-                            print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                            #print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
                             biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
-                            print_with_line_number(f"🔍 biz_path: {biz_path}")
+                            #print_with_line_number(f"🔍 biz_path: {biz_path}")
                             if os.path.exists(biz_path):
                                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                                 if service_refs:
@@ -1440,12 +1440,12 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                     
                         elif "Proxies" in valor_buscado:
                             referencia_proxy = valor_buscado
-                            print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                            #print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
                             buscar_recursivamente_operaciones(referencia_proxy)
 
         elif "BusinessServices" in referencia:
             biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
-            print_with_line_number(f"🔍 biz_path: {biz_path}")
+            #print_with_line_number(f"🔍 biz_path: {biz_path}")
             if os.path.exists(biz_path):
                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                 if service_refs:
@@ -1455,7 +1455,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     
     
     for service_name, service_data in combined_services.items():
-        print_with_line_number(f"🔍 servicio: {service_name}")
+        #print_with_line_number(f"🔍 servicio: {service_name}")
         for proxy in service_data.get("Proxy", []):
             for referencia in service_data.get("Referencia", []):
                 if proxy not in referencia:
@@ -1464,7 +1464,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         # Actualizar el servicio actual en combined_services con la nueva información
         combined_services[service_name].update(referencias)
         combined_services[service_name].update(informacion_business)
-        print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
+        #print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
         informacion_business = {}
         referencias = {}
         referencia_proxy ={}
@@ -1477,25 +1477,25 @@ def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
     for service_name, service_data in combined_services.items():
         informacion_business = {}
         referencias = {}
-        print_with_line_number(f"service_name: {service_name}")
+        #print_with_line_number(f"service_name: {service_name}")
         
         #for proxy in service_data.get("Proxy", []):
             #print_with_line_number(f"proxy: {proxy}")
 
         # Recorrer las Referencias
         for referencia in service_data.get("Referencia", []):
-            print_with_line_number(f"referencia: {referencia}")
+            #print_with_line_number(f"referencia: {referencia}")
             
             if "Proxies" in referencia:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
                 if os.path.exists(osb_file_path):
-                    print_with_line_number(f"🔍osb_file_path: {osb_file_path}")
+                    #print_with_line_number(f"🔍osb_file_path: {osb_file_path}")
                     project_name = extract_project_name_from_proxy(osb_file_path)
-                    print_with_line_number(f"🔍project_name: {project_name}")
+                    #print_with_line_number(f"🔍project_name: {project_name}")
                     pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                    print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
+                    #print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
                     service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-                    print_with_line_number(f"🔍service_for_operations: {service_for_operations}")
+                    #print_with_line_number(f"🔍service_for_operations: {service_for_operations}")
                 
                     if service_for_operations:
                         rutas_de_servicio = list(service_for_operations.values())
@@ -1512,8 +1512,8 @@ def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
         
         service_data.update(referencias)
         service_data.update(informacion_business)
-        print_with_line_number(f"service_data: {service_data}")
-    print_with_line_number(f"combined_services: {combined_services}")
+        #print_with_line_number(f"service_data: {service_data}")
+    #print_with_line_number(f"combined_services: {combined_services}")
     
 def extract_uri_and_provider_id_from_bix(bix_path):
     lista_uri_provider = []
@@ -1772,6 +1772,12 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
                     print_with_line_number(f"combined_services: {combined_services}")
+                    
+                    print_with_line_number(f"operation: {operation}")
+                    
+                    diagrama_path = generar_diagramas_operaciones(jdeveloper_projects_dir, combined_services, operation)
+                    
+                    print_with_line_number(f"diagrama_path: {diagrama_path}")
                     
                     #st.success(f"operation: {operation}")
                     
@@ -2149,188 +2155,194 @@ def descargar_diagrama(uml_url, ruta_destino):
         return None
 
 
-def generar_diagramas_operaciones(project_name, combined_services2):
+def generar_diagramas_operaciones(project_name, combined_services2, operacion_a_documentar=None):
     """
     Genera diagramas de secuencia para cada operación en combined_services2.
     """
+    diagrama_path =""
     for operacion, detalles in combined_services2.items():
-        print_with_line_number(f"\n🔹 Operacion: {operacion}")
         
-        uml = ["@startuml"]
-        data = combined_services2[operacion]
-    
-        # Lista para almacenar los participantes manteniendo el orden
-        participantes = []
+        if operacion_a_documentar in operacion:
         
-        def add_participant(alias, nombre):
-            if (alias, nombre) not in participantes:
-                participantes.append((alias, nombre))
+            print_with_line_number(f"\n🔹 Operacion: {operacion}")
+            
+            uml = ["@startuml"]
+            data = combined_services2[operacion]
         
-        # Agregar siempre el usuario y el EXP con el nombre dinámico
-        add_participant("Usuario", "Usuario")
-        add_participant("EXP", project_name)
+            # Lista para almacenar los participantes manteniendo el orden
+            participantes = []
+            
+            def add_participant(alias, nombre):
+                if (alias, nombre) not in participantes:
+                    participantes.append((alias, nombre))
+            
+            # Agregar siempre el usuario y el EXP con el nombre dinámico
+            add_participant("Usuario", "Usuario")
+            add_participant("EXP", project_name)
+            
+            # Verificar los datos en la estructura y agregar solo si no existen
+            if "Proxy" in data:
+                for proxy in data["Proxy"]:
+                    proxy_name = proxy.split("/")[0]
+                    add_participant(proxy_name, proxy_name)
+            
+            print_with_line_number(f"proxy_name: {proxy_name}")
+            print_with_line_number(f"participantes: {participantes}")
         
-        # Verificar los datos en la estructura y agregar solo si no existen
-        if "Proxy" in data:
-            for proxy in data["Proxy"]:
-                proxy_name = proxy.split("/")[0]
-                add_participant(proxy_name, proxy_name)
+            if contiene_valor("ReglasNegocio",data):
+                print_with_line_number(f"Existe ReglasNegocio")
+                add_participant("ReglasNegocio", "ReglasNegocio")
+            if contiene_valor("BPEL",data):
+                print_with_line_number(f"Existe BPEL")
+                add_participant("BPEL", "BPEL")
+                print_with_line_number(f"Existe BPEL")
+            
+            print_with_line_number(f"participantes: {participantes}")
         
-        print_with_line_number(f"proxy_name: {proxy_name}")
-        print_with_line_number(f"participantes: {participantes}")
-    
-        if contiene_valor("ReglasNegocio",data):
-            print_with_line_number(f"Existe ReglasNegocio")
-            add_participant("ReglasNegocio", "ReglasNegocio")
-        if contiene_valor("BPEL",data):
-            print_with_line_number(f"Existe BPEL")
-            add_participant("BPEL", "BPEL")
-            print_with_line_number(f"Existe BPEL")
-        
-        print_with_line_number(f"participantes: {participantes}")
-    
-        if "Referencia" in data:
-            for referencia in data["Referencia"]:
-                partes = referencia.split("/")
-                if len(partes) >= 3:
-                    proyecto = partes[0]
-                    business = partes[1]
-                    proxy = partes[-1]
-                    print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
-                    add_participant(proyecto, proyecto)
-                    if "BusinessServices" in business:
-                        add_participant(business, business)
-        
-        print_with_line_number(f"participantes: {participantes}")
-        
-        if any(key.startswith("REFERENCIA_") for key in data):
-            for key in data:
-                print_with_line_number(f"key: {key}")
-                if key.startswith("REFERENCIA_"):
-                    for sub_ref in data[key]:
-                        print_with_line_number(f"sub_ref: {sub_ref}")
-                        clave = data[key][sub_ref]
-                        print_with_line_number(f"clave: {clave}")
-                        if "BusinessServices" in clave:
-                            business = clave.split("/")[1]
+            if "Referencia" in data:
+                for referencia in data["Referencia"]:
+                    partes = referencia.split("/")
+                    if len(partes) >= 3:
+                        proyecto = partes[0]
+                        business = partes[1]
+                        proxy = partes[-1]
+                        print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
+                        add_participant(proyecto, proyecto)
+                        if "BusinessServices" in business:
                             add_participant(business, business)
-                        ref_name = data[key][sub_ref].split("/")[0]
-                        print_with_line_number(f"ref_name: {ref_name}")
-                        add_participant(ref_name, ref_name)
+            
+            print_with_line_number(f"participantes: {participantes}")
+            
+            if any(key.startswith("REFERENCIA_") for key in data):
+                for key in data:
+                    print_with_line_number(f"key: {key}")
+                    if key.startswith("REFERENCIA_"):
+                        for sub_ref in data[key]:
+                            print_with_line_number(f"sub_ref: {sub_ref}")
+                            clave = data[key][sub_ref]
+                            print_with_line_number(f"clave: {clave}")
+                            if "BusinessServices" in clave:
+                                business = clave.split("/")[1]
+                                add_participant(business, business)
+                            ref_name = data[key][sub_ref].split("/")[0]
+                            print_with_line_number(f"ref_name: {ref_name}")
+                            add_participant(ref_name, ref_name)
+            
+            print_with_line_number(f"participantes: {participantes}")
+            
+            # Agregar los participantes al diagrama
+            for alias, nombre in participantes:
+                uml.append(f"participant {nombre} as {alias}")
         
-        print_with_line_number(f"participantes: {participantes}")
-        
-        # Agregar los participantes al diagrama
-        for alias, nombre in participantes:
-            uml.append(f"participant {nombre} as {alias}")
-    
-        print_with_line_number(f"uml: {uml}")
-        
-        uml.append(f"Usuario -> EXP: Llamada a {operacion}")
-        if "Proxy" in data:
-            for proxy in data["Proxy"]:
-                proxy_name = proxy.split("/")[0]
-                uml.append(f"EXP -> {proxy_name}: Llamada a {proxy.split('/')[-1]}")
-        print_with_line_number(f"uml: {uml}")
-        
-        proyecto =""
-        if "Referencia" in data:
-            for referencia in data["Referencia"]:
-                partes = referencia.split("/")
-                if len(partes) >= 3:
-                    proyecto = partes[0]
-                    business = partes[1]
-                    proxy = partes[-1]
-                    if "BusinessServices" in business:
-                        uml.append(f"{proyecto} -> {business}: Llamada a {proxy}")
-                        print_with_line_number(f"{proyecto} -> {business}: Llamada a {proxy}")
-                        uml.append(f"{business} -> {proyecto}: Retorna respuesta")
-                        print_with_line_number(f"{business} -> {proyecto}: Retorna respuesta")
-                    else:
-                        referencia_key = f"REFERENCIA_{proxy}"
-                        if referencia_key in data:
-                            print_with_line_number(f"  - {referencia_key} encontrado:")
-                            for key, value in data[referencia_key].items():
-                                project = value.split("/")[0]
-                                proyecto_business = value.split("/")[1]
-                                business_name = value.split("/")[-1]
-                                print_with_line_number(f"    - {key}: {value}")
-                                if "ReglasNegocio" in value:
-                                    regla_negocio = value.split("/")[2]
-                                    uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                                    print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                                    uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
-                                    print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
-                                else:
-                                    if "Proxies" in proyecto_business:
-                                        uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                                        print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                                        uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                        print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                        uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                        print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
-                                        uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                                        print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-
-                                    else:
-                                        uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                                        print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                                        uml.append(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
-                                        print_with_line_number(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
-                                        uml.append(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
-                                        print_with_line_number(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
-                                        uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                                        print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+            print_with_line_number(f"uml: {uml}")
+            
+            uml.append(f"Usuario -> EXP: Llamada a {operacion}")
+            if "Proxy" in data:
+                for proxy in data["Proxy"]:
+                    proxy_name = proxy.split("/")[0]
+                    uml.append(f"EXP -> {proxy_name}: Llamada a {proxy.split('/')[-1]}")
+            print_with_line_number(f"uml: {uml}")
+            
+            proyecto =""
+            if "Referencia" in data:
+                for referencia in data["Referencia"]:
+                    partes = referencia.split("/")
+                    if len(partes) >= 3:
+                        proyecto = partes[0]
+                        business = partes[1]
+                        proxy = partes[-1]
+                        if "BusinessServices" in business:
+                            uml.append(f"{proyecto} -> {business}: Llamada a {proxy}")
+                            print_with_line_number(f"{proyecto} -> {business}: Llamada a {proxy}")
+                            uml.append(f"{business} -> {proyecto}: Retorna respuesta")
+                            print_with_line_number(f"{business} -> {proyecto}: Retorna respuesta")
                         else:
-                            uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                            print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                            uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                            print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                            #uml.append(f"{proxy_name} -> EXP: Retorna respuesta")
-                            #print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
-                    
-            uml.append(f"{proyecto} -> EXP: Retorna respuesta")
-            print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
-        print_with_line_number(f"uml: {uml}")
-        
-        uml.append("EXP -> Usuario : Respuesta final")
-        uml.append("@enduml")
-    
-        print_with_line_number("\n".join(uml))
-    
-        encoded_code = plantuml_to_hex("\n".join(uml))
-        img_url = f"{PLANTUML_SERVER}{encoded_code}"    
-        
-        st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
-        st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
-        
-        # Generar URL
-        uml_url = generate_plantuml_url("\n".join(uml))
-        print_with_line_number(f"URL del diagrama: {uml_url}")
-        
-        # URL final
-        plantuml_url_png = {uml_url}
-        st.image(plantuml_url_png)
-        print("🔹 URL de la imagen PNG:", plantuml_url_png)
-        
-        plantuml_url_png = uml_url
-        # Descargar la imagen del servidor de PlantUML
-        output_dir = "diagramas"
-        os.makedirs(output_dir, exist_ok=True)
-        diagrama_path = os.path.join(output_dir, f"{project_name}_{operacion}.png")
-        print_with_line_number(f"diagrama_path: {diagrama_path}")
-        
-        try:
-            response = requests.get(plantuml_url_png)
-            if response.status_code == 200:
-                with open(diagrama_path, "wb") as file:
-                    file.write(response.content)
-                    print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
-            else:
-                print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
-        except Exception as e:
-            print_with_line_number(f"Error en la solicitud de la imagen: {e}")
+                            referencia_key = f"REFERENCIA_{proxy}"
+                            if referencia_key in data:
+                                print_with_line_number(f"  - {referencia_key} encontrado:")
+                                for key, value in data[referencia_key].items():
+                                    project = value.split("/")[0]
+                                    proyecto_business = value.split("/")[1]
+                                    business_name = value.split("/")[-1]
+                                    print_with_line_number(f"    - {key}: {value}")
+                                    if "ReglasNegocio" in value:
+                                        regla_negocio = value.split("/")[2]
+                                        uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
+                                        print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
+                                        uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
+                                        print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
+                                    else:
+                                        if "Proxies" in proyecto_business:
+                                            uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                            print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                            uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                            print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                            uml.append(f"{project} -> {proyecto}: Retorna respuesta")
+                                            print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                            uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                            print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
 
+                                        else:
+                                            uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                            print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                            uml.append(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
+                                            print_with_line_number(f"{proyecto} -> {proyecto_business}: Llamada a {business_name}")
+                                            uml.append(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
+                                            print_with_line_number(f"{proyecto_business} -> {proyecto}: Retorna respuesta")
+                                            uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                            print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                            else:
+                                uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                                uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                #uml.append(f"{proxy_name} -> EXP: Retorna respuesta")
+                                #print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
+                        
+                uml.append(f"{proyecto} -> EXP: Retorna respuesta")
+                print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
+            print_with_line_number(f"uml: {uml}")
+            
+            uml.append("EXP -> Usuario : Respuesta final")
+            uml.append("@enduml")
+        
+            print_with_line_number("\n".join(uml))
+        
+            encoded_code = plantuml_to_hex("\n".join(uml))
+            img_url = f"{PLANTUML_SERVER}{encoded_code}"    
+            
+            st.image(img_url, caption=f"Diagrama de {operacion}", use_container_width=True)
+            st.markdown(f"[Descargar {operacion}]({img_url})", unsafe_allow_html=True)
+            
+            # Generar URL
+            uml_url = generate_plantuml_url("\n".join(uml))
+            print_with_line_number(f"URL del diagrama: {uml_url}")
+            
+            # URL final
+            plantuml_url_png = {uml_url}
+            st.image(plantuml_url_png)
+            print("🔹 URL de la imagen PNG:", plantuml_url_png)
+            
+            plantuml_url_png = uml_url
+            # Descargar la imagen del servidor de PlantUML
+            output_dir = "diagramas"
+            os.makedirs(output_dir, exist_ok=True)
+            diagrama_path = os.path.join(output_dir, f"{project_name}_{operacion}.png")
+            print_with_line_number(f"diagrama_path: {diagrama_path}")
+            
+            try:
+                response = requests.get(plantuml_url_png)
+                if response.status_code == 200:
+                    with open(diagrama_path, "wb") as file:
+                        file.write(response.content)
+                        print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
+                else:
+                    print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
+            except Exception as e:
+                print_with_line_number(f"Error en la solicitud de la imagen: {e}")
+    
+    return diagrama_path
+    
 
 def main():
     st.markdown(
