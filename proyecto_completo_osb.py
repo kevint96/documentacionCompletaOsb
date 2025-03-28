@@ -2255,7 +2255,18 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             
             
-            def procesar_referencias(proxy, proxy_name, data, uml, profundidad=0):
+            def procesar_referencias(referencia,proxy, proxy_name, data, uml, profundidad=0):
+                
+                partes = referencia.split("/")
+                if len(partes) >= 3:
+                    print_with_line_number(f"referencia: {referencia}")
+                    proyecto = partes[0]
+                    print_with_line_number(f"proyecto: {proyecto}")
+                    business = partes[1]
+                    print_with_line_number(f"business: {business}")
+                    proxy = partes[-1]
+                    print_with_line_number(f"proxy: {proxy}")
+                
                 referencia_key = f"REFERENCIA_{proxy}"
                 print_with_line_number(f"referencia_key: {referencia_key}")
                 
@@ -2291,7 +2302,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                 print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
 
                                 # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
-                                procesar_referencias(business_name, proxy_name, data, uml, profundidad + 1)
+                                procesar_referencias(referencia,business_name, proxy_name, data, uml, profundidad + 1)
 
                             else:
                                 uml.append(f"{proxy_name} -> {project}: Llamada a {proxy}")
@@ -2398,7 +2409,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             uml.append(f"{business} -> {proyecto}: Retorna respuesta")
                             print_with_line_number(f"{business} -> {proyecto}: Retorna respuesta")
                         else:
-                            procesar_referencias(proxy, proxy_name, data, uml)
+                            procesar_referencias(referencia,proxy, proxy_name, data, uml)
                             # referencia_key = f"REFERENCIA_{proxy}"
                             # if referencia_key in data:
                                 # print_with_line_number(f"  - {referencia_key} encontrado:")
