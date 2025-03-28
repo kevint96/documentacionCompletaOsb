@@ -830,23 +830,23 @@ def extraer_operaciones_expuestas_http(project_path):
                         if "EBS" not in project_name and "ABC" not in project_name:
                             if has_http_provider_id(content):
                                 service_name = os.path.splitext(file)[0]
-                                st.success(f"✅ project_name {project_name}")
-                                st.success(f"✅ service_name {service_name}")
+                                #st.success(f"✅ project_name {project_name}")
+                                #st.success(f"✅ service_name {service_name}")
                                 service_url = extract_service_url(content)
-                                st.success(f"✅ service_url {service_url}")
+                                #st.success(f"✅ service_url {service_url}")
                                 wsdl_relative_path = extract_wsdl_relative_path(content)
                                 if wsdl_relative_path:
                                     wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
                                     capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
                                     
-                                    st.success(f"capa_proyecto: {capa_proyecto}")
+                                    #st.success(f"capa_proyecto: {capa_proyecto}")
                                     
-                                    st.success(f"wsdl_path: {wsdl_path}")
+                                    #st.success(f"wsdl_path: {wsdl_path}")
                                     operations = extract_wsdl_operations(wsdl_path)
                                     wsdl_operations_map[wsdl_path] = (
                                         operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                     )
-    st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
+    #st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
     return wsdl_operations_map
 
 def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
@@ -1839,14 +1839,14 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     #st.success(f"Número total de tablas en el documento: {len(doc.tables)}")
                     
-                    for i, table in enumerate(doc.tables):
-                        #st.success(f"Tabla {i + 1}:")  # Mostrar el número de la tabla
+                    # for i, table in enumerate(doc.tables):
+                        # #st.success(f"Tabla {i + 1}:")  # Mostrar el número de la tabla
 
-                        for row in table.rows:
-                            row_text = [cell.text.strip() for cell in row.cells]  # Extraer el texto de cada celda
-                            #st.success(f"  {row_text}")  # Imprimir el contenido de la fila
+                        # for row in table.rows:
+                            # row_text = [cell.text.strip() for cell in row.cells]  # Extraer el texto de cada celda
+                            # #st.success(f"  {row_text}")  # Imprimir el contenido de la fila
 
-                        st.success("-" * 50)  # Separador entre tablas
+                        # st.success("-" * 50)  # Separador entre tablas
                    
                    
                     # Recorrer las filas de la tabla 7
