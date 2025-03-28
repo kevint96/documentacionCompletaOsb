@@ -1543,22 +1543,22 @@ def extract_uri_and_provider_id_from_bix(bix_path):
         # Buscar el valor dentro de las etiquetas <env:value>
         uri_match = re.search(r'<env:value>(.*?)</env:value>', content, re.DOTALL)
         
-        #print_with_line_number(f"MATCH: {uri_match}")
+        print_with_line_number(f"MATCH: {uri_match}")
         if uri_match:
             uri_value = uri_match.group(1)
         else:
             uri_value = None
 
-        #print_with_line_number(f"URI VALUE: {uri_value}")
+        print_with_line_number(f"URI VALUE: {uri_value}")
         # Buscar el valor dentro de las etiquetas <tran:provider-id>
         provider_id_match = re.search(r'<tran:provider-id>(.*?)</tran:provider-id>', content, re.DOTALL)
-        #print_with_line_number(f"PROVIDER_ID: {provider_id_match}")
+        print_with_line_number(f"PROVIDER_ID: {provider_id_match}")
         if provider_id_match:
             provider_id_value = provider_id_match.group(1)
         else:
             provider_id_value = None
         
-        #print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
+        print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
         lista_uri_provider.append((uri_value, provider_id_value))
         return lista_uri_provider
 
