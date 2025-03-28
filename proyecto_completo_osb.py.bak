@@ -2283,6 +2283,7 @@ def generar_diagramas_operaciones(project_name, combined_services2):
             if response.status_code == 200:
                 with open(diagrama_path, "wb") as file:
                     file.write(response.content)
+                    print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
             else:
                 print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
         except Exception as e:

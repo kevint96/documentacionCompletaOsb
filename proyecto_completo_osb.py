@@ -857,33 +857,6 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     operation_to_xsd = {}
     services_for_operations = {}
     found = False  # Variable para rastrear si se encuentra la operación
-    
-    plantuml_code = """@startuml
-    Alice->Bob : I am using hex
-    @enduml"""
-    
-    hex_string = plantuml_to_hex(plantuml_code)
-    print_with_line_number(f"hex_string: {hex_string}")
-    
-    # URL final
-    plantuml_url_png = f"https://www.plantuml.com/plantuml/png/{hex_string}"
-    st.image(plantuml_url_png)
-    print("🔹 URL de la imagen PNG:", plantuml_url_png)
-    
-    
-    uml_example = """@startuml
-    Alice -> Bob: Authentication Request
-    Bob --> Alice: Authentication Response
-    @enduml"""
-
-    # Generar URL
-    uml_url = generate_plantuml_url(uml_example)
-    print_with_line_number(f"URL del diagrama: {uml_url}")
-    
-    # URL final
-    plantuml_url_png = {uml_url}
-    st.image(plantuml_url_png)
-    print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
     #print_with_line_number(f"URL generada: {url}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
@@ -945,36 +918,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
             #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
-            
-            services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
-                        
-            print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
-            
-            services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
-            
-            print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
-
-            combined_services = {}
-
-            for operation, proxy_list in services_for_operations_exp.items():
-                combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
-
-            for operation, reference_list in services_for_operations_ebs:
-                if operation in combined_services:
-                    combined_services[operation]['Referencia'] = reference_list
-                else:
-                    combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
-            
-            print_with_line_number(f"combined_services: {combined_services}")
-            
-            combined_services2 = separar_ebs_abc_business(project_path,combined_services)
-            
-            print_with_line_number(f"combined_services2: {combined_services2}")
-            
-            generar_diagramas_operaciones(project_name,combined_services2)
-            
-            
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
                 continue
@@ -997,7 +941,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #print_with_line_number(f"xsd: {xsd}")
                     
-                        #elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
+                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
 
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
@@ -1012,6 +956,100 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
 
     #st.success(f"osb_services: {osb_services}")
     return osb_services
+
+def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
+    
+    osb_services = []
+    elementos_xsd = []
+    operations =[]
+    operation_to_xsd = {}
+    services_for_operations = {}
+    combined_services = {}
+    found = False  # Variable para rastrear si se encuentra la operación
+    
+    plantuml_code = """@startuml
+    Alice->Bob : I am using hex
+    @enduml"""
+    
+    hex_string = plantuml_to_hex(plantuml_code)
+    print_with_line_number(f"hex_string: {hex_string}")
+    
+    # URL final
+    plantuml_url_png = f"https://www.plantuml.com/plantuml/png/{hex_string}"
+    st.image(plantuml_url_png)
+    print("🔹 URL de la imagen PNG:", plantuml_url_png)
+    
+    
+    uml_example = """@startuml
+    Alice -> Bob: Authentication Request
+    Bob --> Alice: Authentication Response
+    @enduml"""
+
+    # Generar URL
+    uml_url = generate_plantuml_url(uml_example)
+    print_with_line_number(f"URL del diagrama: {uml_url}")
+    
+    # URL final
+    plantuml_url_png = {uml_url}
+    st.image(plantuml_url_png)
+    print("🔹 URL de la imagen PNG:", plantuml_url_png)
+
+    #print_with_line_number(f"URL generada: {url}")
+    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
+    
+    # Recorriendo el diccionario
+    for wsdl_path, data in wsdl_operations_map.items():
+        # Desempaquetar la tupla
+        operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
+        
+        print_with_line_number(f"wsdl_path: {wsdl_path}")
+        print_with_line_number(f"operations: {operations}")
+        print_with_line_number(f"project_name: {project_name}")
+        print_with_line_number(f"service_name: {service_name}")
+        print_with_line_number(f"osb_file_path: {osb_file_path}")
+        print_with_line_number(f"pipeline_path: {pipeline_path}")
+        print_with_line_number(f"service_url: {service_url}")
+        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+
+        imports = extract_xsd_import_paths(wsdl_path)
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"imports: {imports}")
+        
+        #print_with_line_number(f"project_path: {project_path}")
+        # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
+        wsdl_relative_base = os.path.relpath(wsdl_path, "extraccion_jar")
+        #print_with_line_number(f"wsdl_relative_base: {wsdl_relative_base}")
+        operacion_business = ""
+        # 🔹 Obtener la carpeta donde está el WSDL
+        wsdl_dir = os.path.dirname(wsdl_relative_base)
+        #print_with_line_number(f"wsdl_dir: {wsdl_dir}")
+
+        services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
+                    
+        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+        
+        services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
+        
+        print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+
+        for operation, proxy_list in services_for_operations_exp.items():
+            combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
+
+        for operation, reference_list in services_for_operations_ebs:
+            if operation in combined_services:
+                combined_services[operation]['Referencia'] = reference_list
+            else:
+                combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
+        
+        print_with_line_number(f"combined_services: {combined_services}")
+        
+        combined_services2 = separar_ebs_abc_business(project_path,combined_services)
+        
+        print_with_line_number(f"combined_services2: {combined_services2}")
+        
+        #generar_diagramas_operaciones(project_name,combined_services2)
+            
+    return combined_services2
 
 def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_path, pipeline_path, operations, visited_proxies=None):
     if visited_proxies is None:
