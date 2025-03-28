@@ -196,7 +196,7 @@ def replace_text_in_doc(doc, replacements):
                 for row in table.rows:
                     for cell in row.cells:
                         for paragraph in cell.paragraphs:
-                            st.success(paragraph.text)
+                            print(paragraph.text)
             for table in section.header.tables:
                 for row in table.rows:
                     for cell in row.cells:

@@ -157,12 +157,12 @@ def replace_text_in_paragraph(paragraph, replacements):
 def print_element_content(element, element_name):
     #st.success(f"Contenido del {element_name}:")
     for paragraph in element.paragraphs:
-        st.success(paragraph.text)
+        print(paragraph.text)
     for table in element.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    st.success(paragraph.text)
+                    print(paragraph.text)
 
 def replace_text_in_element(element, replacements):
     for paragraph in element.paragraphs:
