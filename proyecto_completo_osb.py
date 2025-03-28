@@ -1545,16 +1545,14 @@ def extract_uri_and_provider_id_from_bix(bix_path):
 
 def reemplazar_marcador_con_imagen(doc, marcador, diagrama_path):
     """
-    Reemplaza un marcador con una imagen en una página horizontal completa.
+    Busca un marcador en el documento y lo reemplaza con una imagen en una página completa en orientación horizontal.
     Retorna el documento modificado.
     """
     for para in doc.paragraphs:
         if marcador in para.text:
-            # Limpiar el marcador
-            para.text = para.text.replace(marcador, "")
-
-            # Agregar una nueva sección en orientación horizontal
-            new_section = doc.add_section()
+            # Agregar una nueva sección con orientación horizontal
+            section = para._element.getparent().addnext(doc.add_section()._element)
+            new_section = doc.sections[-1]
             new_section.orientation = WD_ORIENT.LANDSCAPE
             new_section.page_width = Cm(29.7)  # A4 Horizontal
             new_section.page_height = Cm(21.0)
@@ -1563,16 +1561,20 @@ def reemplazar_marcador_con_imagen(doc, marcador, diagrama_path):
             new_section.top_margin = Cm(1.0)
             new_section.bottom_margin = Cm(1.0)
 
-            # Insertar la imagen en la nueva sección
+            # Limpiar el marcador
+            para.text = para.text.replace(marcador, "")
+
+            # Insertar imagen en la nueva sección
             paragraph = doc.add_paragraph()
             run = paragraph.add_run()
             if os.path.exists(diagrama_path):
-                run.add_picture(diagrama_path, width=Cm(27))  # Ajustar tamaño
+                run.add_picture(diagrama_path, width=Cm(27))  # Ajusta el tamaño de la imagen
             else:
                 print(f"ERROR: No se encontró la imagen {diagrama_path}")
 
             return doc  # Retornar el documento modificado
-    return doc  # Si no encuentra el marcador, retorna el doc original
+    return doc  # Retornar el documento si no se encontró el marcador
+
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
@@ -1815,15 +1817,24 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     if os.path.exists(diagrama_path):
                         doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
                     
-                    # if os.path.exists(diagrama_path):
-                        # marcador = "{Imagen_diagrama}"
-                        # for para in doc.paragraphs:
-                            # if marcador in para.text:
-                                # print_with_line_number(f"marcador: {marcador}")
-                                # para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
-                                # run = para.add_run()
-                                # run.add_picture(diagrama_path, width=Inches(6))  # Ajusta el tamaño si es necesario
-                                # break  # Solo reemplazamos la primera coincidencia
+                    if os.path.exists(diagrama_path):
+                        marcador = "{Imagen_diagrama}"
+                        # Obtener el ancho de la página disponible
+                        section = doc.sections[0]  # Suponemos que la plantilla tiene una sola sección horizontal
+                        page_width = section.page_width
+                        left_margin = section.left_margin
+                        right_margin = section.right_margin
+
+                        # Calcular el ancho disponible para la imagen
+                        max_width = page_width - left_margin - right_margin
+
+                        for para in doc.paragraphs:
+                            if marcador in para.text:
+                                print(f"Insertando imagen en el marcador: {marcador}")
+                                para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
+                                run = para.add_run()
+                                run.add_picture(diagrama_path, width=max_width)  # Ajustar la imagen al ancho máximo
+                                break  # Solo reemplazamos la primera coincidencia
                     
                     
                     #st.success(f"operation: {operation}")
