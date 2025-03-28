@@ -2299,7 +2299,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     uml.append(f"{proxy_name} -> {project}: Llamada a {key}")
                                     print_with_line_number(f"{proxy_name} -> {project}: Llamada a {key}")
                                     uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
-                                    
+                                    print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                 else:
                                     uml.append(f"{proxy_name} -> {project}: Llamada a {proxy}")
                                     print_with_line_number(f"{proxy_name} -> {project}: Llamada a {proxy}")
@@ -2328,7 +2328,6 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                     uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                     print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                    print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
             
             
             
