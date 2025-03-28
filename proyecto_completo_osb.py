@@ -1578,7 +1578,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
-    print_with_line_number(f"✅ services_with_data {services_with_data}")
+    #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -1686,7 +1686,6 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'minOccurs': minOccurs_elements,
                 'service_name': service_name
             }
-            
         #print_with_line_number(f"operation_elements: {operation_elements}")
         ##print_with_line_number(f"service_name: {service_name}")
         # Print the result
@@ -1768,6 +1767,11 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     fecha_formateada = fecha_actual.strftime("%d/%m/%Y")
                     
                     
+                    ruta_proyecto = ruta.strip("/") 
+                    
+                    combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+                    
+                    print_with_line_number(f"combined_services: {combined_services}")
                     
                     #st.success(f"operation: {operation}")
                     
