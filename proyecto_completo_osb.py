@@ -2259,6 +2259,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             def procesar_referencias(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
                 
+                print_with_line_number(f"♪EMPIEZA FLUJO♪: {proxy}")
                 proyecto_padre = referencia_padre.split("/")[0]
                 print_with_line_number(f"proyecto_padre: {proyecto_padre}")
                 partes = referencia_nueva.split("/")
