@@ -2360,8 +2360,6 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                 print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
                                 uml.append(f"{proyecto_business} -> {project}: Retorna respuesta")
                                 print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
-                                uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
-                                print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
 
                 else:
                     
