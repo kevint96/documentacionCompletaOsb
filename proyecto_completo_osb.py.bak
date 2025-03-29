@@ -2272,10 +2272,16 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                 
                 if referencia_key in data:
                     print_with_line_number(f"{'  ' * profundidad}- {referencia_key} encontrado:")
+                    
+                    # 🔹 Obtener claves ordenadas (para saber cuál es la última)
+                    claves = list(data[referencia_key].keys())
+                    ultima_clave = claves[-1]  # Última clave en el diccionario
+                    print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
                     uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                     print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                     
-                    for key, value in data[referencia_key].items():
+                    for key in claves:
+                        value = data[referencia_key][key]  # Valor de la clave
                         partes = value.split("/")
                         project = partes[0]
                         proyecto_business = partes[1]
@@ -2302,8 +2308,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
                                     uml.append(f"{project} -> {proyecto}: Retorna respuesta")
                                     print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
-                                    uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                                    print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                    if key == ultima_clave:
+                                        uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                        print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                                 else:
                                     uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
                                     print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
@@ -2312,6 +2319,10 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     print_with_line_number(f"business_name: {business_name}")
                                     print_with_line_number(f"project: {project}")
                                     print_with_line_number(f"data: {data}")
+                                    
+                                    if key == ultima_clave:
+                                        uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
+                                        print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                     # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
                                     procesar_referencias(value,business_name, project, data, uml, profundidad + 1)
 

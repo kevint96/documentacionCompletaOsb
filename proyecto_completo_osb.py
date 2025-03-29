@@ -2318,7 +2318,11 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     print_with_line_number(f"value: {value}")
                                     print_with_line_number(f"business_name: {business_name}")
                                     print_with_line_number(f"project: {project}")
-                                    print_with_line_number(f"data: {data}")
+                                    #print_with_line_number(f"data: {data}")
+                                    
+                                    if key == ultima_clave:
+                                        uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
+                                        print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                     # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
                                     procesar_referencias(value,business_name, project, data, uml, profundidad + 1)
 
