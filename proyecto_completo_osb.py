@@ -2465,8 +2465,22 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                             print_with_line_number(f"proyecto_business_nuevo: {proyecto_business_nuevo}")
                                             business_name_nuevo = partes_nuevas[-1]
                                             print_with_line_number(f"business_name_nuevo: {business_name_nuevo}")
-                                            procesar_referencias_nivel2(referencia_padre,value_nuevo,business_name_nuevo, project_nuevo, data, uml, profundidad + 1)
                                             
+                                            nueva_referencia_key = f"REFERENCIA_{business_name_nuevo}"
+                                            print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                                            project_business = value_nuevo.split("/")[1]
+                                            
+                                            if nueva_referencia_key in data:
+                                                print_with_line_number(f"{nueva_referencia_key} encontrado:")
+                                                claves_nuevas = list(data[nueva_referencia_key].keys())
+                                                ultima_clave_nueva = claves_nuevas[-1] 
+                                                procesar_referencias(referencia_padre,value_nuevo,business_name_nuevo, project_nuevo, data, uml, profundidad + 1)
+                                            else:
+                                                uml.append(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
+                                                print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
+                                                uml.append(f"{project_business} -> {project}: Llamada a Retorna respuesta")
+                                                print_with_line_number(f"{project_business} -> {project}: Llamada a Retorna respuesta")
+                                           
                                     if key == ultima_clave:
                                         uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
                                         print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
