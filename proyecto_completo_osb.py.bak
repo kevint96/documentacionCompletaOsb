@@ -2321,13 +2321,25 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     print_with_line_number(f"project: {project}")
                                     # #print_with_line_number(f"data: {data}")
                                     
-                                    # nueva_referencia_key = f"REFERENCIA_{business_name}"
-                                    # print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                                    nueva_referencia_key = f"REFERENCIA_{business_name}"
+                                    print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
                                 
-                                    # if nueva_referencia_key in data:
-                                        
-                                        
-                                    
+                                    if nueva_referencia_key in data:
+                                        print_with_line_number(f"{nueva_referencia_key} encontrado:")
+                                        claves_nuevas = list(data[nueva_referencia_key].keys())
+                                        ultima_clave_nueva = claves_nuevas[-1]  # Última clave en el diccionario
+                                        for key_nueva in claves_nuevas:
+                                            value_nuevo = data[nueva_referencia_key][key_nueva]  # Valor de la clave
+                                            print_with_line_number(f"value_nuevo: {value_nuevo}")
+                                            partes_nuevas = value_nuevo.split("/")
+                                            project_nuevo = partes_nuevas[0]
+                                            print_with_line_number(f"project_nuevo: {project_nuevo}")
+                                            proyecto_business_nuevo = partes_nuevas[1]
+                                            print_with_line_number(f"proyecto_business_nuevo: {proyecto_business_nuevo}")
+                                            business_name_nuevo = partes_nuevas[-1]
+                                            print_with_line_number(f"business_name_nuevo: {business_name_nuevo}")
+                                            procesar_referencias(value_nuevo,business_name_nuevo, project_nuevo, data, uml, profundidad + 1)
+                                            
                                     if key == ultima_clave:
                                         uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
                                         print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
