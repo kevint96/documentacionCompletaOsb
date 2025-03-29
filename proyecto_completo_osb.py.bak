@@ -2476,12 +2476,20 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                                 ultima_clave_nueva = claves_nuevas[-1] 
                                                 #procesar_referencias(referencia_padre,value_nuevo,business_name_nuevo, project_nuevo, data, uml, profundidad + 1)
                                             else:
-                                                uml.append(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
-                                                print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
-                                                uml.append(f"{project_business} -> {project}: Llamada a Retorna respuesta")
-                                                print_with_line_number(f"{project_business} -> {project}: Llamada a Retorna respuesta")
-                                                uml.append(f"{project} -> {proyecto}: Llamada a Retorna respuesta")
-                                                print_with_line_number(f"{project} -> {proyecto}: Llamada a Retorna respuesta")
+                                                if "Proxies" in value_nuevo:
+                                                    uml.append(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
+                                                    print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
+                                                    uml.append(f"{project_nuevo} -> {project}: Llamada a Retorna respuesta")
+                                                    print_with_line_number(f"{project_nuevo} -> {project}: Llamada a Retorna respuesta")
+                                                    uml.append(f"{project} -> {proyecto}: Llamada a Retorna respuesta")
+                                                    print_with_line_number(f"{project} -> {proyecto}: Llamada a Retorna respuesta")
+                                                else:
+                                                    uml.append(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
+                                                    print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
+                                                    uml.append(f"{project_business} -> {project}: Llamada a Retorna respuesta")
+                                                    print_with_line_number(f"{project_business} -> {project}: Llamada a Retorna respuesta")
+                                                    uml.append(f"{project} -> {proyecto}: Llamada a Retorna respuesta")
+                                                    print_with_line_number(f"{project} -> {proyecto}: Llamada a Retorna respuesta")
                                            
                                     if key == ultima_clave:
                                         uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
