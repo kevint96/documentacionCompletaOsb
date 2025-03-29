@@ -2275,7 +2275,6 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     print_with_line_number(f"proxy: {proxy}")
                 
                 referencia_key = f"REFERENCIA_{proxy}"
-                print_with_line_number(f"referencia_key: {referencia_key}")
                 
                 if referencia_key in referencias_procesadas:
                     return  # Ya fue procesado, evitamos duplicación
@@ -2380,11 +2379,11 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             uml.append(f"{proxy_name} -> {proyecto}: Retorna respuesta")
                             print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
                         profundidad = 0
-                    else:
-                        uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                        print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                        uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                        print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                    # else:
+                        # uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                        # print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                        # uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                        # print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
             
             
             

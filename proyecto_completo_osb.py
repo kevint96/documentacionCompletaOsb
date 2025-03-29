@@ -2275,7 +2275,6 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     print_with_line_number(f"proxy: {proxy}")
                 
                 referencia_key = f"REFERENCIA_{proxy}"
-                print_with_line_number(f"referencia_key: {referencia_key}")
                 
                 if referencia_key in referencias_procesadas:
                     return  # Ya fue procesado, evitamos duplicación
@@ -2289,23 +2288,21 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     claves = list(data[referencia_key].keys())
                     ultima_clave = claves[-1]  # Última clave en el diccionario
                     print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
-                    uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                    print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
                     
                     for key in claves:
                         value = data[referencia_key][key]  # Valor de la clave
                         print_with_line_number(f"value: {value}")
-                        partes = value.split("/")
-                        project = partes[0]
+                        division = value.split("/")
+                        project = division[0]
                         print_with_line_number(f"project: {project}")
-                        proyecto_business = partes[1]
+                        proyecto_business = division[1]
                         print_with_line_number(f"proyecto_business: {proyecto_business}")
-                        business_name = partes[-1]
+                        business_name = division[-1]
 
                         print_with_line_number(f"key - value {key}: {value}")
 
                         if "ReglasNegocio" in value:
-                            regla_negocio = partes[2]
+                            regla_negocio = division[2]
                             uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
                             print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
                             uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
