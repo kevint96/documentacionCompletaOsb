@@ -2421,10 +2421,10 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
 
                         if "ReglasNegocio" in value:
                             regla_negocio = division[2]
-                            uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                            print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                            uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
-                            print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
+                            uml.append(f"{project} -> {regla_negocio}: Llamada a {business_name}")
+                            print_with_line_number(f"{project} -> {regla_negocio}: Llamada a {business_name}")
+                            uml.append(f"{regla_negocio} -> {project}: Retorna respuesta")
+                            print_with_line_number(f"{regla_negocio} -> {project}: Retorna respuesta")
 
                         else:
                             if "Proxies" in value:
