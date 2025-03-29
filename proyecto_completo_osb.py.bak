@@ -2476,8 +2476,8 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                         else:
                             procesar_referencias(referencia,referencia,proxy, proxy_name, data, uml)
-                            uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta"")
-                            print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta"")
+                            uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                            print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             
                             # referencia_key = f"REFERENCIA_{proxy}"
                             # if referencia_key in data:
