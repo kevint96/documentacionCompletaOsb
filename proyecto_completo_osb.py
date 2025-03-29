@@ -2261,7 +2261,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             def procesar_referencias(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
                 
-                print_with_line_number(f"♪EMPIEZA FLUJO♪: {referencia_padre}")
+                print_with_line_number(f"♪EMPIEZA FLUJO -> Referencia padre♪: {referencia_padre}")
                 proyecto_padre = referencia_padre.split("/")[0]
                 print_with_line_number(f"proyecto_padre: {proyecto_padre}")
                 partes = referencia_nueva.split("/")
@@ -2380,11 +2380,11 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             uml.append(f"{proxy_name} -> {proyecto}: Retorna respuesta")
                             print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
                         profundidad = 0
-                    else:
-                        uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                        print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
-                        uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                        print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                    # else:
+                        # uml.append(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                        # print_with_line_number(f"{proxy_name} -> {proyecto}: Llamada a {proxy}")
+                        # uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                        # print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
             
             
             

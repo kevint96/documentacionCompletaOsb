@@ -2237,6 +2237,8 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
     """
     diagrama_path =""
     referencias_procesadas = set()
+    proyecto_referencia_abc =""
+    proxy_ebs = ""
     for operacion, detalles in combined_services2.items():
         
         if operacion_a_documentar == operacion:
@@ -2259,7 +2261,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             def procesar_referencias(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
                 
-                print_with_line_number(f"♪EMPIEZA FLUJO♪: {referencia_padre}")
+                print_with_line_number(f"♪EMPIEZA FLUJO -> Referencia padre♪: {referencia_padre}")
                 proyecto_padre = referencia_padre.split("/")[0]
                 print_with_line_number(f"proyecto_padre: {proyecto_padre}")
                 partes = referencia_nueva.split("/")
@@ -2450,6 +2452,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
             if "Proxy" in data:
                 for proxy in data["Proxy"]:
+                    proxy_ebs = proxy
                     proyecto_ebs = proxy.split("/")[0]
                     uml.append(f"EXP -> {proyecto_ebs}: Llamada a {proxy.split('/')[-1]}")
             print_with_line_number(f"uml: {uml}")
@@ -2475,7 +2478,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             uml.append(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                             print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                         else:
-                            procesar_referencias(referencia,referencia,proxy, proxy_name, data, uml)
+                            procesar_referencias(proxy_ebs,referencia,proxy, proxy_ebs, data, uml)
                             uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             
