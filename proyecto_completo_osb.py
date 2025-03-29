@@ -2271,7 +2271,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                 print_with_line_number(f"referencia_key: {referencia_key}")
                 
                 if referencia_key in data:
-                    print_with_line_number(f"{'  ' * profundidad}- {referencia_key} encontrado:")
+                    print_with_line_number(f"{referencia_key} encontrado:")
                     
                     # 🔹 Obtener claves ordenadas (para saber cuál es la última)
                     claves = list(data[referencia_key].keys())
@@ -2282,14 +2282,15 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     
                     for key in claves:
                         value = data[referencia_key][key]  # Valor de la clave
+                        print_with_line_number(f"value: {value}")
                         partes = value.split("/")
                         project = partes[0]
+                        print_with_line_number(f"project: {project}")
                         proyecto_business = partes[1]
+                        print_with_line_number(f"proyecto_business: {proyecto_business}")
                         business_name = partes[-1]
 
-                        print_with_line_number(f"{'  ' * profundidad}referencia_key: {referencia_key}")
-                        print_with_line_number(f"{'  ' * profundidad}proyecto_business: {proyecto_business}")
-                        print_with_line_number(f"{'  ' * profundidad}- {key}: {value}")
+                        print_with_line_number(f"key - value {key}: {value}")
 
                         if "ReglasNegocio" in value:
                             regla_negocio = partes[2]
@@ -2318,7 +2319,14 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     print_with_line_number(f"value: {value}")
                                     print_with_line_number(f"business_name: {business_name}")
                                     print_with_line_number(f"project: {project}")
-                                    #print_with_line_number(f"data: {data}")
+                                    # #print_with_line_number(f"data: {data}")
+                                    
+                                    # nueva_referencia_key = f"REFERENCIA_{business_name}"
+                                    # print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                                
+                                    # if nueva_referencia_key in data:
+                                        
+                                        
                                     
                                     if key == ultima_clave:
                                         uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
