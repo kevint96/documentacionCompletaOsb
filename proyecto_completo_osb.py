@@ -1019,11 +1019,11 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
 
         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                     
-        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+        #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
         
         services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
         
-        print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+        #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
         for operation, proxy_list in services_for_operations_exp.items():
             combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1034,7 +1034,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
             else:
                 combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
         
-        print_with_line_number(f"combined_services: {combined_services}")
+        #print_with_line_number(f"combined_services: {combined_services}")
         
         combined_services2 = separar_ebs_abc_business(project_path,combined_services)
         
@@ -1402,29 +1402,29 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     def buscar_recursivamente_operaciones(referencia):
         referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
         referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
-        print_with_line_number(f"🔍 referencia_base: {referencia_base}")
+        #print_with_line_number(f"🔍 referencia_base: {referencia_base}")
         if "Proxies" in referencia:
             osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
             if os.path.exists(osb_file_path):
-                print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
+                #print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
                 project_name = extract_project_name_from_proxy(osb_file_path)
-                print_with_line_number(f"🔍 project_name: {project_name}")
+                #print_with_line_number(f"🔍 project_name: {project_name}")
                 pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+                #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
                 service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-                print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
+                #print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
                 if service_for_operations:
                     referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
                     for valor in service_for_operations.values():
                         valor_buscado = valor
-                        print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
+                        #print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
 
                         if "BusinessServices" in valor_buscado:
                             referencia_business_service = valor_buscado
-                            print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                            #print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
                             biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
-                            print_with_line_number(f"🔍 biz_path: {biz_path}")
+                            #print_with_line_number(f"🔍 biz_path: {biz_path}")
                             if os.path.exists(biz_path):
                                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                                 if service_refs:
@@ -1433,12 +1433,12 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                     
                         elif "Proxies" in valor_buscado:
                             referencia_proxy = valor_buscado
-                            print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                            #print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
                             buscar_recursivamente_operaciones(referencia_proxy)
 
         elif "BusinessServices" in referencia:
             biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
-            print_with_line_number(f"🔍 biz_path: {biz_path}")
+            #print_with_line_number(f"🔍 biz_path: {biz_path}")
             if os.path.exists(biz_path):
                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                 if service_refs:
@@ -1448,21 +1448,21 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         
         elif "Pipeline" in referencia:
             pipeline_path = os.path.join(jdeveloper_projects_dir, referencia + ".Pipeline")
-            print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+            #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-            print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
+            #print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
             if service_for_operations:
                 referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
                 for valor in service_for_operations.values():
                     valor_buscado = valor
-                    print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
+                    #print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
 
                     if "BusinessServices" in valor_buscado:
                         referencia_business_service = valor_buscado
-                        print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                        #print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
                         biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
-                        print_with_line_number(f"🔍 biz_path: {biz_path}")
+                        #print_with_line_number(f"🔍 biz_path: {biz_path}")
                         if os.path.exists(biz_path):
                             service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                             if service_refs:
@@ -1471,12 +1471,12 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                 
                     elif "Proxies" in valor_buscado:
                         referencia_proxy = valor_buscado
-                        print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                        #print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
                         buscar_recursivamente_operaciones(referencia_proxy)
     
     
     for service_name, service_data in combined_services.items():
-        print_with_line_number(f"🔍 servicio: {service_name}")
+        #print_with_line_number(f"🔍 servicio: {service_name}")
         for proxy in service_data.get("Proxy", []):
             for referencia in service_data.get("Referencia", []):
                 if proxy not in referencia:
@@ -1485,7 +1485,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         # Actualizar el servicio actual en combined_services con la nueva información
         combined_services[service_name].update(referencias)
         combined_services[service_name].update(informacion_business)
-        print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
+        #print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
         informacion_business = {}
         referencias = {}
         referencia_proxy ={}

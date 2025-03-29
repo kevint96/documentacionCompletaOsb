@@ -2236,6 +2236,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
     Genera diagramas de secuencia para cada operación en combined_services2.
     """
     diagrama_path =""
+    referencias_procesadas = set()
     for operacion, detalles in combined_services2.items():
         
         if operacion_a_documentar == operacion:
@@ -2255,6 +2256,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             
             
+            
             def procesar_referencias(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
                 
                 proyecto_padre = referencia_padre.split("/")[0]
@@ -2271,6 +2273,11 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                 
                 referencia_key = f"REFERENCIA_{proxy}"
                 print_with_line_number(f"referencia_key: {referencia_key}")
+                
+                if referencia_key in referencias_procesadas:
+                    return  # Ya fue procesado, evitamos duplicación
+                
+                referencias_procesadas.add(referencia_key)
                 
                 if referencia_key in data:
                     print_with_line_number(f"{referencia_key} encontrado:")
