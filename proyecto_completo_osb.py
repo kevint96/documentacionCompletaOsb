@@ -2259,7 +2259,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             def procesar_referencias(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
                 
-                print_with_line_number(f"♪EMPIEZA FLUJO♪: {proxy}")
+                print_with_line_number(f"♪EMPIEZA FLUJO♪: {referencia_padre}")
                 proyecto_padre = referencia_padre.split("/")[0]
                 print_with_line_number(f"proyecto_padre: {proyecto_padre}")
                 partes = referencia_nueva.split("/")
@@ -2394,10 +2394,10 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             # Verificar los datos en la estructura y agregar solo si no existen
             if "Proxy" in data:
                 for proxy in data["Proxy"]:
-                    proxy_name = proxy.split("/")[0]
-                    add_participant(proxy_name, proxy_name)
+                    proyecto_ebs = proxy.split("/")[0]
+                    add_participant(proyecto_ebs, proyecto_ebs)
             
-            print_with_line_number(f"proxy_name: {proxy_name}")
+            print_with_line_number(f"proyecto_ebs: {proyecto_ebs}")
             print_with_line_number(f"participantes: {participantes}")
         
             if contiene_valor("ReglasNegocio",data):
@@ -2450,29 +2450,35 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
             if "Proxy" in data:
                 for proxy in data["Proxy"]:
-                    proxy_name = proxy.split("/")[0]
-                    uml.append(f"EXP -> {proxy_name}: Llamada a {proxy.split('/')[-1]}")
+                    proyecto_ebs = proxy.split("/")[0]
+                    uml.append(f"EXP -> {proyecto_ebs}: Llamada a {proxy.split('/')[-1]}")
             print_with_line_number(f"uml: {uml}")
             
-            proyecto =""
+            proyecto_referencia_abc =""
             if "Referencia" in data:
                 for referencia in data["Referencia"]:
                     partes = referencia.split("/")
                     if len(partes) >= 3:
                         print_with_line_number(f"referencia: {referencia}")
-                        proyecto = partes[0]
-                        print_with_line_number(f"proyecto: {proyecto}")
+                        proyecto_referencia_abc = partes[0]
+                        print_with_line_number(f"proyecto_referencia_abc: {proyecto_referencia_abc}")
                         business = partes[1]
                         print_with_line_number(f"business: {business}")
                         proxy = partes[-1]
                         print_with_line_number(f"proxy: {proxy}")
+                        
+                        uml.append(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
+                        print_with_line_number(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
                         if "BusinessServices" in business:
-                            uml.append(f"{proyecto} -> {business}: Llamada a {proxy}")
-                            print_with_line_number(f"{proyecto} -> {business}: Llamada a {proxy}")
-                            uml.append(f"{business} -> {proyecto}: Retorna respuesta")
-                            print_with_line_number(f"{business} -> {proyecto}: Retorna respuesta")
+                            uml.append(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
+                            print_with_line_number(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
+                            uml.append(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
+                            print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                         else:
                             procesar_referencias(referencia,referencia,proxy, proxy_name, data, uml)
+                            uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta"")
+                            print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta"")
+                            
                             # referencia_key = f"REFERENCIA_{proxy}"
                             # if referencia_key in data:
                                 # print_with_line_number(f"  - {referencia_key} encontrado:")
@@ -2517,8 +2523,8 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                 # #uml.append(f"{proxy_name} -> EXP: Retorna respuesta")
                                 # print_with_line_number(f"{proxy_name} -> EXP: Retorna respuesta")
                         
-                uml.append(f"{proyecto} -> EXP: Retorna respuesta")
-                print_with_line_number(f"{proyecto} -> EXP: Retorna respuesta")
+                uml.append(f"{proyecto_ebs} -> EXP: Retorna respuesta")
+                print_with_line_number(f"{proyecto_ebs} -> EXP: Retorna respuesta")
             print_with_line_number(f"uml: {uml}")
             
             uml.append("EXP -> Usuario : Respuesta final")
