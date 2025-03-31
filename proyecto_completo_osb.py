@@ -624,7 +624,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 element_minOccurs = 0
            
             #print_with_line_number(f"element_name: {element_name}")
-            #print_with_line_number(f"element_type: {element_type}")
+            print_with_line_number(f"element_type: {element_type}")
             #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             print_with_line_number(f"Encontrado elemento: {full_name}")
@@ -651,6 +651,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     'operation_actual': operation_actual,
                 }
                 #print_with_line_number(f"Agregando elemento primitivo: {element_details}")
+                print_with_line_number(f"Agregando elemento primitivo: {full_name}")
 
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
@@ -661,7 +662,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 processed_types[type_name].append(element_details)
 
             elif element_type in complex_types:
-                #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
+                print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 processed_types[type_name].append(element_type)  # 🔹 Registrar referencia
                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
@@ -671,7 +672,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 prefix, nested_type = element_type.split(':')
                 
                 if nested_type in complex_types:
-                    #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
+                    print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     processed_types[type_name].append(nested_type)  # 🔹 Registrar referencia
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
