@@ -1913,48 +1913,6 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     # Variables de control
                     seccion_actual = None
                     
-                    #st.success(f"Número total de tablas en el documento: {len(doc.tables)}")
-                    
-                    # for i, table in enumerate(doc.tables):
-                        # #st.success(f"Tabla {i + 1}:")  # Mostrar el número de la tabla
-
-                        # for row in table.rows:
-                            # row_text = [cell.text.strip() for cell in row.cells]  # Extraer el texto de cada celda
-                            # #st.success(f"  {row_text}")  # Imprimir el contenido de la fila
-
-                        # st.success("-" * 50)  # Separador entre tablas
-                   
-                   
-                    # Recorrer las filas de la tabla 7
-                    # for row in tabla_cabecera_salida.rows:
-                        # row_text = [cell.text.strip() for cell in row.cells]
-
-                        # # Detectar la cabecera de cada subtabla
-                        # if "CabeceraSalida" in row_text:
-                            # seccion_actual = "cabecera_salida"
-                            # continue  # Saltar a la siguiente fila
-
-                        # if "Response Body" in row_text:
-                            # seccion_actual = "datos_respuesta"
-                            # continue  # Saltar a la siguiente fila
-
-                        # # Guardar las filas en la subtabla correspondiente
-                        # if seccion_actual == "cabecera_salida":
-                            # cabecera_salida.append(row_text)
-
-                        # elif seccion_actual == "datos_respuesta":
-                            # datos_respuesta.append(row_text)
-                   
-                    # # Identificar la sección "Datos Respuesta"
-                    # for row in tabla_cabecera_salida.rows:
-                        # if "Response Body" in row.cells[0].text:
-                            # tabla_response = tabla_cabecera_salida  # Ahora sí es una tabla válida
-                            # break
-                    # else:
-                        # st.success("No se encontró la sección 'Response Body' en la tabla 7.")
-                        # tabla_response = None  # Para evitar futuros errores
-                   
-                    
                     # Datos por defecto para LONGITUD y OBSERVACIÓN
                     default_longitud = "default"
                     default_observacion = ""
