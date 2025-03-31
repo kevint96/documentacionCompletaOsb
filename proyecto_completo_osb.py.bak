@@ -2582,7 +2582,10 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             # Agregar los participantes al diagrama
             for alias, nombre in participantes:
-                uml.append(f"participant {nombre} as {alias}")
+                if alias == "BusinessServices":
+                    uml.append(f"database {nombre} as {alias}")
+                else:
+                    uml.append(f"participant {nombre} as {alias}")
         
             print_with_line_number(f"uml: {uml}")
             
