@@ -559,6 +559,15 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         # 🔹 Asegurar que hay elementos almacenados para este type_name
         if processed_types[type_name]:
             for element_details in processed_types[type_name]:
+                
+                # Extraer el último elemento después del último "."
+                ultimo_elemento = element_details['name'].split('.')[-1]
+                
+                # Construir el nuevo 'name'
+                nuevo_name = f"{nuevo_name_base}.{ultimo_elemento}"
+                
+                # Actualizar el diccionario
+                element_details['name'] = nuevo_name
                 print_with_line_number(f"↪ Agregando referencia almacenada de {type_name}: {element_details}")
 
                 if 'Request' in parent_element_name:

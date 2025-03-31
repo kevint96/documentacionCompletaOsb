@@ -564,7 +564,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 ultimo_elemento = element_details['name'].split('.')[-1]
                 
                 # Construir el nuevo 'name'
-                nuevo_name = f"{nuevo_name_base}.{ultimo_elemento}"
+                nuevo_name = f"{parent_element_name}.{ultimo_elemento}"
                 
                 # Actualizar el diccionario
                 element_details['name'] = nuevo_name
