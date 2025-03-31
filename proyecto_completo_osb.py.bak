@@ -664,6 +664,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 
                 # 🔹 Guardar el elemento en processed_types para futuras referencias
                 processed_types[type_name].append(element_details)
+                print_with_line_number(f"processed_types: {processed_types}")
 
             elif element_type in complex_types:
                 print_with_line_number(f"Buscando {element_type} en el mismo XSD")
