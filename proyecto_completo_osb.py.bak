@@ -187,18 +187,18 @@ def replace_text_in_doc(doc, replacements):
 
     for section in doc.sections:
         #st.success(f"Encabezado de la sección: {section.header}")
-        print_element_content(section.header, "Encabezado de la sección")
+        #print_element_content(section.header, "Encabezado de la sección")
         replace_text_in_element(section.header, replacements)
         #st.success(f"Pie de página de la sección: {section.footer}")
-        print_element_content(section.footer, "Pie de página de la sección")
+        #print_element_content(section.footer, "Pie de página de la sección")
         replace_text_in_element(section.footer, replacements)
         # Agregamos este bloque específico para procesar las tablas dentro del encabezado de la sección 2
         if "Encabezado-Sección 2-" in [paragraph.text for paragraph in section.header.paragraphs]:
-            for table in section.header.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        for paragraph in cell.paragraphs:
-                            print(paragraph.text)
+            # for table in section.header.tables:
+                # for row in table.rows:
+                    # for cell in row.cells:
+                        # for paragraph in cell.paragraphs:
+                            # print(paragraph.text)
             for table in section.header.tables:
                 for row in table.rows:
                     for cell in row.cells:
