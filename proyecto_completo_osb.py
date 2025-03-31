@@ -604,7 +604,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             #print_with_line_number(f"element_type: {element_type}")
             #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
-            print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
+            print_with_line_number(f"Encontrado elemento: {full_name}")
+            #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
 
             # 🔹 Buscar 'simpleType' con prefijo válido
             simple_type = element.find(f'{prefix}:simpleType', namespaces)
