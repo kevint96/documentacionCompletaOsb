@@ -662,9 +662,14 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     request_elements.append(element_details)
                 elif 'Response' in parent_element_name:
                     response_elements.append(element_details)
-                
+
+                element_details_specific = {
+                    'name': full_name,  
+                    'type': element_type,
+                    'minOccurs': element_minOccurs
+                }
                 # 🔹 Guardar el elemento en processed_types para futuras referencias
-                processed_types[type_name].append(element_details)
+                processed_types[type_name].append(element_details_specific)
                 print_with_line_number(f"processed_types: {processed_types}")
 
             elif element_type in complex_types:
