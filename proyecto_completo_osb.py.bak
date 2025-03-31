@@ -587,6 +587,11 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
+        print_with_line_number(f"type_name: {type_name}")
+        print_with_line_number(f"parent_element_name: {parent_element_name}")
+        print_with_line_number(f"complex_types: {complex_types}")
+        print_with_line_number(f"namespaces: {namespaces}")
+        print_with_line_number(f"imports: {imports}")
 
         # 🔹 Buscar un prefijo válido
         prefix = next((p for p in ['xs', 'xsd'] if p in namespaces), None)
