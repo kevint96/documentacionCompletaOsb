@@ -435,6 +435,17 @@ def get_correct_xsd_path(current_xsd_path, schema_location):
 
     return corrected_path
 
+@st.cache_resource
+def load_xsd_content(ruta_corregida):
+    """Lee el contenido de un XSD desde el disco y lo almacena en caché."""
+    try:
+        with open(ruta_corregida, 'r', encoding="utf-8") as f:
+            xsd_content = f.read()
+        return xsd_content
+    except FileNotFoundError:
+        st.error(f"El archivo XSD {ruta_corregida} no existe.")
+        return None
+
 def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, capa_proyecto, 
                    operacion_business, operations, service_name, operation_actual, 
                    target_complex_type=None, root_element_name=None,
@@ -449,7 +460,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     if response_elements is None:
         response_elements = []
     if processed_types is None:
-        #processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
+        processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
         processed_types = {}
 
     extraccion_dir = os.path.abspath(project_path)
@@ -464,13 +475,10 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
     #print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
     
-    if not os.path.isfile(ruta_corregida):
-        st.error(f"El archivo XSD {ruta_corregida} no existe.")
-        return request_elements, response_elements
-
-    # Leer el contenido del XSD
-    with open(ruta_corregida, 'r', encoding="utf-8") as f:
-        xsd_content = f.read()
+    # ✅ **Usar caché para evitar lecturas repetidas del XSD**
+    xsd_content = load_xsd_content(ruta_corregida)
+    if xsd_content is None:
+        return request_elements, response_elements  # Evita continuar si no hay contenido
 
     # Extraer el contenido de CDATA si es necesario
     cdata_match = re.search(r'<!\[CDATA\[(.*?)\]\]>', xsd_content, re.DOTALL)
@@ -555,43 +563,12 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
     if type_name in processed_types:
         print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
-
-        # 🔹 Asegurar que hay elementos almacenados para este type_name
-        if processed_types[type_name]:
-            for element_details in processed_types[type_name]:
-                
-                if isinstance(element_details, dict) and 'name' in element_details:
-                    ultimo_elemento = element_details['name'].split('.')[-1]
-                else:
-                    print_with_line_number(f"⚠ Advertencia: element_details no es un diccionario válido -> {element_details}")
-                    return  # Evita que el error rompa la ejecución
-                
-                # Construir el nuevo 'name'
-                nuevo_name = f"{parent_element_name}.{ultimo_elemento}"
-                
-                # Actualizar el diccionario
-                element_details['name'] = nuevo_name
-                print_with_line_number(f"↪ Agregando referencia almacenada de {type_name}: {element_details}")
-
-                if 'Request' in parent_element_name:
-                    request_elements.append(element_details)
-                elif 'Response' in parent_element_name:
-                    response_elements.append(element_details)
-
-        else:
-            print_with_line_number(f"processed_types: {processed_types}")
-        return  # Evita seguir procesando un tipo ya visitado
+        #return  # Evita seguir procesando un tipo ya visitado
     
-    
-    #print_with_line_number(f"processed_types: {processed_types}")
+    processed_types.add(type_name)  # 🔹 Registrar que ya se visitó este tipo
 
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
-        print_with_line_number(f"type_name: {type_name}")
-        print_with_line_number(f"parent_element_name: {parent_element_name}")
-        print_with_line_number(f"complex_types: {complex_types}")
-        print_with_line_number(f"namespaces: {namespaces}")
-        print_with_line_number(f"imports: {imports}")
 
         # 🔹 Buscar un prefijo válido
         prefix = next((p for p in ['xs', 'xsd'] if p in namespaces), None)
@@ -601,9 +578,6 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         
         # 🔹 Buscar 'sequence' con prefijo válido
         sequence = complex_types[type_name].find(f'{prefix}:sequence', namespaces)
-        print_with_line_number(f"type_name: {type_name}")
-        print_with_line_number(f"prefix: {prefix}")
-        #print_with_line_number(f"sequence: {sequence}")
         if sequence is None:
             #st.warning(f"⚠ No se encontró 'sequence' en {type_name}")
             
@@ -614,7 +588,6 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
                     #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
-                    #processed_types[type_name].append(base_type)  # 🔹 Registrar referencia a la base
                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
@@ -638,7 +611,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 element_minOccurs = 0
            
             #print_with_line_number(f"element_name: {element_name}")
-            print_with_line_number(f"element_type: {element_type}")
+            #print_with_line_number(f"element_type: {element_type}")
             #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             print_with_line_number(f"Encontrado elemento: {full_name}")
@@ -665,41 +638,14 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     'operation_actual': operation_actual,
                 }
                 #print_with_line_number(f"Agregando elemento primitivo: {element_details}")
-                print_with_line_number(f"Agregando elemento primitivo: {full_name}")
 
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
                 elif 'Response' in parent_element_name:
                     response_elements.append(element_details)
 
-                element_details_specific = {
-                    'name': full_name,  
-                    'type': element_type,
-                    'minOccurs': element_minOccurs
-                }
-                
-                # 🔹 Obtener el nombre sin prefijo para usarlo como clave base
-                base_type_name = type_name.split(':')[-1]  
-
-                # 🔹 Buscar si ya existe en processed_types con prefijo o sin él
-                matching_key = next((key for key in processed_types if key.split(':')[-1] == base_type_name), None)
-
-                if matching_key:
-                    # 🔹 Si ya existe con otro prefijo, agregar a esa lista
-                    processed_types[matching_key].append(element_details_specific)
-                    
-                    # 🔹 Si la clave actual (type_name) es diferente a la que encontramos, asegurarnos de que no se cree una nueva entrada vacía
-                    if type_name in processed_types and type_name != matching_key:
-                        del processed_types[type_name]  # Eliminar entrada duplicada
-                else:
-                    # 🔹 Si no existe, guardar con el prefijo actual
-                    processed_types[type_name] = [element_details_specific]
-
-                print_with_line_number(f"processed_types: {processed_types}")
-
             elif element_type in complex_types:
-                print_with_line_number(f"Buscando {element_type} en el mismo XSD")
-                #processed_types[type_name].append(element_type)  # 🔹 Registrar referencia
+                #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                       operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
@@ -708,21 +654,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 prefix, nested_type = element_type.split(':')
                 
                 if nested_type in complex_types:
-                    print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
-                    # 🔹 Obtener el nombre sin prefijo para usarlo como clave base
-                    base_type_name = type_name.split(':')[-1]  
-
-                    # 🔹 Buscar si ya existe este tipo en processed_types con cualquier prefijo
-                    matching_key = next((key for key in processed_types if key.split(':')[-1] == base_type_name), None)
-
-                    if matching_key:
-                        # 🔹 Si ya existe con otro prefijo, agregar a esa lista
-                        processed_types[matching_key].append(element_type)
-                    else:
-                        # 🔹 Si no existe, guardar con el prefijo actual
-                        processed_types[type_name] = [element_type]
-                    
-                    print_with_line_number(f"processed_types: {processed_types}")
+                    #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
@@ -735,14 +667,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         #print_with_line_number(f"corrected_xsd_path: {corrected_xsd_path}")
                         new_xsd_path = os.path.join(extraccion_dir, corrected_xsd_path)
                         #print_with_line_number(f"new_xsd_path: {new_xsd_path}")
-                        print_with_line_number(f"namespace: {namespace}")
-                        print_with_line_number(f"prefix: {prefix}")
-                        print_with_line_number(f"schema_location: {schema_location}")
-                        print_with_line_number(f"element_type: {element_type}")
-                        
-                        processed_types[element_type] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias
-                        
-                        print_with_line_number(f"processed_types: {processed_types}")
+
                         parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
                                        service_name, operation_actual, 
