@@ -699,6 +699,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         new_xsd_path = os.path.join(extraccion_dir, corrected_xsd_path)
                         #print_with_line_number(f"new_xsd_path: {new_xsd_path}")
                         print_with_line_number(f"namespace: {namespace}")
+                        print_with_line_number(f"prefix: {prefix}")
+                        print_with_line_number(f"schema_location: {schema_location}")
+                        print_with_line_number(f"element_type: {element_type}")
 
                         parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
