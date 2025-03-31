@@ -560,8 +560,11 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         if processed_types[type_name]:
             for element_details in processed_types[type_name]:
                 
-                # Extraer el último elemento después del último "."
-                ultimo_elemento = element_details['name'].split('.')[-1]
+                if isinstance(element_details, dict) and 'name' in element_details:
+                    ultimo_elemento = element_details['name'].split('.')[-1]
+                else:
+                    print_with_line_number(f"⚠ Advertencia: element_details no es un diccionario válido -> {element_details}")
+                    return  # Evita que el error rompa la ejecución
                 
                 # Construir el nuevo 'name'
                 nuevo_name = f"{parent_element_name}.{ultimo_elemento}"
