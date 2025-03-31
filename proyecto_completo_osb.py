@@ -486,6 +486,9 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
     #print_with_line_number(f"Namespaces detectados: {namespaces}")
     #print_with_line_number(f"Imports encontrados: {imports}")
+    
+    print_with_line_number(f"request element: {request_elements}")
+    print_with_line_number(f"response element: {response_elements}")
 
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
@@ -528,8 +531,8 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name)
 
-    #print_with_line_number(f"Total elementos request: {len(request_elements)}")
-    #print_with_line_number(f"Total elementos response: {len(response_elements)}")
+    print_with_line_number(f"Total elementos request: {len(request_elements)}")
+    print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
 
 
@@ -647,12 +650,12 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                                        root_element_name=full_name,
                                        request_elements=request_elements,
                                        response_elements=response_elements)
-                    # else:
-                        # st.warning(f"No se encontró el namespace para el prefijo {prefix}")
-                # else:
-                    # st.warning(f"complexType {element_type} no encontrado en el XSD")
-    # else:
-        # st.warning(f"complexType {type_name} no encontrado en el XSD")
+                    else:
+                        st.warning(f"No se encontró el namespace para el prefijo {prefix}")
+                else:
+                    st.warning(f"complexType {element_type} no encontrado en el XSD")
+    else:
+        st.warning(f"complexType {type_name} no encontrado en el XSD")
 
 def leer_xsd_file(xsd_file_path, complexType_name):
     elements_list = []
