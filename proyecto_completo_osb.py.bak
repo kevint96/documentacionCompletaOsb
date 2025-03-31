@@ -578,7 +578,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 elif 'Response' in parent_element_name:
                     response_elements.append(element_details)
 
-        print_with_line_number(f"processed_types: {processed_types}")
+        else:
+            print_with_line_number(f"processed_types: {processed_types}")
         return  # Evita seguir procesando un tipo ya visitado
     
     processed_types[type_name] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias
