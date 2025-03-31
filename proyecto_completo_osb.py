@@ -2607,8 +2607,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         proxy = partes[-1]
                         print_with_line_number(f"proxy: {proxy}")
                         
-                        uml.append(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
-                        print_with_line_number(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
+                        if proyecto_ebs != proyecto_referencia_abc:
+                            uml.append(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
+                            print_with_line_number(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
                         if "BusinessServices" in business:
                             uml.append(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
                             print_with_line_number(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
