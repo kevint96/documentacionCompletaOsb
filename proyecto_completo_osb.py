@@ -448,6 +448,8 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         request_elements = []
     if response_elements is None:
         response_elements = []
+    if processed_types is None:
+        processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
 
     extraccion_dir = os.path.abspath(project_path)
     xsd_file_path = os.path.normpath(xsd_file_path.strip("/\\"))  
@@ -522,7 +524,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
         explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                              operations, service_name, operation_actual, request_elements, response_elements, operation_name)
+                              operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
         return request_elements, response_elements
 
     # 🔹 Si `target_complex_type` no está, procesamos TODO desde los elementos raíz.
@@ -532,7 +534,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         if complex_type in complex_types:
             explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name)
+                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
 
     print_with_line_number(f"Total elementos request: {len(request_elements)}")
     print_with_line_number(f"Total elementos response: {len(response_elements)}")
@@ -541,10 +543,19 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
 def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                          operations, service_name, operation_actual, request_elements, response_elements, operation_name):
+                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None):
     """Explora recursivamente un complexType y extrae sus elementos internos."""
 
+    if processed_types is None:
+        processed_types = set()
+
     type_name = type_name.split(':')[-1]  
+
+    if type_name in processed_types:
+        print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+        return  # Evita seguir procesando un tipo ya visitado
+    
+    processed_types.add(type_name)  # 🔹 Registrar que ya se visitó este tipo
 
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
@@ -570,7 +581,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
-                                          request_elements, response_elements, operation_name)
+                                          request_elements, response_elements, operation_name,processed_types)
                     return  # Salimos porque ya delegamos la exploración a la base
                 
             #st.warning(f"⚠ No se encontró ni 'sequence' ni 'extension' en {type_name}")
@@ -626,7 +637,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                      operations, service_name, operation_actual, request_elements, response_elements, operation_name)
+                                      operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
 
             elif ':' in element_type:
                 prefix, nested_type = element_type.split(':')
@@ -635,7 +646,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                          operations, service_name, operation_actual, request_elements, response_elements, operation_name)
+                                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
                 elif prefix in namespaces:
                     namespace = namespaces[prefix]
                     if namespace in imports:
@@ -652,7 +663,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                                        target_complex_type=nested_type, 
                                        root_element_name=full_name,
                                        request_elements=request_elements,
-                                       response_elements=response_elements)
+                                       response_elements=response_elements,
+                                       processed_types=processed_types)
                     else:
                         st.warning(f"No se encontró el namespace para el prefijo {prefix}")
                 else:
