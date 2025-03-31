@@ -460,7 +460,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     if response_elements is None:
         response_elements = []
     if processed_types is None:
-        processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
+        #processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
         processed_types = {}
 
     extraccion_dir = os.path.abspath(project_path)
@@ -555,17 +555,17 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None):
     """Explora recursivamente un complexType y extrae sus elementos internos."""
 
+    type_name = type_name.split(':')[-1]  
+    
     if processed_types is None:
         #processed_types = set()
         processed_types = {}
-
-    type_name = type_name.split(':')[-1]  
 
     if type_name in processed_types:
         print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
         #return  # Evita seguir procesando un tipo ya visitado
     
-    processed_types.add(type_name)  # 🔹 Registrar que ya se visitó este tipo
+    processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
 
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
