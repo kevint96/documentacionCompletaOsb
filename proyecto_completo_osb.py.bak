@@ -582,7 +582,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         return  # Evita seguir procesando un tipo ya visitado
     
     processed_types[type_name] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias
-    print_with_line_number(f"processed_types: {processed_types}")
+    #print_with_line_number(f"processed_types: {processed_types}")
 
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
@@ -670,7 +670,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 }
                 # 🔹 Guardar el elemento en processed_types para futuras referencias
                 processed_types[type_name].append(element_details_specific)
-                print_with_line_number(f"processed_types: {processed_types}")
+                #print_with_line_number(f"processed_types: {processed_types}")
 
             elif element_type in complex_types:
                 print_with_line_number(f"Buscando {element_type} en el mismo XSD")
