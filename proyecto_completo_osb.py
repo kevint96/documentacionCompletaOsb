@@ -555,13 +555,16 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
     if type_name in processed_types:
         print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
-        
-        # 🔹 Recorrer las referencias almacenadas en processed_types
-        for ref in processed_types[type_name]:
-            print_with_line_number(f"↪ Explorando referencia almacenada para {type_name}: {ref}")
-            explorar_complex_type(ref, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
-                                  xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name, processed_types)
+
+        # 🔹 Recuperar los elementos ya procesados y agregarlos según corresponda
+        for element_details in processed_types[type_name]:
+            print_with_line_number(f"↪ Agregando referencia almacenada de {type_name}: {element_details}")
+
+            if 'Request' in parent_element_name:
+                request_elements.append(element_details)
+            elif 'Response' in parent_element_name:
+                response_elements.append(element_details)
+
         return  # Evita seguir procesando un tipo ya visitado
     
     processed_types[type_name] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias

@@ -449,7 +449,8 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     if response_elements is None:
         response_elements = []
     if processed_types is None:
-        processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
+        #processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
+        processed_types = {}
 
     extraccion_dir = os.path.abspath(project_path)
     xsd_file_path = os.path.normpath(xsd_file_path.strip("/\\"))  
@@ -547,15 +548,23 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     """Explora recursivamente un complexType y extrae sus elementos internos."""
 
     if processed_types is None:
-        processed_types = set()
+        #processed_types = set()
+        processed_types = {}
 
     type_name = type_name.split(':')[-1]  
 
     if type_name in processed_types:
         print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+        
+        # 🔹 Recorrer las referencias almacenadas en processed_types
+        for ref in processed_types[type_name]:
+            print_with_line_number(f"↪ Explorando referencia almacenada para {type_name}: {ref}")
+            explorar_complex_type(ref, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
+                                  xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
+                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name, processed_types)
         return  # Evita seguir procesando un tipo ya visitado
     
-    processed_types.add(type_name)  # 🔹 Registrar que ya se visitó este tipo
+    processed_types[type_name] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias
 
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
@@ -578,6 +587,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
                     #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
+                    processed_types[type_name].append(base_type)  # 🔹 Registrar referencia a la base
                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
@@ -636,6 +646,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
             elif element_type in complex_types:
                 #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
+                processed_types[type_name].append(element_type)  # 🔹 Registrar referencia
                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                       operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
@@ -645,6 +656,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 
                 if nested_type in complex_types:
                     #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
+                    processed_types[type_name].append(nested_type)  # 🔹 Registrar referencia
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
