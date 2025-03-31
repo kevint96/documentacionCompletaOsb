@@ -678,23 +678,24 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     'minOccurs': element_minOccurs
                 }
                 
-                print_with_line_number(f"type_name: {type_name}")
-                
                 # 🔹 Obtener el nombre sin prefijo para usarlo como clave base
                 base_type_name = type_name.split(':')[-1]  
 
-                # 🔹 Buscar si ya existe este tipo en processed_types con cualquier prefijo
+                # 🔹 Buscar si ya existe en processed_types con prefijo o sin él
                 matching_key = next((key for key in processed_types if key.split(':')[-1] == base_type_name), None)
 
                 if matching_key:
                     # 🔹 Si ya existe con otro prefijo, agregar a esa lista
                     processed_types[matching_key].append(element_details_specific)
+                    
+                    # 🔹 Si la clave actual (type_name) es diferente a la que encontramos, asegurarnos de que no se cree una nueva entrada vacía
+                    if type_name in processed_types and type_name != matching_key:
+                        del processed_types[type_name]  # Eliminar entrada duplicada
                 else:
                     # 🔹 Si no existe, guardar con el prefijo actual
                     processed_types[type_name] = [element_details_specific]
-                
+
                 print_with_line_number(f"processed_types: {processed_types}")
-                #print_with_line_number(f"processed_types: {processed_types}")
 
             elif element_type in complex_types:
                 print_with_line_number(f"Buscando {element_type} en el mismo XSD")

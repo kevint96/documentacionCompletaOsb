@@ -679,10 +679,20 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 }
                 
                 print_with_line_number(f"type_name: {type_name}")
-                # 🔹 Guardar el elemento en processed_types para futuras referencias
-                if type_name not in processed_types:
-                    processed_types[type_name] = []  # 🔹 Inicializar como lista vacía
-                processed_types[type_name].append(element_details_specific)
+                
+                # 🔹 Obtener el nombre sin prefijo para usarlo como clave base
+                base_type_name = type_name.split(':')[-1]  
+
+                # 🔹 Buscar si ya existe este tipo en processed_types con cualquier prefijo
+                matching_key = next((key for key in processed_types if key.split(':')[-1] == base_type_name), None)
+
+                if matching_key:
+                    # 🔹 Si ya existe con otro prefijo, agregar a esa lista
+                    processed_types[matching_key].append(element_details_specific)
+                else:
+                    # 🔹 Si no existe, guardar con el prefijo actual
+                    processed_types[type_name] = [element_details_specific]
+                
                 print_with_line_number(f"processed_types: {processed_types}")
                 #print_with_line_number(f"processed_types: {processed_types}")
 
