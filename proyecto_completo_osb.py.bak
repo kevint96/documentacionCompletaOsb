@@ -597,7 +597,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         # 🔹 Buscar 'sequence' con prefijo válido
         sequence = complex_types[type_name].find(f'{prefix}:sequence', namespaces)
         print_with_line_number(f"type_name: {type_name}")
-        #print_with_line_number(f"complex_types[type_name]: {complex_types[type_name]}")
+        print_with_line_number(f"prefix: {prefix}")
         #print_with_line_number(f"sequence: {sequence}")
         if sequence is None:
             #st.warning(f"⚠ No se encontró 'sequence' en {type_name}")
