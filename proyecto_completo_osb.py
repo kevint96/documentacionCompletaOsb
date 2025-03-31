@@ -487,11 +487,11 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     #print_with_line_number(f"Namespaces detectados: {namespaces}")
     #print_with_line_number(f"Imports encontrados: {imports}")
     
-    for item in request_elements:
-        print_with_line_number(f"item['name'] request: {item['name']}")
+    # for item in request_elements:
+        # print_with_line_number(f"item['name'] request: {item['name']}")
     
-    for item in response_elements:
-        print_with_line_number(f"item['name'] response: {item['name']}")
+    # for item in response_elements:
+        # print_with_line_number(f"item['name'] response: {item['name']}")
 
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
@@ -593,7 +593,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             #print_with_line_number(f"element_type: {element_type}")
             #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
-            #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
+            print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
 
             # 🔹 Buscar 'simpleType' con prefijo válido
             simple_type = element.find(f'{prefix}:simpleType', namespaces)

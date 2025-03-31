@@ -487,8 +487,11 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     #print_with_line_number(f"Namespaces detectados: {namespaces}")
     #print_with_line_number(f"Imports encontrados: {imports}")
     
-    print_with_line_number(f"request element: {request_elements}")
-    print_with_line_number(f"response element: {response_elements}")
+    for item in request_elements:
+        print_with_line_number(f"item['name'] request: {item['name']}")
+    
+    for item in response_elements:
+        print_with_line_number(f"item['name'] response: {item['name']}")
 
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
