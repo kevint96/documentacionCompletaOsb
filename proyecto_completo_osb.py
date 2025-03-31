@@ -556,14 +556,15 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     if type_name in processed_types:
         print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
 
-        # 🔹 Recuperar los elementos ya procesados y agregarlos según corresponda
-        for element_details in processed_types[type_name]:
-            print_with_line_number(f"↪ Agregando referencia almacenada de {type_name}: {element_details}")
+        # 🔹 Asegurar que hay elementos almacenados para este type_name
+        if processed_types[type_name]:
+            for element_details in processed_types[type_name]:
+                print_with_line_number(f"↪ Agregando referencia almacenada de {type_name}: {element_details}")
 
-            if 'Request' in parent_element_name:
-                request_elements.append(element_details)
-            elif 'Response' in parent_element_name:
-                response_elements.append(element_details)
+                if 'Request' in parent_element_name:
+                    request_elements.append(element_details)
+                elif 'Response' in parent_element_name:
+                    response_elements.append(element_details)
 
         return  # Evita seguir procesando un tipo ya visitado
     
@@ -646,6 +647,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     request_elements.append(element_details)
                 elif 'Response' in parent_element_name:
                     response_elements.append(element_details)
+                
+                # 🔹 Guardar el elemento en processed_types para futuras referencias
+                processed_types[type_name].append(element_details)
 
             elif element_type in complex_types:
                 #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
