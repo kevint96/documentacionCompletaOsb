@@ -582,7 +582,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             print_with_line_number(f"processed_types: {processed_types}")
         return  # Evita seguir procesando un tipo ya visitado
     
-    processed_types[type_name] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias
+    
     #print_with_line_number(f"processed_types: {processed_types}")
 
     if type_name in complex_types:
@@ -606,7 +606,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
                     #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
-                    processed_types[type_name].append(base_type)  # 🔹 Registrar referencia a la base
+                    #processed_types[type_name].append(base_type)  # 🔹 Registrar referencia a la base
                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
@@ -702,6 +702,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         print_with_line_number(f"prefix: {prefix}")
                         print_with_line_number(f"schema_location: {schema_location}")
                         print_with_line_number(f"element_type: {element_type}")
+                        
+                        processed_types[element_type] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias
 
                         parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
