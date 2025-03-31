@@ -678,6 +678,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 if type_name not in processed_types:
                     processed_types[type_name] = []  # 🔹 Inicializar como lista vacía
                 processed_types[type_name].append(element_details_specific)
+                print_with_line_number(f"processed_types: {processed_types}")
                 #print_with_line_number(f"processed_types: {processed_types}")
 
             elif element_type in complex_types:
@@ -695,6 +696,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     if type_name not in processed_types:
                         processed_types[type_name] = []  # 🔹 Inicializar como lista vacía
                     processed_types[type_name].append(element_type)  # 🔹 Registrar referencia
+                    
+                    print_with_line_number(f"processed_types: {processed_types}")
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
