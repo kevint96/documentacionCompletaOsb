@@ -567,7 +567,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                                           request_elements, response_elements, operation_name)
                     return  # Salimos porque ya delegamos la exploración a la base
                 
-            st.warning(f"⚠ No se encontró ni 'sequence' ni 'extension' en {type_name}")
+            #st.warning(f"⚠ No se encontró ni 'sequence' ni 'extension' en {type_name}")
             return  # Si no hay ni sequence ni extensión, no hay nada más que hacer
 
         ##print_with_line_number(f"Usando prefijo: {prefix}")
@@ -634,7 +634,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     namespace = namespaces[prefix]
                     if namespace in imports:
                         schema_location = imports[namespace]
-                        st.warning(f"El tipo {nested_type} está en otro XSD: {schema_location}")
+                        #st.warning(f"El tipo {nested_type} está en otro XSD: {schema_location}")
                         corrected_xsd_path = get_correct_xsd_path(xsd_file_path, schema_location)
                         #print_with_line_number(f"corrected_xsd_path: {corrected_xsd_path}")
                         new_xsd_path = os.path.join(extraccion_dir, corrected_xsd_path)
@@ -647,12 +647,12 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                                        root_element_name=full_name,
                                        request_elements=request_elements,
                                        response_elements=response_elements)
-                    else:
-                        st.warning(f"No se encontró el namespace para el prefijo {prefix}")
-                else:
-                    st.warning(f"complexType {element_type} no encontrado en el XSD")
-    else:
-        st.warning(f"complexType {type_name} no encontrado en el XSD")
+                    # else:
+                        # st.warning(f"No se encontró el namespace para el prefijo {prefix}")
+                # else:
+                    # st.warning(f"complexType {element_type} no encontrado en el XSD")
+    # else:
+        # st.warning(f"complexType {type_name} no encontrado en el XSD")
 
 def leer_xsd_file(xsd_file_path, complexType_name):
     elements_list = []
