@@ -596,6 +596,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         
         # 🔹 Buscar 'sequence' con prefijo válido
         sequence = complex_types[type_name].find(f'{prefix}:sequence', namespaces)
+        print_with_line_number(f"type_name: {type_name}")
+        print_with_line_number(f"complex_types[type_name]: {complex_types[type_name]}")
+        print_with_line_number(f"sequence: {sequence}")
         if sequence is None:
             #st.warning(f"⚠ No se encontró 'sequence' en {type_name}")
             
@@ -687,7 +690,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 
                 if nested_type in complex_types:
                     print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
-                    #processed_types[type_name].append(nested_type)  # 🔹 Registrar referencia
+                    processed_types[type_name].append(element_type)  # 🔹 Registrar referencia
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)

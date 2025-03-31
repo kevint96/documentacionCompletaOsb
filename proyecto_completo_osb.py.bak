@@ -669,6 +669,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     'type': element_type,
                     'minOccurs': element_minOccurs
                 }
+                
+                print_with_line_number(f"type_name: {type_name}")
                 # 🔹 Guardar el elemento en processed_types para futuras referencias
                 processed_types[type_name].append(element_details_specific)
                 #print_with_line_number(f"processed_types: {processed_types}")
@@ -704,7 +706,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         print_with_line_number(f"element_type: {element_type}")
                         
                         processed_types[element_type] = []  # 🔹 Registrar que ya se visitó este tipo con una lista de referencias
-
+                        
+                        print_with_line_number(f"processed_types: {processed_types}")
                         parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
                                        service_name, operation_actual, 
