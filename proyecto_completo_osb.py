@@ -438,7 +438,7 @@ def get_correct_xsd_path(current_xsd_path, schema_location):
 def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, capa_proyecto, 
                    operacion_business, operations, service_name, operation_actual, 
                    target_complex_type=None, root_element_name=None,
-                   request_elements=None, response_elements=None):
+                   request_elements=None, response_elements=None,processed_types=None):
     """
     Parsea un XSD y extrae los elementos request/response de forma recursiva.
     """
