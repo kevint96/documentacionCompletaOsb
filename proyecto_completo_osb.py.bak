@@ -566,33 +566,38 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     st.write(f"📌 start_time: {start_time}, current_time: {current_time}")
     st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     
-    if start_time and elapsed_time > time_limit:
-        st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
+    # if start_time and elapsed_time > time_limit:
+        # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
         
-        if type_name in processed_types:
-            print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-            print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
-            #print_with_line_number(f"🔄 processed_types: {processed_types}")
-            
-            element_details = {
-                        'elemento': parent_element_name.split('.')[0],  
-                        'name': parent_element_name,  
-                        'type': type_name,
-                        'url': service_url,
-                        'ruta': capa_proyecto,
-                        'minOccurs': 0,
-                        'operations': operations,
-                        'service_name': service_name,
-                        'operation_actual': operation_actual,
-                    }
-            print_with_line_number(f"element_details: {element_details}")
+    if type_name in processed_types:
+        print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
+        print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+        #print_with_line_number(f"🔄 processed_types: {processed_types}")
+        
+        elemento_fijo = processed_types.get(type_name, [])
 
-            if 'Request' in parent_element_name:
-                request_elements.append(element_details)
-            elif 'Response' in parent_element_name:
-                response_elements.append(element_details)
+        for element in elemento_fijo:
+            print_with_line_number(f"Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
         
-            return  # 🚨 Detener la ejecución si excede el límite de tiempo
+        element_details = {
+                    'elemento': parent_element_name.split('.')[0],  
+                    'name': parent_element_name,  
+                    'type': type_name,
+                    'url': service_url,
+                    'ruta': capa_proyecto,
+                    'minOccurs': 0,
+                    'operations': operations,
+                    'service_name': service_name,
+                    'operation_actual': operation_actual,
+                }
+        print_with_line_number(f"element_details: {element_details}")
+
+        if 'Request' in parent_element_name:
+            request_elements.append(element_details)
+        elif 'Response' in parent_element_name:
+            response_elements.append(element_details)
+    
+        return  # 🚨 Detener la ejecución si excede el límite de tiempo
     
     print_with_line_number(f"type_name: {type_name}")
     print_with_line_number(f"parent_element_name: {parent_element_name}")
