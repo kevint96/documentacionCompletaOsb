@@ -593,6 +593,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         
             return  # 🚨 Detener la ejecución si excede el límite de tiempo
     
+    print_with_line_number(f"type_name: {type_name}")
+    print_with_line_number(f"parent_element_name: {parent_element_name}")
+    print_with_line_number(f"xsd_file_path: {xsd_file_path}")
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
 
     if type_name in complex_types:
