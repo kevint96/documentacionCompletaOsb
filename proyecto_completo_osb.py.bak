@@ -35,6 +35,7 @@ import json
 import zlib
 import urllib.parse
 import requests
+import concurrent.futures
 
 # URL del servidor público de PlantUML
 PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
@@ -469,9 +470,11 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         return request_elements, response_elements
 
     # Leer el contenido del XSD
-    with open(ruta_corregida, 'r', encoding="utf-8") as f:
-        xsd_content = f.read()
-
+    try:
+        with open(ruta_corregida, 'r', encoding="utf-8") as f:
+            xsd_content = f.read()
+    except FileNotFoundError:
+        return None
     # Extraer el contenido de CDATA si es necesario
     cdata_match = re.search(r'<!\[CDATA\[(.*?)\]\]>', xsd_content, re.DOTALL)
     if cdata_match:
