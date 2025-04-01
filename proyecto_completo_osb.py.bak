@@ -2609,7 +2609,8 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             if "Referencia" in data:
                 referencias_ordenadas = sorted(data["Referencia"])  # Ordenar las referencias alfabéticamente
                 print_with_line_number(f"referencias_ordenadas : {referencias_ordenadas}")
-                for i,referencia in enumerate(referencias_ordenadas):
+                print_with_line_number(f" data[Referencia] : {data["Referencia"]}")
+                for i,referencia in enumerate(data["Referencia"]:):
                     partes = referencia.split("/")
                     if len(partes) >= 3:
                         print_with_line_number(f"referencia: {referencia}")
@@ -2631,9 +2632,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                         else:
                             procesar_referencias(proxy_ebs,referencia,proxy, proxy_ebs, data, uml)
-                            if not existen_mas_referencias_proyecto:
-                                uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                                print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                            #if not existen_mas_referencias_proyecto:
+                            uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                            print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             
                             # referencia_key = f"REFERENCIA_{proxy}"
                             # if referencia_key in data:
