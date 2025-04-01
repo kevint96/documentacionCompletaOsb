@@ -647,8 +647,11 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             print_with_line_number(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             print_with_line_number(f"Encontrado elemento: {full_name}")
+            
             #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
-
+            padre = get_last_before_dot(full_name)
+            processed_types = add_child(processed_types, padre, element_name, element_type, element_minOccurs)
+            print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
             simple_type = element.find(f'{prefix}:simpleType', namespaces)
             if simple_type is not None:
@@ -716,6 +719,18 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     st.warning(f"complexType {element_type} no encontrado en el XSD")
     else:
         st.warning(f"complexType {type_name} no encontrado en el XSD")
+
+def get_last_before_dot(path):
+    parts = path.strip(".").split(".")  # Eliminamos puntos al final y dividimos
+    return parts[-2] if len(parts) > 1 else parts[0]
+
+def add_child(processed_types, parent, name, type_, minOccurs="1"):
+    new_element = {"name": name, "type": type_, "minOccurs": minOccurs}
+    
+    if parent in processed_types:
+        processed_types[parent].append(new_element)
+    else:
+        processed_types[parent] = [new_element]
 
 def leer_xsd_file(xsd_file_path, complexType_name):
     elements_list = []
