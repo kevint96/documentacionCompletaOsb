@@ -2441,8 +2441,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                         uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                                         print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                                 else:
-                                    uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                    print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                    if proyecto != project:
+                                        uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                        print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
 
                                     print_with_line_number(f"value: {value}")
                                     print_with_line_number(f"business_name: {business_name}")
@@ -2495,8 +2496,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                                     print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
                                                     uml.append(f"{project_business} -> {project}: Retorna respuesta")
                                                     print_with_line_number(f"{project_business} -> {project}: Retorna respuesta")
-                                                    uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                                    print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                                    if proyecto != project:
+                                                        uml.append(f"{project} -> {proyecto}: Retorna respuesta")
+                                                        print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                            
                                     # if key == ultima_clave:
                                         # uml.append(f"{project} -> {proxy_name[0]}: Retorna respuesta")

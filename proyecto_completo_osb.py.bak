@@ -2606,6 +2606,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             proyecto_referencia_abc =""
             if "Referencia" in data:
                 referencias_ordenadas = sorted(data["Referencia"])  # Ordenar las referencias alfabéticamente
+                print_with_line_number(f"referencias_ordenadas : {referencias_ordenadas}")
                 for i,referencia in enumerate(referencias_ordenadas):
                     partes = referencia.split("/")
                     if len(partes) >= 3:
