@@ -440,7 +440,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
                    operacion_business, operations, service_name, operation_actual, 
                    target_complex_type=None, root_element_name=None,
                    request_elements=None, response_elements=None,processed_types=None,
-                   start_time=None, time_limit=60):
+                   start_time=None, time_limit=0.60):
     """
     Parsea un XSD y extrae los elementos request/response de forma recursiva.
     """
@@ -552,7 +552,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
-                          start_time=None, time_limit=60):
+                          start_time=None, time_limit=0.60):
     """Explora recursivamente un complexType y extrae sus elementos internos."""
     
     current_time = time.time()
@@ -563,7 +563,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
     type_name = type_name.split(':')[-1]  
     
-    print_with_line_number(f"start_time: {start_time}")
+    st.write(f"📌 start_time: {start_time}, current_time: {current_time}")
     st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     
     if start_time is None:

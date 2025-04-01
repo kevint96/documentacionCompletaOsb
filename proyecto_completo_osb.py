@@ -566,34 +566,32 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     st.write(f"📌 start_time: {start_time}, current_time: {current_time}")
     st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     
-    if start_time is None:
-        st.error("❌ Error: start_time es None.")
-    
     if start_time and elapsed_time > time_limit:
         st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
-        return  # 🚨 Detener la ejecución si excede el límite de tiempo
-    # if type_name in processed_types:
-        # print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-        # print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
         
-        # element_details = {
-                    # 'elemento': parent_element_name.split('.')[0],  
-                    # 'name': parent_element_name,  
-                    # 'type': type_name,
-                    # 'url': service_url,
-                    # 'ruta': capa_proyecto,
-                    # 'minOccurs': 0,
-                    # 'operations': operations,
-                    # 'service_name': service_name,
-                    # 'operation_actual': operation_actual,
-                # }
-        # print_with_line_number(f"element_details: {element_details}")
+        if type_name in processed_types:
+            print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
+            print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+            
+            element_details = {
+                        'elemento': parent_element_name.split('.')[0],  
+                        'name': parent_element_name,  
+                        'type': type_name,
+                        'url': service_url,
+                        'ruta': capa_proyecto,
+                        'minOccurs': 0,
+                        'operations': operations,
+                        'service_name': service_name,
+                        'operation_actual': operation_actual,
+                    }
+            print_with_line_number(f"element_details: {element_details}")
 
-        # if 'Request' in parent_element_name:
-            # request_elements.append(element_details)
-        # elif 'Response' in parent_element_name:
-            # response_elements.append(element_details)
-        # return  # Evita seguir procesando un tipo ya visitado
+            if 'Request' in parent_element_name:
+                request_elements.append(element_details)
+            elif 'Response' in parent_element_name:
+                response_elements.append(element_details)
+        
+        return  # 🚨 Detener la ejecución si excede el límite de tiempo
     
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
 
