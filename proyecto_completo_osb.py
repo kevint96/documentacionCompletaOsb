@@ -439,10 +439,13 @@ def get_correct_xsd_path(current_xsd_path, schema_location):
 def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, capa_proyecto, 
                    operacion_business, operations, service_name, operation_actual, 
                    target_complex_type=None, root_element_name=None,
-                   request_elements=None, response_elements=None,processed_types=None):
+                   request_elements=None, response_elements=None,processed_types=None,
+                   start_time=None, time_limit=300):
     """
     Parsea un XSD y extrae los elementos request/response de forma recursiva.
     """
+    if start_time is None:
+        start_time = time.time()  # Guardamos el tiempo inicial
 
     # 🔹 Asegurar que las listas no se reinicien
     if request_elements is None:
@@ -528,7 +531,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
         explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                              operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
+                              operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
         return request_elements, response_elements
 
     # 🔹 Si `target_complex_type` no está, procesamos TODO desde los elementos raíz.
@@ -538,7 +541,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         if complex_type in complex_types:
             explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
+                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
 
     print_with_line_number(f"Total elementos request: {len(request_elements)}")
     print_with_line_number(f"Total elementos response: {len(response_elements)}")
@@ -547,7 +550,8 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
 def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None):
+                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
+                          start_time=None, time_limit=300):
     """Explora recursivamente un complexType y extrae sus elementos internos."""
 
     if processed_types is None:
@@ -555,7 +559,10 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         processed_types = {}
 
     type_name = type_name.split(':')[-1]  
-
+    
+    if start_time and (time.time() - start_time) > time_limit:
+        st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
+        return  # 🚨 Detener la ejecución si excede el límite de tiempo
     # if type_name in processed_types:
         # print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
         # print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
@@ -605,7 +612,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
-                                          request_elements, response_elements, operation_name,processed_types)
+                                          request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
                     return  # Salimos porque ya delegamos la exploración a la base
                 
             #st.warning(f"⚠ No se encontró ni 'sequence' ni 'extension' en {type_name}")
@@ -662,7 +669,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                      operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
+                                      operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
 
             elif ':' in element_type:
                 prefix, nested_type = element_type.split(':')
@@ -671,7 +678,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types)
+                                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
                 elif prefix in namespaces:
                     namespace = namespaces[prefix]
                     if namespace in imports:
@@ -689,7 +696,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                                        root_element_name=full_name,
                                        request_elements=request_elements,
                                        response_elements=response_elements,
-                                       processed_types=processed_types)
+                                       processed_types=processed_types,
+                                       start_time=start_time,
+                                       time_limit=time_limit)
                     else:
                         st.warning(f"No se encontró el namespace para el prefijo {prefix}")
                 else:
