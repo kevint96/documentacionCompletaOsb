@@ -605,7 +605,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                                              operations, service_name, operation_actual, request_elements, response_elements)
         return
     
-    process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
+    if type_name in processed_types:
+        process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements)
 
     # if type_name in processed_types:
