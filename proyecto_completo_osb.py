@@ -2587,7 +2587,12 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     uml.append(f"database {nombre} as {alias}")
                 else:
                     uml.append(f"participant {nombre} as {alias}")
-        
+            
+            business_services = 'database BusinessServices as BusinessServices'
+            # Si 'BusinessServices' está en la lista, lo mueve al final
+            if business_services in uml_elements:
+                uml_elements.remove(business_services)  # Elimina si existe
+                uml_elements.append(business_services)  # Lo agrega al final
             print_with_line_number(f"uml: {uml}")
             
             uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
@@ -2609,7 +2614,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         business = partes[1]
                         print_with_line_number(f"business: {business}")
                         proxy = partes[-1]
-                        print_with_line_number(f"proxy: {proxy}")
+                        print_with_line_number(f"proxy : {proxy}")
                         
                         if proyecto_ebs != proyecto_referencia_abc:
                             uml.append(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
