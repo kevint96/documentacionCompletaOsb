@@ -642,9 +642,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             if element_minOccurs is None:
                 element_minOccurs = 0
            
-            #print_with_line_number(f"element_name: {element_name}")
-            #print_with_line_number(f"element_type: {element_type}")
-            #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
+            print_with_line_number(f"element_name: {element_name}")
+            print_with_line_number(f"element_type: {element_type}")
+            print_with_line_number(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             print_with_line_number(f"Encontrado elemento: {full_name}")
             #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
@@ -655,7 +655,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 restriction = simple_type.find(f'{prefix}:restriction', namespaces)
                 if restriction is not None and 'base' in restriction.attrib:
                     element_type = restriction.attrib['base']
-                    #print_with_line_number(f"Elemento {full_name} tiene restricción con base: {element_type}")
+                    print_with_line_number(f"Elemento {full_name} tiene restricción con base: {element_type}")
 
             if element_type.startswith(("xsd:", "xs:")):
                 element_details = {
@@ -669,7 +669,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     'service_name': service_name,
                     'operation_actual': operation_actual,
                 }
-                #print_with_line_number(f"Agregando elemento primitivo: {element_details}")
+                print_with_line_number(f"Agregando elemento primitivo: {element_details}")
 
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
