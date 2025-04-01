@@ -652,7 +652,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             print_with_line_number(f"🔄 processed_types: {processed_types}")
             padre = get_last_before_dot(full_name)
             print_with_line_number(f"🔄 padre: {padre}")
-            processed_types = add_child(processed_types, padre, element_name, element_type, element_minOccurs)
+            add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
             simple_type = element.find(f'{prefix}:simpleType', namespaces)
