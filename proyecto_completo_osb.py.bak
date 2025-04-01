@@ -2605,7 +2605,8 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             proyecto_referencia_abc =""
             if "Referencia" in data:
-                for referencia in data["Referencia"]:
+                referencias_ordenadas = sorted(data["Referencia"])  # Ordenar las referencias alfabéticamente
+                for i,referencia in enumerate(referencias_ordenadas):
                     partes = referencia.split("/")
                     if len(partes) >= 3:
                         print_with_line_number(f"referencia: {referencia}")
@@ -2615,6 +2616,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         print_with_line_number(f"business: {business}")
                         proxy = partes[-1]
                         print_with_line_number(f"proxy : {proxy}")
+                        existen_mas_referencias_proyecto = any(proyecto_referencia_abc in ref for ref in referencias_ordenadas[i+1:])
                         
                         if proyecto_ebs != proyecto_referencia_abc:
                             uml.append(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
@@ -2626,8 +2628,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                             print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                         else:
                             procesar_referencias(proxy_ebs,referencia,proxy, proxy_ebs, data, uml)
-                            uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                            print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                            if not existen_mas_referencias_proyecto:
+                                uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                                print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             
                             # referencia_key = f"REFERENCIA_{proxy}"
                             # if referencia_key in data:
