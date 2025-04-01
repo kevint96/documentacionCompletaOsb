@@ -557,6 +557,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     type_name = type_name.split(':')[-1]  
 
     if type_name in processed_types:
+        print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
         print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
         #return  # Evita seguir procesando un tipo ya visitado
     
