@@ -2438,8 +2438,10 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     uml.append(f"{project} -> {proyecto}: Retorna respuesta")
                                     print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                     if key == ultima_clave:
-                                        uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                                        print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                                        proxy_project = proxy_name.split("/")[0]
+                                        if proyecto != proxy_project:
+                                            uml.append(f"{proyecto} -> {proxy_project}: Retorna respuesta")
+                                            print_with_line_number(f"{proyecto} -> {proxy_project}: Retorna respuesta")
                                 else:
                                     if proyecto != project:
                                         uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
@@ -2633,9 +2635,11 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         else:
                             procesar_referencias(proxy_ebs,referencia,proxy, proxy_ebs, data, uml)
                             #if not existen_mas_referencias_proyecto:
-                            uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                            print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                            
+                                # uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                                # print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                            if proyecto_referencia_abc != proyecto_ebs:
+                                uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                                print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             # referencia_key = f"REFERENCIA_{proxy}"
                             # if referencia_key in data:
                                 # print_with_line_number(f"  - {referencia_key} encontrado:")
