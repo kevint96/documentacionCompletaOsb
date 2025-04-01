@@ -568,20 +568,21 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
-        
-    if type_name in processed_types:
-        print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-        print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
-        #print_with_line_number(f"🔄 processed_types: {processed_types}")
-        
-        elemento_fijo = processed_types.get(type_name, [])
-
-        for element in elemento_fijo:
-            print_with_line_number(f"Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
-        
-            element_details = {
-                        'elemento': parent_element_name.split('.')[0],  
-                        'name': f"{parent_element_name}.{element['name']}",  
+    
+    def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
+                             operations, service_name, operation_actual, request_elements, response_elements):
+        if type_name in processed_types:
+            print_with_line_number(f"🔄 Explorando: {parent_element_name} ({type_name})")
+            
+            for element in processed_types[type_name]:
+                nuevo_full_name = f"{parent_element_name}.{element['name']}"
+                print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
+                
+                # Si es un tipo primitivo (xsd:string, xsd:int, etc.)
+                if element['type'].startswith(("xsd:", "xs:")):
+                    element_details = {
+                        'elemento': parent_element_name.split('.')[0],
+                        'name': nuevo_full_name,
                         'type': element['type'],
                         'url': service_url,
                         'ruta': capa_proyecto,
@@ -590,15 +591,84 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         'service_name': service_name,
                         'operation_actual': operation_actual,
                     }
-            
-            print_with_line_number(f"element_details: {element_details}")
+                    print_with_line_number(f"📋 Agregado: {element_details}")
+                    
+                    if 'Request' in parent_element_name:
+                        request_elements.append(element_details)
+                    elif 'Response' in parent_element_name:
+                        response_elements.append(element_details)
+                else:
+                    # Es un tipo complejo, llamar recursivamente
+                    nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
+                    process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
+                                             operations, service_name, operation_actual, request_elements, response_elements)
+        return
+    
+    process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
+                             operations, service_name, operation_actual, request_elements, response_elements)
 
-            if 'Request' in parent_element_name:
-                request_elements.append(element_details)
-            elif 'Response' in parent_element_name:
-                response_elements.append(element_details)
+    # if type_name in processed_types:
+        # print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
+        # print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+        # #print_with_line_number(f"🔄 processed_types: {processed_types}")
         
-        return  # 🚨 Detener la ejecución si excede el límite de tiempo
+        # elemento_fijo = processed_types.get(type_name, [])
+
+        # for element in elemento_fijo:
+            # print_with_line_number(f"Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
+            
+            # nuevo_full_name = f"{parent_element_name}.{element['name']}"
+            
+            # if element['type'].startswith(("xsd:", "xs:")):
+                # element_details = {
+                            # 'elemento': parent_element_name.split('.')[0],  
+                            # 'name': f"{parent_element_name}.{element['name']}",  
+                            # 'type': element['type'],
+                            # 'url': service_url,
+                            # 'ruta': capa_proyecto,
+                            # 'minOccurs': element['minOccurs'],
+                            # 'operations': operations,
+                            # 'service_name': service_name,
+                            # 'operation_actual': operation_actual,
+                        # }
+                
+                # print_with_line_number(f"element_details: {element_details}")
+
+                # if 'Request' in parent_element_name:
+                    # request_elements.append(element_details)
+                # elif 'Response' in parent_element_name:
+                    # response_elements.append(element_details)
+            
+            # else:
+                # nuevo_type = element['type'].split(':')[-1]
+                
+                # elemento_fijo = processed_types.get(nuevo_type, [])
+                
+                # for element in elemento_fijo:
+                    # print_with_line_number(f"Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
+                    
+                    # if element['type'].startswith(("xsd:", "xs:")):
+                        # element_details = {
+                                    # 'elemento': nuevo_full_name.split('.')[0],  
+                                    # 'name': f"{nuevo_full_name}.{element['name']}",  
+                                    # 'type': element['type'],
+                                    # 'url': service_url,
+                                    # 'ruta': capa_proyecto,
+                                    # 'minOccurs': element['minOccurs'],
+                                    # 'operations': operations,
+                                    # 'service_name': service_name,
+                                    # 'operation_actual': operation_actual,
+                                # }
+                        
+                        # print_with_line_number(f"element_details: {element_details}")
+
+                        # if 'Request' in parent_element_name:
+                            # request_elements.append(element_details)
+                        # elif 'Response' in parent_element_name:
+                            # response_elements.append(element_details)
+                
+        
+        # return  # 🚨 Detener la ejecución si excede el límite de tiempo
     
     print_with_line_number(f"type_name: {type_name}")
     print_with_line_number(f"parent_element_name: {parent_element_name}")
