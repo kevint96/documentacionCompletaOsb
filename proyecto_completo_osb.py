@@ -674,9 +674,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
         
         # return  # 🚨 Detener la ejecución si excede el límite de tiempo
     
-    print_with_line_number(f"type_name: {type_name}")
-    print_with_line_number(f"parent_element_name: {parent_element_name}")
-    print_with_line_number(f"xsd_file_path: {xsd_file_path}")
+    st.toast(f"type_name: {type_name}")
+    st.toast(f"parent_element_name: {parent_element_name}")
+    st.toast(f"xsd_file_path: {xsd_file_path}")
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
 
     if type_name in complex_types:
@@ -722,16 +722,16 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             if element_minOccurs is None:
                 element_minOccurs = 0
            
-            print_with_line_number(f"element_name: {element_name}")
-            print_with_line_number(f"element_type: {element_type}")
-            print_with_line_number(f"element_minOccurs: {element_minOccurs}")
+            st.toast(f"element_name: {element_name}")
+            st.toast(f"element_type: {element_type}")
+            st.toast(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
-            print_with_line_number(f"Encontrado elemento: {full_name}")
+            st.toast(f"Encontrado elemento: {full_name}")
             
             #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             padre = get_last_before_dot(type_name)
-            print_with_line_number(f"🔄 padre: {padre}")
+            st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
@@ -740,7 +740,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 restriction = simple_type.find(f'{prefix}:restriction', namespaces)
                 if restriction is not None and 'base' in restriction.attrib:
                     element_type = restriction.attrib['base']
-                    print_with_line_number(f"Elemento {full_name} tiene restricción con base: {element_type}")
+                    st.toast(f"Elemento {full_name} tiene restricción con base: {element_type}")
 
             if element_type.startswith(("xsd:", "xs:")):
                 element_details = {
@@ -754,7 +754,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     'service_name': service_name,
                     'operation_actual': operation_actual,
                 }
-                print_with_line_number(f"Agregando elemento primitivo: {element_details}")
+                st.toast(f"Agregando elemento primitivo: {element_details}")
 
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)

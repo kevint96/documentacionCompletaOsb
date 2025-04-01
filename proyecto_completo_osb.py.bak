@@ -576,6 +576,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
             
             for element in processed_types[type_name]:
+                nuevo_nombre_prueba = evitar_recursion(parent_element_name, element['name'])
+                print_with_line_number(f"🔄 nuevo_nombre_prueba: {nuevo_nombre_prueba}")
                 nuevo_full_name = f"{parent_element_name}.{element['name']}"
                 print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
                 
@@ -799,6 +801,21 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     st.warning(f"complexType {element_type} no encontrado en el XSD")
     else:
         st.warning(f"complexType {type_name} no encontrado en el XSD")
+
+def evitar_recursion(name, nuevo_valor):
+    name_parts = name.split(".")  # Convertir a lista
+    nuevo_valor_parts = nuevo_valor.split(".")  # Convertir a lista
+    
+    # Verificar si ya existe en cualquier posición
+    for i in range(len(name_parts) - len(nuevo_valor_parts) + 1):
+        if name_parts[i:i + len(nuevo_valor_parts)] == nuevo_valor_parts:
+            print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
+            return name  # No concatenar si ya existe en cualquier parte
+    
+    # Si no está repetido, concatenar
+    new_name = name + "." + nuevo_valor
+    print_with_line_number(f"✅ Nuevo valor concatenado: {new_name}")
+    return new_name
 
 def get_last_before_dot(path):
     parts = path.strip(".").split(".")  # Eliminamos puntos al final y dividimos
