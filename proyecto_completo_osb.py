@@ -591,7 +591,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             elif 'Response' in parent_element_name:
                 response_elements.append(element_details)
         
-        return  # 🚨 Detener la ejecución si excede el límite de tiempo
+            return  # 🚨 Detener la ejecución si excede el límite de tiempo
     
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
 
