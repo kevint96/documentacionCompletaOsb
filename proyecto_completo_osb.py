@@ -2590,9 +2590,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             business_services = "database BusinessServices as BusinessServices"
             # Si 'BusinessServices' está en la lista, lo mueve al final
-            if business_services in uml_elements:
-                uml_elements.remove(business_services)  # Elimina si existe
-                uml_elements.append(business_services)  # Lo agrega al final
+            if business_services in uml:
+                uml.remove(business_services)  # Elimina si existe
+                uml.append(business_services)  # Lo agrega al final
             print_with_line_number(f"uml: {uml}")
             
             uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
