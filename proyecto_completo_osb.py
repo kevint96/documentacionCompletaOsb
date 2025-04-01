@@ -554,7 +554,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
                           start_time=None, time_limit=60):
     """Explora recursivamente un complexType y extrae sus elementos internos."""
-
+    
+    current_time = time.time()
+    elapsed_time = current_time - start_time
     if processed_types is None:
         #processed_types = set()
         processed_types = {}
@@ -562,8 +564,12 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     type_name = type_name.split(':')[-1]  
     
     print_with_line_number(f"start_time: {start_time}")
+    st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     
-    if start_time and (time.time() - start_time) > time_limit:
+    if start_time is None:
+        st.error("❌ Error: start_time es None.")
+    
+    if start_time and elapsed_time > time_limit:
         st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
         return  # 🚨 Detener la ejecución si excede el límite de tiempo
     # if type_name in processed_types:
