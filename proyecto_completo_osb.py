@@ -556,28 +556,28 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
     type_name = type_name.split(':')[-1]  
 
-    if type_name in processed_types:
-        print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-        print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+    # if type_name in processed_types:
+        # print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
+        # print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
         
-        element_details = {
-                    'elemento': parent_element_name.split('.')[0],  
-                    'name': parent_element_name,  
-                    'type': type_name,
-                    'url': service_url,
-                    'ruta': capa_proyecto,
-                    'minOccurs': 0,
-                    'operations': operations,
-                    'service_name': service_name,
-                    'operation_actual': operation_actual,
-                }
-        print_with_line_number(f"element_details: {element_details}")
+        # element_details = {
+                    # 'elemento': parent_element_name.split('.')[0],  
+                    # 'name': parent_element_name,  
+                    # 'type': type_name,
+                    # 'url': service_url,
+                    # 'ruta': capa_proyecto,
+                    # 'minOccurs': 0,
+                    # 'operations': operations,
+                    # 'service_name': service_name,
+                    # 'operation_actual': operation_actual,
+                # }
+        # print_with_line_number(f"element_details: {element_details}")
 
-        if 'Request' in parent_element_name:
-            request_elements.append(element_details)
-        elif 'Response' in parent_element_name:
-            response_elements.append(element_details)
-        return  # Evita seguir procesando un tipo ya visitado
+        # if 'Request' in parent_element_name:
+            # request_elements.append(element_details)
+        # elif 'Response' in parent_element_name:
+            # response_elements.append(element_details)
+        # return  # Evita seguir procesando un tipo ya visitado
     
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
 
