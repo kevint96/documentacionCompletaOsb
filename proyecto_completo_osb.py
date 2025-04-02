@@ -605,6 +605,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     else:
                         # Es un tipo complejo, llamar recursivamente
                         nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
+                        print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
                         await process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
         
@@ -612,9 +613,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     return
         return
     
-    if type_name in processed_types:
-        await process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
-                             operations, service_name, operation_actual, request_elements, response_elements)
+    # if type_name in processed_types:
+        # await process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
+                             # operations, service_name, operation_actual, request_elements, response_elements)
 
     # if type_name in processed_types:
         # print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
