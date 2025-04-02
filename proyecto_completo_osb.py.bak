@@ -1247,14 +1247,14 @@ async def generar_operaciones_expuestas_http(project_path,operacion_a_documentar
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        #print_with_line_number(f"wsdl_path: {wsdl_path}")
-        #print_with_line_number(f"operations: {operations}")
-        #print_with_line_number(f"project_name: {project_name}")
-        #print_with_line_number(f"service_name: {service_name}")
-        #print_with_line_number(f"osb_file_path: {osb_file_path}")
-        #print_with_line_number(f"pipeline_path: {pipeline_path}")
-        #print_with_line_number(f"service_url: {service_url}")
-        #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+        print_with_line_number(f"wsdl_path: {wsdl_path}")
+        print_with_line_number(f"operations: {operations}")
+        print_with_line_number(f"project_name: {project_name}")
+        print_with_line_number(f"service_name: {service_name}")
+        print_with_line_number(f"osb_file_path: {osb_file_path}")
+        print_with_line_number(f"pipeline_path: {pipeline_path}")
+        print_with_line_number(f"service_url: {service_url}")
+        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
         # for operation in operations:
         if operacion_a_documentar:
@@ -1262,11 +1262,11 @@ async def generar_operaciones_expuestas_http(project_path,operacion_a_documentar
 
         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                     
-        #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
         
         services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
         
-        #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+        print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
         for operation, proxy_list in services_for_operations_exp.items():
             combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1277,11 +1277,11 @@ async def generar_operaciones_expuestas_http(project_path,operacion_a_documentar
             else:
                 combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
         
-        #print_with_line_number(f"combined_services: {combined_services}")
+        print_with_line_number(f"combined_services: {combined_services}")
         
         combined_services2 = separar_ebs_abc_business(project_path,combined_services)
         
-        #print_with_line_number(f"combined_services2: {combined_services2}")
+        print_with_line_number(f"combined_services2: {combined_services2}")
         
         #generar_diagramas_operaciones(project_name,combined_services2)
             
