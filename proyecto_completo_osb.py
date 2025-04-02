@@ -580,6 +580,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 
                 if not evita:
                     nuevo_full_name = f"{parent_element_name}.{element['name']}"
+                    print_with_line_number(f"🔄 nuevo_full_name: {nuevo_full_name}")
                     print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
                     
                     # Si es un tipo primitivo (xsd:string, xsd:int, etc.)
@@ -814,13 +815,13 @@ def evitar_recursion(name, nuevo_valor):
     # Verificar si ya existe en cualquier posición
     for i in range(len(name_parts) - len(nuevo_valor_parts) + 1):
         if name_parts[i:i + len(nuevo_valor_parts)] == nuevo_valor_parts:
-            print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
+            #print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
             evita = True
             return evita  # No concatenar si ya existe en cualquier parte
     
     # Si no está repetido, concatenar
     new_name = name + "." + nuevo_valor
-    print_with_line_number(f"✅ Nuevo valor concatenado: {new_name}")
+    #print_with_line_number(f"✅ Nuevo valor concatenado: {new_name}")
     return evita
 
 def get_last_before_dot(path):

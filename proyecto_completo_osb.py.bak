@@ -595,7 +595,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                             'service_name': service_name,
                             'operation_actual': operation_actual,
                         }
-                        print_with_line_number(f"📋 Agregado: {element_details}")
+                        st.toast(f"📋 Agregado: {element_details}")
                         
                         if 'Request' in parent_element_name:
                             request_elements.append(element_details)
