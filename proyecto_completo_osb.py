@@ -692,16 +692,24 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
     evita = evitar_recursion(parent_element_name, type_name)
     
-    if num_elementos_request > 6000:
-        print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
-        processed_types = {}
-        return
-    if num_elementos_response > 6000:
-        print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
-        processed_types = {}
-        return
+    if 'Request' in parent_element_name:
+        if num_elementos_request > 6000:
+            print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
+            agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
+            processed_types = {}
+            return
+            
+    if 'Response' in parent_element_name:
+        if num_elementos_response > 6000:
+            print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
+            agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
+            processed_types = {}
+            return
     if evita:
         print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
+        
+        agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
+
         return
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
@@ -825,6 +833,31 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     st.warning(f"complexType {element_type} no encontrado en el XSD")
     else:
             st.warning(f"complexType {type_name} no encontrado en el XSD")
+
+def agregar_lista_elementos(parent_element_name,type_name,element_type,service_url,capa_proyecto,element_minOccurs,operations,service_name,operation_actual,request_elements,response_elements):
+    
+    full_name = f"{parent_element_name}.{type_name}"
+    
+    element_details = {
+                    'elemento': parent_element_name.split('.')[0],  
+                    'name': full_name,  
+                    'type': element_type,
+                    'url': service_url,
+                    'ruta': capa_proyecto,
+                    'minOccurs': element_minOccurs,
+                    'operations': operations,
+                    'service_name': service_name,
+                    'operation_actual': operation_actual,
+                }
+                #st.toast(f"Agregando elemento primitivo: {element_details}")
+
+    if 'Request' in parent_element_name:
+        request_elements.append(element_details)
+    elif 'Response' in parent_element_name:
+        response_elements.append(element_details)
+    
+    print_with_line_number(f"⚠ element_details {element_details}, INTERNO.")
+    
 
 def evitar_recursion(name, nuevo_valor):
     evita = False
