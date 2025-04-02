@@ -576,35 +576,39 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
             
             for element in processed_types[type_name]:
-                nuevo_nombre_prueba = evitar_recursion(parent_element_name, element['name'])
-                print_with_line_number(f"🔄 nuevo_nombre_prueba: {nuevo_nombre_prueba}")
-                nuevo_full_name = f"{parent_element_name}.{element['name']}"
-                print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
+                evita = evitar_recursion(parent_element_name, element['name'])
                 
-                # Si es un tipo primitivo (xsd:string, xsd:int, etc.)
-                if element['type'].startswith(("xsd:", "xs:")):
-                    element_details = {
-                        'elemento': parent_element_name.split('.')[0],
-                        'name': nuevo_full_name,
-                        'type': element['type'],
-                        'url': service_url,
-                        'ruta': capa_proyecto,
-                        'minOccurs': element['minOccurs'],
-                        'operations': operations,
-                        'service_name': service_name,
-                        'operation_actual': operation_actual,
-                    }
-                    print_with_line_number(f"📋 Agregado: {element_details}")
+                if not evita:
+                    nuevo_full_name = f"{parent_element_name}.{element['name']}"
+                    print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
                     
-                    if 'Request' in parent_element_name:
-                        request_elements.append(element_details)
-                    elif 'Response' in parent_element_name:
-                        response_elements.append(element_details)
-                else:
-                    # Es un tipo complejo, llamar recursivamente
-                    nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
-                    await process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
+                    # Si es un tipo primitivo (xsd:string, xsd:int, etc.)
+                    if element['type'].startswith(("xsd:", "xs:")):
+                        element_details = {
+                            'elemento': parent_element_name.split('.')[0],
+                            'name': nuevo_full_name,
+                            'type': element['type'],
+                            'url': service_url,
+                            'ruta': capa_proyecto,
+                            'minOccurs': element['minOccurs'],
+                            'operations': operations,
+                            'service_name': service_name,
+                            'operation_actual': operation_actual,
+                        }
+                        print_with_line_number(f"📋 Agregado: {element_details}")
+                        
+                        if 'Request' in parent_element_name:
+                            request_elements.append(element_details)
+                        elif 'Response' in parent_element_name:
+                            response_elements.append(element_details)
+                    else:
+                        # Es un tipo complejo, llamar recursivamente
+                        nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
+                        await process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
+        
+                else:
+                    return
         return
     
     if type_name in processed_types:
@@ -803,6 +807,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
         st.warning(f"complexType {type_name} no encontrado en el XSD")
 
 def evitar_recursion(name, nuevo_valor):
+    evita = False
     name_parts = name.split(".")  # Convertir a lista
     nuevo_valor_parts = nuevo_valor.split(".")  # Convertir a lista
     
@@ -810,12 +815,13 @@ def evitar_recursion(name, nuevo_valor):
     for i in range(len(name_parts) - len(nuevo_valor_parts) + 1):
         if name_parts[i:i + len(nuevo_valor_parts)] == nuevo_valor_parts:
             print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
-            return name  # No concatenar si ya existe en cualquier parte
+            evita = True
+            return evita  # No concatenar si ya existe en cualquier parte
     
     # Si no está repetido, concatenar
     new_name = name + "." + nuevo_valor
     print_with_line_number(f"✅ Nuevo valor concatenado: {new_name}")
-    return new_name
+    return evita
 
 def get_last_before_dot(path):
     parts = path.strip(".").split(".")  # Eliminamos puntos al final y dividimos
@@ -2826,7 +2832,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
     return diagrama_path
     
 
-async def main()():
+async def main():
     st.markdown(
     "<h1 style='text-align: center;'>📄 Generador de Documentación OSB</h1>",
     unsafe_allow_html=True)
