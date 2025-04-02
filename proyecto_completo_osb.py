@@ -565,9 +565,11 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     
     st.write(f"📌 start_time: {start_time}, current_time: {current_time}")
     st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
+    num_elementos_request = len(request_elements)
+    num_elementos_response = len(response_elements)
     print_with_line_number(f"parent_element_name: {parent_element_name}")
-    print_with_line_number(f"Total elementos request: {len(request_elements)}")
-    print_with_line_number(f"Total elementos response: {len(response_elements)}")
+    print_with_line_number(f"Total elementos request: {num_elementos_request}")
+    print_with_line_number(f"Total elementos response: {num_elementos_response}")
     
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
@@ -688,7 +690,19 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     #st.toast(f"parent_element_name: {parent_element_name}")
     #st.toast(f"xsd_file_path: {xsd_file_path}")
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
-
+    evita = evitar_recursion(parent_element_name, type_name)
+    
+    if num_elementos_request > 6000:
+        print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
+        processed_types = {}
+        return
+    if num_elementos_response > 6000:
+        print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
+        processed_types = {}
+        return
+    if evita:
+        print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
+        return
     if type_name in complex_types:
         #print_with_line_number(f"Explorando complexType: {type_name}")
 
@@ -810,7 +824,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 else:
                     st.warning(f"complexType {element_type} no encontrado en el XSD")
     else:
-        st.warning(f"complexType {type_name} no encontrado en el XSD")
+            st.warning(f"complexType {type_name} no encontrado en el XSD")
 
 def evitar_recursion(name, nuevo_valor):
     evita = False
