@@ -2826,7 +2826,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
     return diagrama_path
     
 
-async def main()():
+async def main():
     st.markdown(
     "<h1 style='text-align: center;'>📄 Generador de Documentación OSB</h1>",
     unsafe_allow_html=True)
