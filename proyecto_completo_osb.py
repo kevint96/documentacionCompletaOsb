@@ -986,7 +986,7 @@ def extract_wsdl_operations(wsdl_path):
                 operations.add(operation_name)  # Agregamos el nombre de la operación al conjunto
     return list(operations)  # Convertimos el conjunto de vuelta a lista antes de devolverlo
 
-def extraer_operaciones_expuestas_http(project_path):
+async def extraer_operaciones_expuestas_http(project_path):
     wsdl_operations_map = {}
     for root, dirs, files in os.walk(project_path):
         if os.path.basename(root) == "Proxies":
@@ -1026,7 +1026,7 @@ def extraer_operaciones_expuestas_http(project_path):
     #st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
     return wsdl_operations_map
 
-def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
+async def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
     
     osb_services = []
     elementos_xsd = []
@@ -1036,7 +1036,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     found = False  # Variable para rastrear si se encuentra la operación
 
     #print_with_line_number(f"URL generada: {url}")
-    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
+    wsdl_operations_map = await extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
@@ -1118,7 +1118,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #print_with_line_number(f"xsd: {xsd}")
                     
-                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
+                        elementos_xsd = await parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
 
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
@@ -1134,7 +1134,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     #st.success(f"osb_services: {osb_services}")
     return osb_services
 
-def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
+async def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     
     osb_services = []
     elementos_xsd = []
@@ -1172,7 +1172,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     #print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
     ##print_with_line_number(f"URL generada: {url}")
-    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
+    wsdl_operations_map = await extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
@@ -1770,7 +1770,7 @@ def reemplazar_marcador_con_imagen(doc, marcador, diagrama_path):
     return doc  # Retornar el documento si no se encontró el marcador
 
 
-def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
+async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
     """Función que ejecuta la generación de documentación."""
     
     zip_files = []
@@ -1805,7 +1805,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         #print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
     
     # Llamar a la función principal de tu script
-    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+    services_with_data = await extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
     #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
@@ -1998,7 +1998,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     ruta_proyecto = ruta.strip("/") 
                     
-                    combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+                    combined_services = await generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
                     print_with_line_number(f"combined_services: {combined_services}")
                     
@@ -2826,7 +2826,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
     return diagrama_path
     
 
-def main():
+async def main()():
     st.markdown(
     "<h1 style='text-align: center;'>📄 Generador de Documentación OSB</h1>",
     unsafe_allow_html=True)
@@ -2884,10 +2884,10 @@ def main():
             if jar_file and plantilla_file and nombre_autor:
                 #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
                 with st.spinner("Generando documentación..."):
-                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor)
+                    await generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
