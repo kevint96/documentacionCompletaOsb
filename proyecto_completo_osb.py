@@ -2188,7 +2188,9 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                         tabla_response._element.remove(tabla_response.rows[2]._element)
                     
                     # Procesar los datos
-                    for elem in elements['request']:
+                    idx_cabecera = 1  # Contador para "cabeceraEntrada"
+                    idx_request = 1   # Contador para el else
+                    for elem in elements['request']: 
                         
                         obligatorio = "NO"
                         #if 'cabeceraEntrada.' not in elem['name']:
@@ -2196,36 +2198,41 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                         #fila[0].text = operation + "Request" + "." + elem['name']
                         if 'cabeceraEntrada' in elem['name']:
                             fila_cabecera_entrada = tabla_cabecera_entrada.add_row().cells
-                            fila_cabecera_entrada[0].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila_cabecera_entrada[0].text = str(idx_cabecera)
                             fila_cabecera_entrada[1].text = elem['name']
-                            campo = fila_cabecera_entrada[1].text.split('.')[-1]
-                            fila_cabecera_entrada[1].text = campo
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila_cabecera_entrada[2].text = elem['name']
+                            campo = fila_cabecera_entrada[2].text.split('.')[-1]
+                            fila_cabecera_entrada[2].text = campo
                             #st.success(f"fila[1].text: {fila[1].text}")
                             if elem['minOccurs'] == '1':
                                 obligatorio = "SI"
-                            fila_cabecera_entrada[2].text = obligatorio
-                            fila_cabecera_entrada[3].text = elem['type']
-                            tipo_campo = fila_cabecera_entrada[3].text.split(':')[-1]
+                            fila_cabecera_entrada[3].text = obligatorio
+                            fila_cabecera_entrada[4].text = elem['type']
+                            tipo_campo = fila_cabecera_entrada[4].text.split(':')[-1]
                             if tipo_campo == 'string':
                                 tipo_campo = 'String'
-                            fila_cabecera_entrada[3].text = tipo_campo
+                            fila_cabecera_entrada[4].text = tipo_campo
+                            
+                            idx_cabecera += 1  # Incrementar solo en este bloque
                         else:
                             fila = tabla_request.add_row().cells
-                            fila[0].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila[0].text = str(idx_request)
                             fila[1].text = elem['name']
-                            campo = fila[1].text.split('.')[-1]
-                            fila[1].text = campo
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila[2].text = elem['name']
+                            campo = fila[2].text.split('.')[-1]
+                            fila[2].text = campo
                             #st.success(f"fila[1].text: {fila[1].text}")
                             if elem['minOccurs'] == '1':
                                 obligatorio = "SI"
-                            fila[2].text = obligatorio
-                            fila[3].text = elem['type']
-                            tipo_campo = fila[3].text.split(':')[-1]
+                            fila[3].text = obligatorio
+                            fila[4].text = elem['type']
+                            tipo_campo = fila[4].text.split(':')[-1]
                             if tipo_campo == 'string':
                                 tipo_campo = 'String'
-                            fila[3].text = tipo_campo
+                            fila[4].text = tipo_campo
+                            idx_request += 1  # Incrementar solo en este bloque
                         #st.success(f"fila[3].text: {fila[3].text}")
                     
                     if total_operaciones == 1:
@@ -2236,6 +2243,8 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                         tabla_response._element.remove(tabla_response.rows[2]._element)
                     
                     # Procesar los datos
+                    idx_cabecera = 1  # Contador para "cabeceraEntrada"
+                    idx_response = 1   # Contador para el else
                     for elem in elements['response']:
                         
                         obligatorio = "NO"
@@ -2245,36 +2254,40 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                         #fila[0].text = operation + "Response" + "." + elem['name']
                         if 'cabeceraSalida' in elem['name']:
                             fila_cabecera_salida = tabla_cabecera_salida.add_row().cells
-                            fila_cabecera_salida[0].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila_cabecera_salida[0].text = str(idx_cabecera)
                             fila_cabecera_salida[1].text = elem['name']
-                            campo = fila_cabecera_salida[1].text.split('.')[-1]
-                            fila_cabecera_salida[1].text = campo
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila_cabecera_salida[2].text = elem['name']
+                            campo = fila_cabecera_salida[2].text.split('.')[-1]
+                            fila_cabecera_salida[2].text = campo
                             #st.success(f"fila[1].text: {fila[1].text}")
                             if elem['minOccurs'] == '1':
                                 obligatorio = "SI"
-                            fila_cabecera_salida[2].text = obligatorio
-                            fila_cabecera_salida[3].text = elem['type']
-                            tipo_campo = fila_cabecera_salida[3].text.split(':')[-1]
+                            fila_cabecera_salida[3].text = obligatorio
+                            fila_cabecera_salida[4].text = elem['type']
+                            tipo_campo = fila_cabecera_salida[4].text.split(':')[-1]
                             if tipo_campo == 'string':
                                 tipo_campo = 'String'
-                            fila_cabecera_salida[3].text = tipo_campo
+                            fila_cabecera_salida[4].text = tipo_campo
+                            idx_cabecera += 1
                         else:
                             fila = tabla_response.add_row().cells
-                            fila[0].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila[0].text = str(idx_response)
                             fila[1].text = elem['name']
-                            campo = fila[1].text.split('.')[-1]
-                            fila[1].text = campo
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila[2].text = elem['name']
+                            campo = fila[2].text.split('.')[-1]
+                            fila[2].text = campo
                             #st.success(f"fila[1].text: {fila[1].text}")
                             if elem['minOccurs'] == '1':
                                 obligatorio = "SI"
-                            fila[2].text = obligatorio
-                            fila[3].text = elem['type']
-                            tipo_campo = fila[3].text.split(':')[-1]
+                            fila[3].text = obligatorio
+                            fila[4].text = elem['type']
+                            tipo_campo = fila[4].text.split(':')[-1]
                             if tipo_campo == 'string':
                                 tipo_campo = 'String'
-                            fila[3].text = tipo_campo
+                            fila[4].text = tipo_campo
+                            idx_response += 1  # Incrementar solo en este bloque
                     
                     if total_operaciones == 1:
                         progress_bar_general.progress(75)
