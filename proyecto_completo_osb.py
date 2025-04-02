@@ -1934,6 +1934,9 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
         if total_operaciones > 1:
             progress_bar_general = st.progress(0)
         
+        if "progress_bar_general" not in st.session_state:
+            st.session_state["progress_bar_general"] = st.progress(0)
+        
         # 🔹 Iterar sobre cada operación
         for idx, operation in enumerate(unique_operations, start=1):
             if total_operaciones > 1:
@@ -2345,7 +2348,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
         with open(zip_path, "rb") as file:
             zip_bytes = file.read()
         
-        progress_bar_general.progress(100)  # ¡Completado!
+        st.session_state["progress_bar_general"].progress(100)  # ¡Completado!
         st.success("Documentación generada con éxito!")
 
         # 🔹 Agregar un pequeño delay para asegurar que el ZIP esté listo
