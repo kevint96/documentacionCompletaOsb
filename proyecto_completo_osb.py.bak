@@ -565,6 +565,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     
     st.write(f"📌 start_time: {start_time}, current_time: {current_time}")
     st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
+    print_with_line_number(f"parent_element_name: {parent_element_name}")
     print_with_line_number(f"Total elementos request: {len(request_elements)}")
     print_with_line_number(f"Total elementos response: {len(response_elements)}")
     
