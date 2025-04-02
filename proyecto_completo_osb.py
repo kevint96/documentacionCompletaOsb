@@ -36,6 +36,7 @@ import zlib
 import urllib.parse
 import requests
 import concurrent.futures
+import asyncio
 
 # URL del servidor público de PlantUML
 PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
@@ -436,7 +437,7 @@ def get_correct_xsd_path(current_xsd_path, schema_location):
 
     return corrected_path
 
-def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, capa_proyecto, 
+async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, capa_proyecto, 
                    operacion_business, operations, service_name, operation_actual, 
                    target_complex_type=None, root_element_name=None,
                    request_elements=None, response_elements=None,processed_types=None,
@@ -454,7 +455,6 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     if response_elements is None:
         response_elements = []
     if processed_types is None:
-        processed_types = set()  # 🔹 Inicializa el conjunto solo si no existe
         processed_types = {}
 
     extraccion_dir = os.path.abspath(project_path)
@@ -530,7 +530,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     # 🚀 **Si `target_complex_type` está definido, buscar SOLO ese complexType.**
     if target_complex_type:
         #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
-        explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+        await explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                               operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
         return request_elements, response_elements
@@ -540,7 +540,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         #print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
 
         if complex_type in complex_types:
-            explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+            await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
 
@@ -549,7 +549,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     return request_elements, response_elements
 
 
-def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
+async def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
                           start_time=None, time_limit=0.60):
@@ -569,7 +569,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
     
-    def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
+    async def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
         if type_name in processed_types:
             print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
@@ -603,12 +603,12 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 else:
                     # Es un tipo complejo, llamar recursivamente
                     nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
-                    process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
+                    await process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
         return
     
     if type_name in processed_types:
-        process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
+        await process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements)
 
     # if type_name in processed_types:
@@ -700,7 +700,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
                     #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
-                    explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
+                    await explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
                                           request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
@@ -763,7 +763,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
             elif element_type in complex_types:
                 #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
-                explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
+                await explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                       operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
 
@@ -772,7 +772,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 
                 if nested_type in complex_types:
                     #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
-                    explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
+                    await explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
                 elif prefix in namespaces:
@@ -785,7 +785,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         new_xsd_path = os.path.join(extraccion_dir, corrected_xsd_path)
                         #print_with_line_number(f"new_xsd_path: {new_xsd_path}")
 
-                        parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
+                        await parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
                                        service_name, operation_actual, 
                                        target_complex_type=nested_type, 
@@ -1118,7 +1118,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #print_with_line_number(f"xsd: {xsd}")
                     
-                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
+                        elementos_xsd = await parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
 
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
