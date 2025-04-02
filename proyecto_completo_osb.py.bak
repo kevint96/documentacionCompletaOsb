@@ -1477,6 +1477,17 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                     print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                
+                else:
+                    request_element = branch.find(".//con:request", namespaces)
+                    if request_element is not None:
+                        request_value = request_element.text
+                        pipelines = root.findall(f".//con:pipeline[@name='{request_value}']", namespaces)
+                        for pipeline in pipelines:
+                            for ws_callout in pipeline.findall(".//con3:wsCallout", namespaces):
+                                service_element = ws_callout.find(".//con3:service", namespaces)
+                                if service_element is not None:
+                                    services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
         return services_for_operations
 
     def process_flow_elements():
