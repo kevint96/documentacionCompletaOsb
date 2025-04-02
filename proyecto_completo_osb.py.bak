@@ -448,7 +448,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     if start_time is None:
         start_time = time.time()  # Guardamos el tiempo inicial
     
-    print_with_line_number(f"start_timee: {start_time}")
+    #print_with_line_number(f"start_timee: {start_time}")
     # 🔹 Asegurar que las listas no se reinicien
     if request_elements is None:
         request_elements = []
@@ -544,8 +544,8 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
 
-    print_with_line_number(f"Total elementos request: {len(request_elements)}")
-    print_with_line_number(f"Total elementos response: {len(response_elements)}")
+    #print_with_line_number(f"Total elementos request: {len(request_elements)}")
+    #print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
 
 
@@ -567,9 +567,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     num_elementos_request = len(request_elements)
     num_elementos_response = len(response_elements)
-    print_with_line_number(f"parent_element_name: {parent_element_name}")
-    print_with_line_number(f"Total elementos request: {num_elementos_request}")
-    print_with_line_number(f"Total elementos response: {num_elementos_response}")
+    #print_with_line_number(f"parent_element_name: {parent_element_name}")
+    #print_with_line_number(f"Total elementos request: {num_elementos_request}")
+    #print_with_line_number(f"Total elementos response: {num_elementos_response}")
     
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
@@ -578,16 +578,16 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     async def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
         if type_name in processed_types:
-            print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-            print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+            #print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
+            #print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
             
             for element in processed_types[type_name]:
                 evita = evitar_recursion(parent_element_name, element['name'])
                 
                 if not evita:
                     nuevo_full_name = f"{parent_element_name}.{element['name']}"
-                    print_with_line_number(f"🔄 nuevo_full_name: {nuevo_full_name}")
-                    print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
+                    #print_with_line_number(f"🔄 nuevo_full_name: {nuevo_full_name}")
+                    #print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
                     
                     # Si es un tipo primitivo (xsd:string, xsd:int, etc.)
                     if element['type'].startswith(("xsd:", "xs:")):
@@ -611,7 +611,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     else:
                         # Es un tipo complejo, llamar recursivamente
                         nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
-                        print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
+                        #print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
                         await process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
         
@@ -694,19 +694,19 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     
     if 'Request' in parent_element_name:
         if type_name in processed_types and num_elementos_request > 6000:
-            print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
+            #print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
             
     if 'Response' in parent_element_name:
         if type_name in processed_types and num_elementos_response > 6000:
-            print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
+            #print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
     if evita:
-        print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
+        #print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
         
         agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
 
@@ -857,7 +857,7 @@ def agregar_lista_elementos(parent_element_name,type_name,element_type,service_u
     elif 'Response' in parent_element_name:
         response_elements.append(element_details)
     
-    print_with_line_number(f"⚠ element_details {element_details}, INTERNO.")
+    #print_with_line_number(f"⚠ element_details {element_details}, INTERNO.")
     
 
 def evitar_recursion(name, nuevo_valor):
@@ -2065,7 +2065,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                     
                     combined_services = await generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    print_with_line_number(f"combined_services: {combined_services}")
+                    #print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     
@@ -2445,18 +2445,18 @@ def procesar_referencias_nivel2(referencia_padre,referencia_nueva,proxy, proxy_n
     
     referencias_procesadas = set()
                 
-    print_with_line_number(f"♪EMPIEZA FLUJO procesar_referencias_nivel2 -> Referencia padre♪: {referencia_padre}")
+    #print_with_line_number(f"♪EMPIEZA FLUJO procesar_referencias_nivel2 -> Referencia padre♪: {referencia_padre}")
     proyecto_padre = referencia_padre.split("/")[0]
-    print_with_line_number(f"proyecto_padre procesar_referencias_nivel2: {proyecto_padre}")
+    #print_with_line_number(f"proyecto_padre procesar_referencias_nivel2: {proyecto_padre}")
     partes = referencia_nueva.split("/")
     if len(partes) >= 3:
-        print_with_line_number(f"referencia_nueva procesar_referencias_nivel2: {referencia_nueva}")
+        #print_with_line_number(f"referencia_nueva procesar_referencias_nivel2: {referencia_nueva}")
         proyecto = partes[0]
-        print_with_line_number(f"proyecto procesar_referencias_nivel2: {proyecto}")
+        #print_with_line_number(f"proyecto procesar_referencias_nivel2: {proyecto}")
         business = partes[1]
-        print_with_line_number(f"business procesar_referencias_nivel2: {business}")
+        #print_with_line_number(f"business procesar_referencias_nivel2: {business}")
         proxy = partes[-1]
-        print_with_line_number(f"proxy procesar_referencias_nivel2: {proxy}")
+        #print_with_line_number(f"proxy procesar_referencias_nivel2: {proxy}")
     
     referencia_key = f"REFERENCIA_{proxy}"
     
@@ -2466,96 +2466,96 @@ def procesar_referencias_nivel2(referencia_padre,referencia_nueva,proxy, proxy_n
     referencias_procesadas.add(referencia_key)
     
     if referencia_key in data:
-        print_with_line_number(f"{referencia_key} encontrado:")
+        #print_with_line_number(f"{referencia_key} encontrado:")
         
         # 🔹 Obtener claves ordenadas (para saber cuál es la última)
         claves = list(data[referencia_key].keys())
         ultima_clave = claves[-1]  # Última clave en el diccionario
-        print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
+        #print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
         
         for key in claves:
             value = data[referencia_key][key]  # Valor de la clave
-            print_with_line_number(f"value: {value}")
+            #print_with_line_number(f"value: {value}")
             division = value.split("/")
             project = division[0]
-            print_with_line_number(f"procesar_referencias_nivel2 project: {project}")
+            #print_with_line_number(f"procesar_referencias_nivel2 project: {project}")
             proyecto_business = division[1]
-            print_with_line_number(f"procesar_referencias_nivel2 proyecto_business: {proyecto_business}")
+            #print_with_line_number(f"procesar_referencias_nivel2 proyecto_business: {proyecto_business}")
             business_name = division[-1]
 
-            print_with_line_number(f"procesar_referencias_nivel2 key - value {key}: {value}")
+            #print_with_line_number(f"procesar_referencias_nivel2 key - value {key}: {value}")
 
             if "ReglasNegocio" in value:
                 regla_negocio = division[2]
                 uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
+                #print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
                 uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
-                print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
+                #print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
 
             else:
                 if "Proxies" in value:
                     nueva_referencia_key = f"REFERENCIA_{business_name}"
-                    print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                    #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
                     
                     if not nueva_referencia_key in data:
                         uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                        print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                        #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
                         uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                        print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                        #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                         if key == ultima_clave:
                             uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                            print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
+                            #print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
                     else:
                         uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                        print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                        #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
 
-                        print_with_line_number(f"value: {value}")
-                        print_with_line_number(f"business_name: {business_name}")
-                        print_with_line_number(f"project: {project}")
+                        #print_with_line_number(f"value: {value}")
+                        #print_with_line_number(f"business_name: {business_name}")
+                        #print_with_line_number(f"project: {project}")
                         # #print_with_line_number(f"data: {data}")
                         
                         nueva_referencia_key = f"REFERENCIA_{business_name}"
-                        print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                        #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
                     
                         if nueva_referencia_key in data:
-                            print_with_line_number(f"{nueva_referencia_key} encontrado:")
+                            #print_with_line_number(f"{nueva_referencia_key} encontrado:")
                             claves_nuevas = list(data[nueva_referencia_key].keys())
                             ultima_clave_nueva = claves_nuevas[-1]  # Última clave en el diccionario
                             for key_nueva in claves_nuevas:
                                 value_nuevo = data[nueva_referencia_key][key_nueva]  # Valor de la clave
-                                print_with_line_number(f"procesar_referencias_nivel2 value_nuevo: {value_nuevo}")
+                                #print_with_line_number(f"procesar_referencias_nivel2 value_nuevo: {value_nuevo}")
                                 partes_nuevas = value_nuevo.split("/")
                                 project_nuevo = partes_nuevas[0]
-                                print_with_line_number(f"procesar_referencias_nivel2 project_nuevo: {project_nuevo}")
+                                #print_with_line_number(f"procesar_referencias_nivel2 project_nuevo: {project_nuevo}")
                                 proyecto_business_nuevo = partes_nuevas[1]
-                                print_with_line_number(f"procesar_referencias_nivel2 proyecto_business_nuevo: {proyecto_business_nuevo}")
+                                #print_with_line_number(f"procesar_referencias_nivel2 proyecto_business_nuevo: {proyecto_business_nuevo}")
                                 business_name_nuevo = partes_nuevas[-1]
-                                print_with_line_number(f"procesar_referencias_nivel2 business_name_nuevo: {business_name_nuevo}")
+                                #print_with_line_number(f"procesar_referencias_nivel2 business_name_nuevo: {business_name_nuevo}")
                                 
                         if key == ultima_clave:
                             uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
-                            print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
+                            #print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                         # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
 
                 else:
                     uml.append(f"{project} -> {proyecto_business}: Llamada a {business_name}")
-                    print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
+                    #print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
                     uml.append(f"{proyecto_business} -> {project}: Retorna respuesta")
-                    print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
+                    #print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
 
     else:
         
         if "BusinessServices" in referencia_nueva:
             uml.append(f"{proxy_name} -> {business}: Llamada a {proxy}")
-            print_with_line_number(f"{proxy_name} -> {business}: Llamada a {proxy}")
+            #print_with_line_number(f"{proxy_name} -> {business}: Llamada a {proxy}")
             uml.append(f"{business} -> {proxy_name}: Retorna respuesta")
-            print_with_line_number(f"{business} -> {proxy_name}: Retorna respuesta")
+            #print_with_line_number(f"{business} -> {proxy_name}: Retorna respuesta")
             if profundidad > 0:
                 uml.append(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
-                print_with_line_number(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
+                #print_with_line_number(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
             else:
                 uml.append(f"{proxy_name} -> {proyecto}: Retorna respuesta")
-                print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
+                #print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
             profundidad = 0
 
 
@@ -2572,7 +2572,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
         
         if operacion_a_documentar == operacion:
         
-            print_with_line_number(f"\n🔹 Operacion: {operacion}")
+            #print_with_line_number(f"\n🔹 Operacion: {operacion}")
             
             uml = ["@startuml"]
             data = combined_services2[operacion]
@@ -2590,18 +2590,18 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             def procesar_referencias(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
                 
-                print_with_line_number(f"♪EMPIEZA FLUJO -> Referencia padre♪: {referencia_padre}")
+                #print_with_line_number(f"♪EMPIEZA FLUJO -> Referencia padre♪: {referencia_padre}")
                 proyecto_padre = referencia_padre.split("/")[0]
-                print_with_line_number(f"proyecto_padre: {proyecto_padre}")
+                #print_with_line_number(f"proyecto_padre: {proyecto_padre}")
                 partes = referencia_nueva.split("/")
                 if len(partes) >= 3:
-                    print_with_line_number(f"referencia_nueva: {referencia_nueva}")
+                    #print_with_line_number(f"referencia_nueva: {referencia_nueva}")
                     proyecto = partes[0]
-                    print_with_line_number(f"proyecto: {proyecto}")
+                    #print_with_line_number(f"proyecto: {proyecto}")
                     business = partes[1]
-                    print_with_line_number(f"business: {business}")
+                    #print_with_line_number(f"business: {business}")
                     proxy = partes[-1]
-                    print_with_line_number(f"proxy: {proxy}")
+                    #print_with_line_number(f"proxy: {proxy}")
                 
                 referencia_key = f"REFERENCIA_{proxy}"
                 
@@ -2611,110 +2611,110 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                 referencias_procesadas.add(referencia_key)
                 
                 if referencia_key in data:
-                    print_with_line_number(f"{referencia_key} encontrado:")
+                    #print_with_line_number(f"{referencia_key} encontrado:")
                     
                     # 🔹 Obtener claves ordenadas (para saber cuál es la última)
                     claves = list(data[referencia_key].keys())
                     ultima_clave = claves[-1]  # Última clave en el diccionario
-                    print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
+                    #print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
                     
                     for key in claves:
                         value = data[referencia_key][key]  # Valor de la clave
-                        print_with_line_number(f"value: {value}")
+                        #print_with_line_number(f"value: {value}")
                         division = value.split("/")
                         project = division[0]
-                        print_with_line_number(f"project: {project}")
+                        #print_with_line_number(f"project: {project}")
                         proyecto_business = division[1]
-                        print_with_line_number(f"proyecto_business: {proyecto_business}")
+                        #print_with_line_number(f"proyecto_business: {proyecto_business}")
                         business_name = division[-1]
 
-                        print_with_line_number(f"key - value {key}: {value}")
+                        #print_with_line_number(f"key - value {key}: {value}")
                         
                         if "ComponentesComunes" != project and "UtilitariosEBS" != project:
 
                             if "ReglasNegocio" in value:
                                 regla_negocio = division[2]
                                 uml.append(f"{project} -> {regla_negocio}: Llamada a {business_name}")
-                                print_with_line_number(f"{project} -> {regla_negocio}: Llamada a {business_name}")
+                                #print_with_line_number(f"{project} -> {regla_negocio}: Llamada a {business_name}")
                                 uml.append(f"{regla_negocio} -> {project}: Retorna respuesta")
-                                print_with_line_number(f"{regla_negocio} -> {project}: Retorna respuesta")
+                                #print_with_line_number(f"{regla_negocio} -> {project}: Retorna respuesta")
 
                             else:
                                 if "Proxies" in value:
                                     nueva_referencia_key = f"REFERENCIA_{business_name}"
-                                    print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                                    #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
                                     
                                     if not nueva_referencia_key in data:
                                         uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                        print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                        #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
                                         uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                        print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                        #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                         if key == ultima_clave:
                                             proxy_project = proxy_name.split("/")[0]
                                             if proyecto != proxy_project:
                                                 uml.append(f"{proyecto} -> {proxy_project}: Retorna respuesta")
-                                                print_with_line_number(f"{proyecto} -> {proxy_project}: Retorna respuesta")
+                                                #print_with_line_number(f"{proyecto} -> {proxy_project}: Retorna respuesta")
                                     else:
                                         if proyecto != project:
                                             uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                            print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                            #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
 
-                                        print_with_line_number(f"value: {value}")
-                                        print_with_line_number(f"business_name: {business_name}")
-                                        print_with_line_number(f"project: {project}")
+                                        #print_with_line_number(f"value: {value}")
+                                        #print_with_line_number(f"business_name: {business_name}")
+                                        #print_with_line_number(f"project: {project}")
                                         # #print_with_line_number(f"data: {data}")
                                         
                                         referencia_nueva_key = f"REFERENCIA_{business_name}"
-                                        print_with_line_number(f"nueva_referencia_key: {referencia_nueva_key}")
+                                        #print_with_line_number(f"nueva_referencia_key: {referencia_nueva_key}")
                                     
                                         if referencia_nueva_key in data:
-                                            print_with_line_number(f"{referencia_nueva_key} encontrado:")
+                                            #print_with_line_number(f"{referencia_nueva_key} encontrado:")
                                             claves_nuevas = list(data[referencia_nueva_key].keys())
                                             ultima_clave_nueva = claves_nuevas[-1]  # Última clave en el diccionario
                                             for key_nueva in claves_nuevas:
                                                 value_nuevo = data[referencia_nueva_key][key_nueva]  # Valor de la clave
-                                                print_with_line_number(f"value_nuevo: {value_nuevo}")
+                                                #print_with_line_number(f"value_nuevo: {value_nuevo}")
                                                 partes_nuevas = value_nuevo.split("/")
                                                 project_nuevo = partes_nuevas[0]
-                                                print_with_line_number(f"project_nuevo: {project_nuevo}")
+                                                #print_with_line_number(f"project_nuevo: {project_nuevo}")
                                                 proyecto_business_nuevo = partes_nuevas[1]
-                                                print_with_line_number(f"proyecto_business_nuevo: {proyecto_business_nuevo}")
+                                                #print_with_line_number(f"proyecto_business_nuevo: {proyecto_business_nuevo}")
                                                 business_name_nuevo = partes_nuevas[-1]
-                                                print_with_line_number(f"business_name_nuevo: {business_name_nuevo}")
+                                                #print_with_line_number(f"business_name_nuevo: {business_name_nuevo}")
                                                 
                                                 nueva_referencia_business_key = f"REFERENCIA_{business_name_nuevo}"
-                                                print_with_line_number(f"nueva_referencia_key: {nueva_referencia_business_key}")
+                                                #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_business_key}")
                                                 project_business = value_nuevo.split("/")[1]
                                                 
                                                 if "ComponentesComunes" != project_nuevo and "UtilitariosEBS" != project_nuevo:
                                                 
                                                     if nueva_referencia_business_key in data:
-                                                        print_with_line_number(f"{nueva_referencia_business_key} encontrado:")
+                                                        #print_with_line_number(f"{nueva_referencia_business_key} encontrado:")
                                                         claves_nuevas = list(data[nueva_referencia_business_key].keys())
                                                         ultima_clave_nueva = claves_nuevas[-1] 
                                                         
                                                         uml.append(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
-                                                        print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
+                                                        #print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
                                                         
                                                         procesar_referencias(referencia_padre,value_nuevo,business_name_nuevo, project_nuevo, data, uml, profundidad + 1)
                                                     else:
                                                         if "Proxies" in value_nuevo:
                                                             uml.append(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
-                                                            print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
+                                                            #print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
                                                             uml.append(f"{project_nuevo} -> {project}: Retorna respuesta")
-                                                            print_with_line_number(f"{project_nuevo} -> {project}: Retorna respuesta")
+                                                            #print_with_line_number(f"{project_nuevo} -> {project}: Retorna respuesta")
                                                             
                                                             if key_nueva == ultima_clave_nueva:
                                                                 uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                                                print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                                                #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                                         else:
                                                             uml.append(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
-                                                            print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
+                                                            #print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
                                                             uml.append(f"{project_business} -> {project}: Retorna respuesta")
-                                                            print_with_line_number(f"{project_business} -> {project}: Retorna respuesta")
+                                                            #print_with_line_number(f"{project_business} -> {project}: Retorna respuesta")
                                                             if proyecto != project:
                                                                 uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                                                print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                                                #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                                    
                                         # if key == ultima_clave:
                                             # uml.append(f"{project} -> {proxy_name[0]}: Retorna respuesta")
@@ -2724,23 +2724,23 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
 
                                 else:
                                     uml.append(f"{project} -> {proyecto_business}: Llamada a {business_name}")
-                                    print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
+                                    #print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
                                     uml.append(f"{proyecto_business} -> {project}: Retorna respuesta")
-                                    print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
+                                    #print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
 
                 else:
                     
                     if "BusinessServices" in referencia_nueva:
                         uml.append(f"{proxy_name} -> {business}: Llamada a {proxy}")
-                        print_with_line_number(f"{proxy_name} -> {business}: Llamada a {proxy}")
+                        #print_with_line_number(f"{proxy_name} -> {business}: Llamada a {proxy}")
                         uml.append(f"{business} -> {proxy_name}: Retorna respuesta")
-                        print_with_line_number(f"{business} -> {proxy_name}: Retorna respuesta")
+                        #print_with_line_number(f"{business} -> {proxy_name}: Retorna respuesta")
                         if profundidad > 0:
                             uml.append(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
-                            print_with_line_number(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
+                            #print_with_line_number(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
                         else:
                             uml.append(f"{proxy_name} -> {proyecto}: Retorna respuesta")
-                            print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
+                            #print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
                         profundidad = 0
             
             
@@ -2755,18 +2755,18 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     proyecto_ebs = proxy.split("/")[0]
                     add_participant(proyecto_ebs, proyecto_ebs)
             
-            print_with_line_number(f"proyecto_ebs: {proyecto_ebs}")
-            print_with_line_number(f"participantes: {participantes}")
+            #print_with_line_number(f"proyecto_ebs: {proyecto_ebs}")
+            #print_with_line_number(f"participantes: {participantes}")
         
             if contiene_valor("ReglasNegocio",data):
-                print_with_line_number(f"Existe ReglasNegocio")
+                #print_with_line_number(f"Existe ReglasNegocio")
                 add_participant("ReglasNegocio", "ReglasNegocio")
             if contiene_valor("BPEL",data):
-                print_with_line_number(f"Existe BPEL")
+                #print_with_line_number(f"Existe BPEL")
                 add_participant("BPEL", "BPEL")
-                print_with_line_number(f"Existe BPEL")
+                #print_with_line_number(f"Existe BPEL")
             
-            print_with_line_number(f"participantes: {participantes}")
+            #print_with_line_number(f"participantes: {participantes}")
         
             if "Referencia" in data:
                 for referencia in data["Referencia"]:
@@ -2776,30 +2776,30 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         business = partes[1]
                         proxy = partes[-1]
                         if "ComponentesComunes" != proyecto and "UtilitariosEBS" != proyecto:
-                            print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
+                            #print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
                             add_participant(proyecto, proyecto)
                         if "BusinessServices" in business:
                             add_participant(business, business)
             
-            print_with_line_number(f"participantes: {participantes}")
+            #print_with_line_number(f"participantes: {participantes}")
             
             if any(key.startswith("REFERENCIA_") for key in data):
                 for key in data:
-                    print_with_line_number(f"key: {key}")
+                    #print_with_line_number(f"key: {key}")
                     if key.startswith("REFERENCIA_"):
                         for sub_ref in data[key]:
-                            print_with_line_number(f"sub_ref: {sub_ref}")
+                            #print_with_line_number(f"sub_ref: {sub_ref}")
                             clave = data[key][sub_ref]
-                            print_with_line_number(f"clave: {clave}")
+                            #print_with_line_number(f"clave: {clave}")
                             if "BusinessServices" in clave:
                                 business = clave.split("/")[1]
                                 add_participant(business, business)
                             ref_name = data[key][sub_ref].split("/")[0]
                             if "ComponentesComunes" != ref_name and "UtilitariosEBS" != ref_name:
-                                print_with_line_number(f"ref_name: {ref_name}")
+                                #print_with_line_number(f"ref_name: {ref_name}")
                                 add_participant(ref_name, ref_name)
             
-            print_with_line_number(f"participantes: {participantes}")
+            #print_with_line_number(f"participantes: {participantes}")
             
             # Agregar los participantes al diagrama
             for alias, nombre in participantes:
@@ -2813,7 +2813,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             if business_services in uml:
                 uml.remove(business_services)  # Elimina si existe
                 uml.append(business_services)  # Lo agrega al final
-            print_with_line_number(f"uml: {uml}")
+            #print_with_line_number(f"uml: {uml}")
             
             uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
             if "Proxy" in data:
@@ -2821,35 +2821,35 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     proxy_ebs = proxy
                     proyecto_ebs = proxy.split("/")[0]
                     uml.append(f"EXP -> {proyecto_ebs}: Llamada a {proxy.split('/')[-1]}")
-            print_with_line_number(f"uml: {uml}")
+            #print_with_line_number(f"uml: {uml}")
             
             proyecto_referencia_abc =""
             if "Referencia" in data:
                 referencias_ordenadas = sorted(data["Referencia"])  # Ordenar las referencias alfabéticamente
-                print_with_line_number(f"referencias_ordenadas : {referencias_ordenadas}")
-                print_with_line_number(f" data[Referencia] : {data["Referencia"]}")
+                #print_with_line_number(f"referencias_ordenadas : {referencias_ordenadas}")
+                #print_with_line_number(f" data[Referencia] : {data["Referencia"]}")
                 for i,referencia in enumerate(data["Referencia"]):
                     partes = referencia.split("/")
                     if len(partes) >= 3:
-                        print_with_line_number(f"referencia: {referencia}")
+                        #print_with_line_number(f"referencia: {referencia}")
                         proyecto_referencia_abc = partes[0]
-                        print_with_line_number(f"proyecto_referencia_abc: {proyecto_referencia_abc}")
+                        #print_with_line_number(f"proyecto_referencia_abc: {proyecto_referencia_abc}")
                         business = partes[1]
-                        print_with_line_number(f"business: {business}")
+                        #print_with_line_number(f"business: {business}")
                         proxy = partes[-1]
-                        print_with_line_number(f"proxy : {proxy}")
+                        #print_with_line_number(f"proxy : {proxy}")
                         existen_mas_referencias_proyecto = any(proyecto_referencia_abc in ref for ref in referencias_ordenadas[i+1:])
                         
                         if "ComponentesComunes" != proyecto_referencia_abc and "UtilitariosEBS" != proyecto_referencia_abc:
                             
                             if proyecto_ebs != proyecto_referencia_abc:
                                 uml.append(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
-                                print_with_line_number(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
+                                #print_with_line_number(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
                             if "BusinessServices" in business:
                                 uml.append(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
-                                print_with_line_number(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
+                                #print_with_line_number(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
                                 uml.append(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
-                                print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
+                                #print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                             else:
                                 procesar_referencias(proxy_ebs,referencia,proxy, proxy_ebs, data, uml)
                                 #if not existen_mas_referencias_proyecto:
@@ -2857,16 +2857,16 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                     # print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                                 if proyecto_referencia_abc != proyecto_ebs:
                                     uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                                    print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                                    #print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             
                 uml.append(f"{proyecto_ebs} -> EXP: Retorna respuesta")
-                print_with_line_number(f"{proyecto_ebs} -> EXP: Retorna respuesta")
-            print_with_line_number(f"uml: {uml}")
+                #print_with_line_number(f"{proyecto_ebs} -> EXP: Retorna respuesta")
+            #print_with_line_number(f"uml: {uml}")
             
             uml.append("EXP -> Usuario : Respuesta final")
             uml.append("@enduml")
         
-            print_with_line_number("\n".join(uml))
+            #print_with_line_number("\n".join(uml))
         
             encoded_code = plantuml_to_hex("\n".join(uml))
             img_url = f"{PLANTUML_SERVER}{encoded_code}"    

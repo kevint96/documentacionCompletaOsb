@@ -563,8 +563,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
 
     type_name = type_name.split(':')[-1]  
     
-    st.write(f"📌 start_time: {start_time}, current_time: {current_time}")
-    st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
+    #st.write(f"📌 start_time: {start_time}, current_time: {current_time}")
+    #st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     num_elementos_request = len(request_elements)
     num_elementos_response = len(response_elements)
     #print_with_line_number(f"parent_element_name: {parent_element_name}")
@@ -1182,8 +1182,11 @@ async def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_do
                         #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #print_with_line_number(f"xsd: {xsd}")
-                    
+                        start_time = time.time()  # Guardamos el tiempo inicial
                         elementos_xsd = await parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
+                        current_time = time.time()
+                        elapsed_time = current_time - start_time
+                        st.toast(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg")
                         #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
 
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
