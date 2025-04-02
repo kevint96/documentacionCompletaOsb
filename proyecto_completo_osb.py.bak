@@ -548,7 +548,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
 
-
+@st.cache_data
 async def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
@@ -572,6 +572,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
     
+    @st.cache_data
     async def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
         if type_name in processed_types:
@@ -599,7 +600,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                             'service_name': service_name,
                             'operation_actual': operation_actual,
                         }
-                        st.toast(f"📋 Agregado: {element_details}")
+                        #st.toast(f"📋 Agregado: {element_details}")
                         
                         if 'Request' in parent_element_name:
                             request_elements.append(element_details)
@@ -683,9 +684,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
         
         # return  # 🚨 Detener la ejecución si excede el límite de tiempo
     
-    st.toast(f"type_name: {type_name}")
-    st.toast(f"parent_element_name: {parent_element_name}")
-    st.toast(f"xsd_file_path: {xsd_file_path}")
+    #st.toast(f"type_name: {type_name}")
+    #st.toast(f"parent_element_name: {parent_element_name}")
+    #st.toast(f"xsd_file_path: {xsd_file_path}")
     processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
 
     if type_name in complex_types:
@@ -731,16 +732,16 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             if element_minOccurs is None:
                 element_minOccurs = 0
            
-            st.toast(f"element_name: {element_name}")
-            st.toast(f"element_type: {element_type}")
-            st.toast(f"element_minOccurs: {element_minOccurs}")
+            #st.toast(f"element_name: {element_name}")
+            #st.toast(f"element_type: {element_type}")
+            #st.toast(f"element_minOccurs: {element_minOccurs}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
-            st.toast(f"Encontrado elemento: {full_name}")
+            #st.toast(f"Encontrado elemento: {full_name}")
             
             #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             padre = get_last_before_dot(type_name)
-            st.toast(f"🔄 padre: {padre}")
+            #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
@@ -749,7 +750,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 restriction = simple_type.find(f'{prefix}:restriction', namespaces)
                 if restriction is not None and 'base' in restriction.attrib:
                     element_type = restriction.attrib['base']
-                    st.toast(f"Elemento {full_name} tiene restricción con base: {element_type}")
+                    #st.toast(f"Elemento {full_name} tiene restricción con base: {element_type}")
 
             if element_type.startswith(("xsd:", "xs:")):
                 element_details = {
@@ -763,7 +764,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     'service_name': service_name,
                     'operation_actual': operation_actual,
                 }
-                st.toast(f"Agregando elemento primitivo: {element_details}")
+                #st.toast(f"Agregando elemento primitivo: {element_details}")
 
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
