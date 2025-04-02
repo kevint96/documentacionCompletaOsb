@@ -693,14 +693,14 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     evita = evitar_recursion(parent_element_name, type_name)
     
     if 'Request' in parent_element_name:
-        if num_elementos_request > 6000:
+        if type_name in processed_types and num_elementos_request > 6000:
             print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
             
     if 'Response' in parent_element_name:
-        if num_elementos_response > 6000:
+        if type_name in processed_types and num_elementos_response > 6000:
             print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
@@ -836,7 +836,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
 
 def agregar_lista_elementos(parent_element_name,type_name,element_type,service_url,capa_proyecto,element_minOccurs,operations,service_name,operation_actual,request_elements,response_elements):
     
-    full_name = f"{parent_element_name}.{type_name}"
+    #full_name = f"{parent_element_name}.{type_name}"
+    full_name = parent_element_name
     
     element_details = {
                     'elemento': parent_element_name.split('.')[0],  
@@ -864,12 +865,17 @@ def evitar_recursion(name, nuevo_valor):
     name_parts = name.split(".")  # Convertir a lista
     nuevo_valor_parts = nuevo_valor.split(".")  # Convertir a lista
     
+    ultimo_valor_name = name.split(".")[-1]
+    ultimo_nuevo_valor_name = nuevo_valor.split(".")[-1]
+    
     # Verificar si ya existe en cualquier posición
-    for i in range(len(name_parts) - len(nuevo_valor_parts) + 1):
-        if name_parts[i:i + len(nuevo_valor_parts)] == nuevo_valor_parts:
-            #print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
-            evita = True
-            return evita  # No concatenar si ya existe en cualquier parte
+    if ultimo_valor_name != ultimo_nuevo_valor_name:
+        
+        for i in range(len(name_parts) - len(nuevo_valor_parts) + 1):
+            if name_parts[i:i + len(nuevo_valor_parts)] == nuevo_valor_parts:
+                #print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
+                evita = True
+                return evita  # No concatenar si ya existe en cualquier parte
     
     # Si no está repetido, concatenar
     new_name = name + "." + nuevo_valor
