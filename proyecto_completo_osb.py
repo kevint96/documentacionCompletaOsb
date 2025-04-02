@@ -448,7 +448,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     if start_time is None:
         start_time = time.time()  # Guardamos el tiempo inicial
     
-    print_with_line_number(f"start_time: {start_time}")
+    print_with_line_number(f"start_timee: {start_time}")
     # 🔹 Asegurar que las listas no se reinicien
     if request_elements is None:
         request_elements = []
