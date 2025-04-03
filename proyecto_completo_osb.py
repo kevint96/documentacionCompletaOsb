@@ -464,10 +464,10 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
-    print_with_line_number(f"extraccion_dir: {extraccion_dir}")
-    print_with_line_number(f"xsd_file_path: {xsd_file_path}")
-    print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
-    print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
+    #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
+    #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
+    #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
+    #print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
     
     if not os.path.isfile(ruta_corregida):
         st.error(f"El archivo XSD {ruta_corregida} no existe.")
@@ -483,7 +483,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     cdata_match = re.search(r'<!\[CDATA\[(.*?)\]\]>', xsd_content, re.DOTALL)
     if cdata_match:
         xsd_content = cdata_match.group(1)
-        print_with_line_number("Se ha extraído el contenido de CDATA correctamente")
+        #print_with_line_number("Se ha extraído el contenido de CDATA correctamente")
 
     try:
         root = ET.fromstring(xsd_content)
@@ -494,15 +494,9 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     namespaces = extract_namespaces(xsd_content)
     imports = extract_imports(root)
 
-    print_with_line_number(f"Namespaces detectados: {namespaces}")
-    print_with_line_number(f"Imports encontrados: {imports}")
+    #print_with_line_number(f"Namespaces detectados: {namespaces}")
+    #print_with_line_number(f"Imports encontrados: {imports}")
     
-    # for item in request_elements:
-        # print_with_line_number(f"item['name'] request: {item['name']}")
-    
-    # for item in response_elements:
-        # print_with_line_number(f"item['name'] response: {item['name']}")
-
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
 
@@ -512,7 +506,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     # 🔹 Tomar el primer prefijo encontrado en namespaces (xs o xsd)
     prefix = valid_prefixes[0]
-    print_with_line_number(f"prefix: {prefix}")
+    #print_with_line_number(f"prefix: {prefix}")
 
     # 🔹 Buscar complexTypes con el prefijo detectado dinámicamente
     complex_types = {
@@ -529,7 +523,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     # 🚀 **Si `target_complex_type` está definido, buscar SOLO ese complexType.**
     if target_complex_type:
-        print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
+        #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
         await explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                               operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
@@ -537,24 +531,18 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     # 🔹 Si `target_complex_type` no está, procesamos TODO desde los elementos raíz.
     for root_element_name, complex_type in root_elements.items():
-        print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
+        #print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
         
-        print_with_line_number(f"Namespaces detectados: {namespaces}")
-        print_with_line_number(f"Imports encontrados: {imports}")
+        #print_with_line_number(f"Namespaces detectados: {namespaces}")
+        #print_with_line_number(f"Imports encontrados: {imports}")
 
         if complex_type in complex_types:
             await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
-        
-        # if not complex_type:
-            # complex_type = root_element_name[0].upper() + root_element_name[1:]
-            # await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
-                                  # xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                  # operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
-            
-    print_with_line_number(f"Total elementos request: {len(request_elements)}")
-    print_with_line_number(f"Total elementos response: {len(response_elements)}")
+    
+    #print_with_line_number(f"Total elementos request: {len(request_elements)}")
+    #print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
 
 
@@ -578,9 +566,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     #st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     num_elementos_request = len(request_elements)
     num_elementos_response = len(response_elements)
-    print_with_line_number(f"parent_element_name: {parent_element_name}")
-    print_with_line_number(f"Total elementos request: {num_elementos_request}")
-    print_with_line_number(f"Total elementos response: {num_elementos_response}")
+    #print_with_line_number(f"parent_element_name: {parent_element_name}")
+    #print_with_line_number(f"Total elementos request: {num_elementos_request}")
+    #print_with_line_number(f"Total elementos response: {num_elementos_response}")
     
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
@@ -589,16 +577,16 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     async def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
         if type_name in processed_types:
-            print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-            print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+            #print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
+            #print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
             
             for element in processed_types[type_name]:
                 evita = evitar_recursion(parent_element_name, element['name'])
                 
                 if not evita:
                     nuevo_full_name = f"{parent_element_name}.{element['name']}"
-                    print_with_line_number(f"🔄 nuevo_full_name: {nuevo_full_name}")
-                    print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
+                    #print_with_line_number(f"🔄 nuevo_full_name: {nuevo_full_name}")
+                    #print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
                     
                     # Si es un tipo primitivo (xsd:string, xsd:int, etc.)
                     if element['type'].startswith(("xsd:", "xs:")):
@@ -622,7 +610,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     else:
                         # Es un tipo complejo, llamar recursivamente
                         nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
-                        print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
+                        #print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
                         await process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
         
@@ -634,10 +622,10 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
         """Función recursiva para recorrer elementos complexType y sus hijos sin perder la referencia del padre."""
         prefix = "xsd"
         inner_complex_types = element.findall(f'{prefix}:complexType', namespaces)
-        print_with_line_number(f"🔍 Tipos complejos encontrados en {full_name}: {len(inner_complex_types)}")
+        #print_with_line_number(f"🔍 Tipos complejos encontrados en {full_name}: {len(inner_complex_types)}")
 
         if inner_complex_types:
-            print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
+            #print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
             
             for inner_complex_type in inner_complex_types:
                 sequence = inner_complex_type.find(f"{prefix}:sequence", namespaces)
@@ -647,7 +635,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                         sub_element_type = sub_element.get("type")  # Si no tiene tipo, es un complexType
                         sub_element_minOccurs = sub_element.get("minOccurs", 0)
                         
-                        print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOccurs: {sub_element_minOccurs}")
+                        #print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOccurs: {sub_element_minOccurs}")
                         
                         if sub_element_type and sub_element_type.startswith(("xsd:", "xs:")):
                             new_full_name = f"{full_name}.{sub_element_name}"
@@ -669,9 +657,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                                 response_elements.append(element_details)
                         
                         elif not sub_element_type:
-                            print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
+                            #print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
                             # Llamada recursiva si el sub-elemento es un complexType anidado
-                            print_with_line_number(f"🔄 sub_element: {sub_element}, full_name: {full_name} , sub_element_name: {sub_element_name} , parent_element_name: {parent_element_name}")
+                            #print_with_line_number(f"🔄 sub_element: {sub_element}, full_name: {full_name} , sub_element_name: {sub_element_name} , parent_element_name: {parent_element_name}")
                             await process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
                                                  service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
         
@@ -683,25 +671,25 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     
     if 'Request' in parent_element_name:
         if type_name in processed_types and num_elementos_request > 6000:
-            print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
+            #print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
             
     if 'Response' in parent_element_name:
         if type_name in processed_types and num_elementos_response > 6000:
-            print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
+            #print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
     if evita:
-        print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
+        #print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
         
         agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
 
         return
     if type_name in complex_types:
-        print_with_line_number(f"Explorando complexType: {type_name}")
+        #print_with_line_number(f"Explorando complexType: {type_name}")
 
         # 🔹 Buscar un prefijo válido
         prefix = next((p for p in ['xs', 'xsd'] if p in namespaces), None)
@@ -720,7 +708,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 if extension is not None and 'base' in extension.attrib:
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
-                    print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
+                    #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
                     await explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
@@ -743,24 +731,24 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             if element_minOccurs is None:
                 element_minOccurs = 0
            
-            print_with_line_number(f"element_name: {element_name}")
-            print_with_line_number(f"element_type: {element_type}")
-            print_with_line_number(f"element_minOccurs: {element_minOccurs}")
-            print_with_line_number(f"prefix: {prefix}")
+            #print_with_line_number(f"element_name: {element_name}")
+            #print_with_line_number(f"element_type: {element_type}")
+            #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
+            #print_with_line_number(f"prefix: {prefix}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             #st.toast(f"Encontrado elemento: {full_name}")
             
-            print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
+            #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             padre = get_last_before_dot(type_name)
-            print_with_line_number(f"🔄 padre: {padre}")
-            print_with_line_number(f"🔄 element_name: {element_name}")
+            #print_with_line_number(f"🔄 padre: {padre}")
+            #print_with_line_number(f"🔄 element_name: {element_name}")
 
-            print_with_line_number(f"🔄 element_type: {element_type}")
-            print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
+            #print_with_line_number(f"🔄 element_type: {element_type}")
+            #print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
             #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
-            print_with_line_number(f"🔄 processed_types: {processed_types}")
+            #print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
             simple_type = element.find(f'{prefix}:simpleType', namespaces)
             if simple_type is not None:
@@ -771,7 +759,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             
             if not element_type:
                 # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
-                    print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
+                    #print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
                     await process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
 
                                 
@@ -788,7 +776,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     'operation_actual': operation_actual,
                 }
                 #st.toast(f"Agregando elemento primitivo: {element_details}")
-                print_with_line_number(f"🔄 element_type.startswith: {element_type}")
+                #print_with_line_number(f"🔄 element_type.startswith: {element_type}")
                 
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
@@ -796,7 +784,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     response_elements.append(element_details)
 
             elif element_type in complex_types:
-                print_with_line_number(f"Buscando {element_type} en el mismo XSD")
+                #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 await explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                       operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
@@ -804,9 +792,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             elif ':' in element_type:
                 prefix, nested_type = element_type.split(':')
                 
-                print_with_line_number(f"🔄 : {prefix} , {nested_type}")
+                #print_with_line_number(f"🔄 : {prefix} , {nested_type}")
                 if nested_type in complex_types:
-                    print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
+                    #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     await explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
@@ -816,9 +804,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                         schema_location = imports[namespace]
                         #st.warning(f"El tipo {nested_type} está en otro XSD: {schema_location}")
                         corrected_xsd_path = get_correct_xsd_path(xsd_file_path, schema_location)
-                        print_with_line_number(f"corrected_xsd_path: {corrected_xsd_path}")
+                        #print_with_line_number(f"corrected_xsd_path: {corrected_xsd_path}")
                         new_xsd_path = os.path.join(extraccion_dir, corrected_xsd_path)
-                        print_with_line_number(f"new_xsd_path: {new_xsd_path}")
+                        #print_with_line_number(f"new_xsd_path: {new_xsd_path}")
 
                         await parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
@@ -2097,7 +2085,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                     
                     combined_services = await generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    #print_with_line_number(f"combined_services: {combined_services}")
+                    print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     
@@ -2472,125 +2460,6 @@ def descargar_diagrama(uml_url, ruta_destino):
     else:
         print(f"Error al descargar diagrama: {response.status_code}")
         return None
-
-def procesar_referencias_nivel2(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
-    
-    referencias_procesadas = set()
-                
-    #print_with_line_number(f"♪EMPIEZA FLUJO procesar_referencias_nivel2 -> Referencia padre♪: {referencia_padre}")
-    proyecto_padre = referencia_padre.split("/")[0]
-    #print_with_line_number(f"proyecto_padre procesar_referencias_nivel2: {proyecto_padre}")
-    partes = referencia_nueva.split("/")
-    if len(partes) >= 3:
-        #print_with_line_number(f"referencia_nueva procesar_referencias_nivel2: {referencia_nueva}")
-        proyecto = partes[0]
-        #print_with_line_number(f"proyecto procesar_referencias_nivel2: {proyecto}")
-        business = partes[1]
-        #print_with_line_number(f"business procesar_referencias_nivel2: {business}")
-        proxy = partes[-1]
-        #print_with_line_number(f"proxy procesar_referencias_nivel2: {proxy}")
-    
-    referencia_key = f"REFERENCIA_{proxy}"
-    
-    if referencia_key in referencias_procesadas:
-        return  # Ya fue procesado, evitamos duplicación
-    
-    referencias_procesadas.add(referencia_key)
-    
-    if referencia_key in data:
-        #print_with_line_number(f"{referencia_key} encontrado:")
-        
-        # 🔹 Obtener claves ordenadas (para saber cuál es la última)
-        claves = list(data[referencia_key].keys())
-        ultima_clave = claves[-1]  # Última clave en el diccionario
-        #print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
-        
-        for key in claves:
-            value = data[referencia_key][key]  # Valor de la clave
-            #print_with_line_number(f"value: {value}")
-            division = value.split("/")
-            project = division[0]
-            #print_with_line_number(f"procesar_referencias_nivel2 project: {project}")
-            proyecto_business = division[1]
-            #print_with_line_number(f"procesar_referencias_nivel2 proyecto_business: {proyecto_business}")
-            business_name = division[-1]
-
-            #print_with_line_number(f"procesar_referencias_nivel2 key - value {key}: {value}")
-
-            if "ReglasNegocio" in value:
-                regla_negocio = division[2]
-                uml.append(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                #print_with_line_number(f"{proxy_name} -> {regla_negocio}: Llamada a {business_name}")
-                uml.append(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
-                #print_with_line_number(f"{regla_negocio} -> {proxy_name}: Retorna respuesta")
-
-            else:
-                if "Proxies" in value:
-                    nueva_referencia_key = f"REFERENCIA_{business_name}"
-                    #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
-                    
-                    if not nueva_referencia_key in data:
-                        uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                        #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
-                        uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                        #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
-                        if key == ultima_clave:
-                            uml.append(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                            #print_with_line_number(f"{proyecto} -> {proxy_name}: Retorna respuesta")
-                    else:
-                        uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                        #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
-
-                        #print_with_line_number(f"value: {value}")
-                        #print_with_line_number(f"business_name: {business_name}")
-                        #print_with_line_number(f"project: {project}")
-                        # #print_with_line_number(f"data: {data}")
-                        
-                        nueva_referencia_key = f"REFERENCIA_{business_name}"
-                        #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
-                    
-                        if nueva_referencia_key in data:
-                            #print_with_line_number(f"{nueva_referencia_key} encontrado:")
-                            claves_nuevas = list(data[nueva_referencia_key].keys())
-                            ultima_clave_nueva = claves_nuevas[-1]  # Última clave en el diccionario
-                            for key_nueva in claves_nuevas:
-                                value_nuevo = data[nueva_referencia_key][key_nueva]  # Valor de la clave
-                                #print_with_line_number(f"procesar_referencias_nivel2 value_nuevo: {value_nuevo}")
-                                partes_nuevas = value_nuevo.split("/")
-                                project_nuevo = partes_nuevas[0]
-                                #print_with_line_number(f"procesar_referencias_nivel2 project_nuevo: {project_nuevo}")
-                                proyecto_business_nuevo = partes_nuevas[1]
-                                #print_with_line_number(f"procesar_referencias_nivel2 proyecto_business_nuevo: {proyecto_business_nuevo}")
-                                business_name_nuevo = partes_nuevas[-1]
-                                #print_with_line_number(f"procesar_referencias_nivel2 business_name_nuevo: {business_name_nuevo}")
-                                
-                        if key == ultima_clave:
-                            uml.append(f"{project} -> {proxy_name}: Retorna respuesta")
-                            #print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
-                        # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
-
-                else:
-                    uml.append(f"{project} -> {proyecto_business}: Llamada a {business_name}")
-                    #print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
-                    uml.append(f"{proyecto_business} -> {project}: Retorna respuesta")
-                    #print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
-
-    else:
-        
-        if "BusinessServices" in referencia_nueva:
-            uml.append(f"{proxy_name} -> {business}: Llamada a {proxy}")
-            #print_with_line_number(f"{proxy_name} -> {business}: Llamada a {proxy}")
-            uml.append(f"{business} -> {proxy_name}: Retorna respuesta")
-            #print_with_line_number(f"{business} -> {proxy_name}: Retorna respuesta")
-            if profundidad > 0:
-                uml.append(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
-                #print_with_line_number(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
-            else:
-                uml.append(f"{proxy_name} -> {proyecto}: Retorna respuesta")
-                #print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
-            profundidad = 0
-
-
 
 def generar_diagramas_operaciones(project_name, service_name, combined_services2, operacion_a_documentar=None):
     """

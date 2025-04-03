@@ -671,7 +671,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                         elif not sub_element_type:
                             print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
                             # Llamada recursiva si el sub-elemento es un complexType anidado
-                            process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
+                            print_with_line_number(f"🔄 sub_element: {sub_element}, full_name: {full_name} , sub_element_name: {sub_element_name} , parent_element_name: {parent_element_name}")
+                            await process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
                                                  service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
         
     #st.toast(f"type_name: {type_name}")
@@ -770,6 +771,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             
             if not element_type:
                 # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
+                    print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
                     await process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
 
                                 
