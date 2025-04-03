@@ -545,6 +545,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
         
         if not complex_type:
+            complex_type = root_element_name[0].upper() + root_element_name[1:]
             await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
@@ -623,74 +624,6 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 else:
                     return
         return
-    
-    # if type_name in processed_types:
-        # await process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
-                             # operations, service_name, operation_actual, request_elements, response_elements)
-
-    # if type_name in processed_types:
-        # print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-        # print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
-        # print_with_line_number(f"🔄 processed_types: {processed_types}")
-        
-        # elemento_fijo = processed_types.get(type_name, [])
-
-        # for element in elemento_fijo:
-            # print_with_line_number(f"Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
-            
-            # nuevo_full_name = f"{parent_element_name}.{element['name']}"
-            
-            # if element['type'].startswith(("xsd:", "xs:")):
-                # element_details = {
-                            # 'elemento': parent_element_name.split('.')[0],  
-                            # 'name': f"{parent_element_name}.{element['name']}",  
-                            # 'type': element['type'],
-                            # 'url': service_url,
-                            # 'ruta': capa_proyecto,
-                            # 'minOccurs': element['minOccurs'],
-                            # 'operations': operations,
-                            # 'service_name': service_name,
-                            # 'operation_actual': operation_actual,
-                        # }
-                
-                # print_with_line_number(f"element_details: {element_details}")
-
-                # if 'Request' in parent_element_name:
-                    # request_elements.append(element_details)
-                # elif 'Response' in parent_element_name:
-                    # response_elements.append(element_details)
-            
-            # else:
-                # nuevo_type = element['type'].split(':')[-1]
-                
-                # elemento_fijo = processed_types.get(nuevo_type, [])
-                
-                # for element in elemento_fijo:
-                    # print_with_line_number(f"Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
-                    
-                    # if element['type'].startswith(("xsd:", "xs:")):
-                        # element_details = {
-                                    # 'elemento': nuevo_full_name.split('.')[0],  
-                                    # 'name': f"{nuevo_full_name}.{element['name']}",  
-                                    # 'type': element['type'],
-                                    # 'url': service_url,
-                                    # 'ruta': capa_proyecto,
-                                    # 'minOccurs': element['minOccurs'],
-                                    # 'operations': operations,
-                                    # 'service_name': service_name,
-                                    # 'operation_actual': operation_actual,
-                                # }
-                        
-                        # print_with_line_number(f"element_details: {element_details}")
-
-                        # if 'Request' in parent_element_name:
-                            # request_elements.append(element_details)
-                        # elif 'Response' in parent_element_name:
-                            # response_elements.append(element_details)
-                
-        
-        # return  # 🚨 Detener la ejecución si excede el límite de tiempo
-    
     #st.toast(f"type_name: {type_name}")
     #st.toast(f"parent_element_name: {parent_element_name}")
     #st.toast(f"xsd_file_path: {xsd_file_path}")
@@ -770,11 +703,12 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             padre = get_last_before_dot(type_name)
             print_with_line_number(f"🔄 padre: {padre}")
             print_with_line_number(f"🔄 element_name: {element_name}")
+          
+            if not element_type:
+                element_type = element_name[0].upper() + element_name[1:]
+            
             print_with_line_number(f"🔄 element_type: {element_type}")
             print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
-            
-            if not element_type:
-                element_type = 'xsd'
             #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             print_with_line_number(f"🔄 processed_types: {processed_types}")
