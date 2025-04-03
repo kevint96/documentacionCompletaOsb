@@ -2975,6 +2975,7 @@ async def main():
             
             operaciones = obtener_operaciones(carpeta_destino)
             # Agregar una opción vacía al inicio de la lista
+            operaciones = sorted(operaciones, key=str.lower)
             operaciones.insert(0, "TODAS")
             if operaciones:  # Solo mostrar si hay operaciones disponibles
                 operacion_a_documentar = st.selectbox("Selecciona una operación", operaciones)
