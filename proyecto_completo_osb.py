@@ -464,10 +464,10 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
-    #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
-    #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
-    #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
-    #print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
+    print_with_line_number(f"extraccion_dir: {extraccion_dir}")
+    print_with_line_number(f"xsd_file_path: {xsd_file_path}")
+    print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
+    print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
     
     if not os.path.isfile(ruta_corregida):
         st.error(f"El archivo XSD {ruta_corregida} no existe.")
@@ -494,8 +494,8 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     namespaces = extract_namespaces(xsd_content)
     imports = extract_imports(root)
 
-    #print_with_line_number(f"Namespaces detectados: {namespaces}")
-    #print_with_line_number(f"Imports encontrados: {imports}")
+    print_with_line_number(f"Namespaces detectados: {namespaces}")
+    print_with_line_number(f"Imports encontrados: {imports}")
     
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
