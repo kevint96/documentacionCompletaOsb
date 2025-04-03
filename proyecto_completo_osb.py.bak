@@ -707,9 +707,16 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             print_with_line_number(f"🔄 element_name: {element_name}")
           
             if not element_type:
-                sin_tipo = True
-                element_type = element_name[0].upper() + element_name[1:]
-            
+                # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
+                inner_complex_type = element.find(f'{prefix}:complexType', namespaces)
+                if inner_complex_type is not None:
+                    print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, procesando...")
+                    await explorar_complex_type(full_name, full_name, complex_types, namespaces, imports, extraccion_dir, 
+                                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
+                                               operations, service_name, operation_actual, request_elements, response_elements, 
+                                               operation_name, processed_types, start_time, time_limit)
+                    continue  # Ya procesamos este elemento, pasamos al siguiente
+
             print_with_line_number(f"🔄 element_type: {element_type}")
             print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
             #st.toast(f"🔄 padre: {padre}")
@@ -743,7 +750,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 elif 'Response' in parent_element_name:
                     response_elements.append(element_details)
 
-            elif sin_tipo or element_type in complex_types:
+            elif element_type in complex_types:
                 print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 await explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
