@@ -538,6 +538,9 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     # 🔹 Si `target_complex_type` no está, procesamos TODO desde los elementos raíz.
     for root_element_name, complex_type in root_elements.items():
         print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
+        
+        print_with_line_number(f"Namespaces detectados: {namespaces}")
+        print_with_line_number(f"Imports encontrados: {imports}")
 
         if complex_type in complex_types:
             await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 

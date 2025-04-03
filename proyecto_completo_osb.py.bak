@@ -720,20 +720,20 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     element_type = restriction.attrib['base']
                     #st.toast(f"Elemento {full_name} tiene restricción con base: {element_type}")
             
-            if not element_type:
-                # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
-                print_with_line_number(f"namespaces: {namespaces}")
-                print_with_line_number(f"Usando prefijo: {prefix}")
-                inner_complex_types = element.findall('.//xsd:complexType', namespaces)
-                print_with_line_number(f"🔍 Tipos complejos encontrados en {element_name}: {len(inner_complex_types)}")
-                inner_complex_type = element.find(f'{prefix}:complexType', namespaces)
-                if inner_complex_type is not None:
-                    print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, procesando...")
-                    await explorar_complex_type(full_name, full_name, complex_types, namespaces, imports, extraccion_dir, 
-                                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                               operations, service_name, operation_actual, request_elements, response_elements, 
-                                               operation_name, processed_types, start_time, time_limit)
-                    continue  # Ya procesamos este elemento, pasamos al siguiente
+            # if not element_type:
+                # # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
+                # print_with_line_number(f"namespaces: {namespaces}")
+                # print_with_line_number(f"Usando prefijo: {prefix}")
+                # inner_complex_types = element.findall('.//xsd:complexType', namespaces)
+                # print_with_line_number(f"🔍 Tipos complejos encontrados en {element_name}: {len(inner_complex_types)}")
+                # inner_complex_type = element.find(f'{prefix}:complexType', namespaces)
+                # if inner_complex_type is not None:
+                    # print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, procesando...")
+                    # await explorar_complex_type(full_name, full_name, complex_types, namespaces, imports, extraccion_dir, 
+                                               # xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
+                                               # operations, service_name, operation_actual, request_elements, response_elements, 
+                                               # operation_name, processed_types, start_time, time_limit)
+                    # continue  # Ya procesamos este elemento, pasamos al siguiente
             
             if element_type.startswith(("xsd:", "xs:")):
                 element_details = {
