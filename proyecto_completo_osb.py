@@ -543,7 +543,12 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
             await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
-
+        
+        if not complex_type:
+            await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+                                  xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
+                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
+            
     print_with_line_number(f"Total elementos request: {len(request_elements)}")
     print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
@@ -711,7 +716,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
         agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
 
         return
-    if type_name in complex_types:
+    if not type_name or type_name in complex_types:
         print_with_line_number(f"Explorando complexType: {type_name}")
 
         # 🔹 Buscar un prefijo válido

@@ -543,7 +543,12 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
             await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
-
+        
+        if not complex_type:
+            await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+                                  xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
+                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
+            
     print_with_line_number(f"Total elementos request: {len(request_elements)}")
     print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
@@ -794,7 +799,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     'operation_actual': operation_actual,
                 }
                 #st.toast(f"Agregando elemento primitivo: {element_details}")
-
+                print_with_line_number(f"🔄 element_type.startswith: {element_type}")
+                
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
                 elif 'Response' in parent_element_name:
@@ -809,6 +815,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             elif ':' in element_type:
                 prefix, nested_type = element_type.split(':')
                 
+                print_with_line_number(f"🔄 : {prefix} , {nested_type}")
                 if nested_type in complex_types:
                     print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     await explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
