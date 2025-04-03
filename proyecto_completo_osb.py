@@ -731,11 +731,13 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
         if prefix not in namespaces:
             st.error(f"⛔ Error: el prefijo '{prefix}' no está en namespaces: {namespaces}")
             return
-
+        
+        namespace_map = {v: k for k, v in namespaces.items()}
         for element in sequence.findall(f'{prefix}:element', namespaces):
             element_name = element.attrib.get('name', '')
             element_type = element.attrib.get('type', '')
             element_minOccurs = element.attrib.get('minOccurs', '')
+            print_with_line_number(f"🔄 prefix: {prefix}")
             if element_minOccurs is None:
                 element_minOccurs = 0
            
@@ -743,10 +745,11 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 print_with_line_number(f"Namespaces detectados: {namespaces}")
                 tag_name = element.tag  # Obtiene el nombre completo del tag, incluyendo el prefijo
                 print_with_line_number(f"🔄 tag_name: {tag_name}")
-                prefix = tag_name.split("}")[0].replace("{", "")  # Extrae la URL del namespace
-                print_with_line_number(f"🔄 prefix: {prefix}")
-                prefix = namespaces.get(prefix, "")  # Obtiene el prefijo correspondiente del diccionario namespaces
-                print_with_line_number(f"🔄 prefix: {prefix}")
+                namespace_uri = tag_name.split("}")[0].replace("{", "")  # Extrae la URL del namespace
+                print_with_line_number(f"🔄 namespace_uri: {namespace_uri}")
+                
+                prefix = namespace_map.get(namespace_uri, "")  # Busca el prefijo en el diccionario invertido
+                print_with_line_number(f"🔄 prefix: {prefix}")  # Debería imprimir 'xs' si es correcto
             #print_with_line_number(f"element_name: {element_name}")
             #print_with_line_number(f"element_type: {element_type}")
             #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
