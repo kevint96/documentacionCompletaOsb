@@ -464,10 +464,10 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
-    print_with_line_number(f"extraccion_dir: {extraccion_dir}")
-    print_with_line_number(f"xsd_file_path: {xsd_file_path}")
-    print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
-    print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
+    #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
+    #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
+    #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
+    #print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
     
     if not os.path.isfile(ruta_corregida):
         st.error(f"El archivo XSD {ruta_corregida} no existe.")
@@ -494,8 +494,8 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     namespaces = extract_namespaces(xsd_content)
     imports = extract_imports(root)
 
-    print_with_line_number(f"Namespaces detectados: {namespaces}")
-    print_with_line_number(f"Imports encontrados: {imports}")
+    #print_with_line_number(f"Namespaces detectados: {namespaces}")
+    #print_with_line_number(f"Imports encontrados: {imports}")
     
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
@@ -618,15 +618,13 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     return
         return
     
-    async def process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces):
+    async def process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces,prefix):
         """Función recursiva para recorrer elementos complexType y sus hijos sin perder la referencia del padre."""
         
-        prefix = "xsd"
-        
-        print_with_line_number(f"Namespaces detectados: {namespaces}")
+        #print_with_line_number(f"Namespaces detectados: {namespaces}")
         
         if prefix not in namespaces:
-            print_with_line_number(f"⚠️ El prefijo '{prefix}' no está en namespaces. Usando otro prefijo disponible.")
+            #print_with_line_number(f"⚠️ El prefijo '{prefix}' no está en namespaces. Usando otro prefijo disponible.")
             prefix = next(iter(namespaces.values()), '')  # Usa el primer prefijo disponible
 
         inner_complex_types = element.findall(f'{prefix}:complexType', namespaces)
@@ -669,7 +667,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                             # Llamada recursiva si el sub-elemento es un complexType anidado
                             #print_with_line_number(f"🔄 sub_element: {sub_element}, full_name: {full_name} , sub_element_name: {sub_element_name} , parent_element_name: {parent_element_name}")
                             await process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
-                                                 service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
+                                                 service_url, capa_proyecto, operations, service_name, operation_actual, namespaces, prefix)
         
     #st.toast(f"type_name: {type_name}")
     #st.toast(f"parent_element_name: {parent_element_name}")
@@ -737,41 +735,43 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             element_name = element.attrib.get('name', '')
             element_type = element.attrib.get('type', '')
             element_minOccurs = element.attrib.get('minOccurs', '')
-            print_with_line_number(f"🔄 prefix: {prefix}")
+            
+            #print_with_line_number(f"element_name: {element_name}")
+            #print_with_line_number(f"element_type: {element_type}")
+            #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
+            #print_with_line_number(f"🔄 prefix: {prefix}")
             if element_minOccurs is None:
                 element_minOccurs = 0
            
             if not element_type:
-                print_with_line_number(f"Namespaces detectados: {namespaces}")
+                #print_with_line_number(f"Namespaces detectados: {namespaces}")
                 tag_name = element.tag  # Obtiene el nombre completo del tag, incluyendo el prefijo
-                print_with_line_number(f"🔄 tag_name: {tag_name}")
+                #print_with_line_number(f"🔄 tag_name: {tag_name}")
                 namespace_uri = tag_name.split("}")[0].replace("{", "")  # Extrae la URL del namespace
-                print_with_line_number(f"🔄 namespace_uri: {namespace_uri}")
+                #print_with_line_number(f"🔄 namespace_uri: {namespace_uri}")
                 
                 prefix = namespace_map.get(namespace_uri, "")  # Busca el prefijo en el diccionario invertido
-                print_with_line_number(f"🔄 prefix: {prefix}")  # Debería imprimir 'xs' si es correcto
-            #print_with_line_number(f"element_name: {element_name}")
-            #print_with_line_number(f"element_type: {element_type}")
-            #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
+                #print_with_line_number(f"🔄 prefix: {prefix}")  # Debería imprimir 'xs' si es correcto
+
             #print_with_line_number(f"prefix: {prefix}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             #st.toast(f"Encontrado elemento: {full_name}")
             
-            print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
+            #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             padre = get_last_before_dot(type_name)
-            print_with_line_number(f"🔄 padre: {padre}")
-            print_with_line_number(f"🔄 element_name: {element_name}")
+            #print_with_line_number(f"🔄 padre: {padre}")
+            #print_with_line_number(f"🔄 element_name: {element_name}")
 
-            print_with_line_number(f"🔄 element_type: {element_type}")
-            print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
+            #print_with_line_number(f"🔄 element_type: {element_type}")
+            #print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
             #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
-            print_with_line_number(f"🔄 prefix: {prefix}")
+            #print_with_line_number(f"🔄 prefix: {prefix}")
             simple_type = element.find(f'{prefix}:simpleType', namespaces)
-            print_with_line_number(f"🔄 simple_type: {simple_type}")
+            #print_with_line_number(f"🔄 simple_type: {simple_type}")
             if simple_type is not None:
                 restriction = simple_type.find(f'{prefix}:restriction', namespaces)
                 if restriction is not None and 'base' in restriction.attrib:
@@ -780,8 +780,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             
             if not element_type:
                 # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
-                    print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
-                    await process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
+                    #print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
+                    await process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces, prefix)
 
                                 
             if element_type.startswith(("xsd:", "xs:")):
