@@ -623,6 +623,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
         
         prefix = "xsd"
         
+        print_with_line_number(f"Namespaces detectados: {namespaces}")
+        
         if prefix not in namespaces:
             print_with_line_number(f"⚠️ El prefijo '{prefix}' no está en namespaces. Usando otro prefijo disponible.")
             prefix = next(iter(namespaces.values()), '')  # Usa el primer prefijo disponible
