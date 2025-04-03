@@ -1238,12 +1238,12 @@ async def generar_operaciones_expuestas_http(project_path,operacion_a_documentar
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"operations: {operations}")
         #print_with_line_number(f"project_name: {project_name}")
         #print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number(f"osb_file_path: {osb_file_path}")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
+        #print_with_line_number(f"osb_file_path: {osb_file_path}")
+        #print_with_line_number(f"pipeline_path: {pipeline_path}")
         #print_with_line_number(f"service_url: {service_url}")
         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
         if operacion_a_documentar in operations or not operacion_a_documentar:
@@ -1434,6 +1434,14 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
         
     return None
 
+def get_namespace_prefixes(root):
+    """Obtiene un diccionario con los prefijos de los namespaces reales en el XML."""
+    namespace_map = {v: k for k, v in namespaces.items()}  # Invertimos el diccionario
+    return {
+        el.tag.split('}')[0].strip('{'): namespace_map.get(el.tag.split('}')[0].strip('{'), '')
+        for el in root.iter() if '}' in el.tag
+    }
+
 def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
@@ -1492,19 +1500,44 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                         services_for_operations[operation_name].add(service_ref)
                         print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
-
+    
     def process_route_elements():
-        """Busca servicios en elementos <con:route-node>."""
+        """Busca servicios en elementos <con:route-node>, detectando los namespaces dinámicamente."""
+        ns_prefixes = get_namespace_prefixes(root)
+
+        con1_prefix = ns_prefixes.get("http://www.bea.com/wli/sb/stages/routing/config", "con1")
+        con3_prefix = ns_prefixes.get("http://www.bea.com/wli/sb/stages/transform/config", "con3")
+
         for route in root.findall(".//con:route-node", namespaces):
-            operation_element = route.find(".//con1:operation", namespaces)
+            # Buscar operation en cualquier namespace detectado
+            operation_xpath = f".//{con3_prefix}:operation" if con3_prefix else f".//{con1_prefix}:operation"
+            operation_element = route.find(operation_xpath, namespaces) or route.find(f".//{con1_prefix}:operation", namespaces)
+
             if operation_element is not None:
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
-                    service_element = route.find(".//con1:service", namespaces)
+                    # Buscar service en cualquier namespace detectado
+                    service_xpath = f".//{con3_prefix}:service" if con3_prefix else f".//{con1_prefix}:service"
+                    service_element = route.find(service_xpath, namespaces) or route.find(f".//{con1_prefix}:service", namespaces)
+
                     if service_element is not None:
-                        services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                        ref_value = service_element.attrib.get('ref', '')
+                        services_for_operations[operation_name].add(ref_value)
+                        print_with_line_number(f"🛠 Agregando servicio {ref_value} para operación {operation_name}")
         return services_for_operations
+    
+    # def process_route_elements():
+        # """Busca servicios en elementos <con:route-node>."""
+        # for route in root.findall(".//con:route-node", namespaces):
+            # operation_element = route.find(".//con1:operation", namespaces)
+            # if operation_element is not None:
+                # operation_name = operation_element.text.strip()
+                # if operation_name in operations:
+                    # service_element = route.find(".//con1:service", namespaces)
+                    # if service_element is not None:
+                        # services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
+                        # print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+        # return services_for_operations
 
     def process_callout_elements():
         """Busca servicios en elementos <wsCallout>."""
