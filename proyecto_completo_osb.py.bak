@@ -739,6 +739,13 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             if element_minOccurs is None:
                 element_minOccurs = 0
            
+            if not element_type:
+                tag_name = element.tag  # Obtiene el nombre completo del tag, incluyendo el prefijo
+                print_with_line_number(f"🔄 tag_name: {tag_name}")
+                prefix = tag_name.split("}")[0].replace("{", "")  # Extrae la URL del namespace
+                print_with_line_number(f"🔄 prefix: {prefix}")
+                prefix = namespaces.get(prefix, "")  # Obtiene el prefijo correspondiente del diccionario namespaces
+                print_with_line_number(f"🔄 prefix: {prefix}")
             #print_with_line_number(f"element_name: {element_name}")
             #print_with_line_number(f"element_type: {element_type}")
             #print_with_line_number(f"element_minOccurs: {element_minOccurs}")

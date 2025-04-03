@@ -740,6 +740,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 element_minOccurs = 0
            
             if not element_type:
+                print_with_line_number(f"Namespaces detectados: {namespaces}")
                 tag_name = element.tag  # Obtiene el nombre completo del tag, incluyendo el prefijo
                 print_with_line_number(f"🔄 tag_name: {tag_name}")
                 prefix = tag_name.split("}")[0].replace("{", "")  # Extrae la URL del namespace
