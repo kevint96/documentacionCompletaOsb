@@ -1503,6 +1503,9 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
 
     def process_route_elements():
         """Busca servicios en elementos <con:route-node>."""
+        route_nodes = root.findall(".//con:route-node", namespaces)
+        cantidad_route_nodes = len(route_nodes)
+        print_with_line_number(f"cantidad_route_nodes: {cantidad_route_nodes}")
         for route in root.findall(".//con:route-node", namespaces):
             operation_element = route.find(".//con1:operation", namespaces)
             print_with_line_number(f"operation_element: {operation_element}")
@@ -1514,6 +1517,15 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                         print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                else:
+                    if cantidad_route_nodes ==1:
+                        service_element = route.find(".//con1:service", namespaces)
+                        if service_element is not None:
+                            if len(operations) ==1:
+                                operation_name = operations[0]
+                                services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
+                                print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+
         return services_for_operations
 
     def process_callout_elements():

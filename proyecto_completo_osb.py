@@ -1518,14 +1518,18 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                         print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                 else:
-                    if cantidad_route_nodes ==1:
+                    if cantidad_route_nodes == 1:
                         service_element = route.find(".//con1:service", namespaces)
                         if service_element is not None:
-                            if len(operations) ==1:
+                            if isinstance(operations, list) and len(operations) ==1:
                                 operation_name = operations[0]
                                 services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                                 print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
-
+                            else:
+                                operation_name = operations
+                                services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
+                                print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                                
         return services_for_operations
 
     def process_callout_elements():
