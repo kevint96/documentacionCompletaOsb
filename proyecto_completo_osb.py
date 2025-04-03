@@ -767,6 +767,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             print_with_line_number(f"🔄 element_name: {element_name}")
             print_with_line_number(f"🔄 element_type: {element_type}")
             print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
+            
+            if not element_type:
+                element_type = 'None'
             #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             print_with_line_number(f"🔄 processed_types: {processed_types}")
