@@ -769,7 +769,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
             
             if not element_type:
-                element_type = 'None'
+                element_type = 'xsd'
             #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             print_with_line_number(f"🔄 processed_types: {processed_types}")
@@ -794,7 +794,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     'operation_actual': operation_actual,
                 }
                 #st.toast(f"Agregando elemento primitivo: {element_details}")
-
+                print_with_line_number(f"🔄 element_type.startswith: {element_type}")
+                
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
                 elif 'Response' in parent_element_name:
@@ -809,6 +810,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             elif ':' in element_type:
                 prefix, nested_type = element_type.split(':')
                 
+                print_with_line_number(f"🔄 : {prefix} , {nested_type}")
                 if nested_type in complex_types:
                     print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     await explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
