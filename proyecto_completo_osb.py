@@ -730,13 +730,23 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 inner_complex_types = element.findall('.//xsd:complexType', namespaces)
                 print_with_line_number(f"🔍 Tipos complejos encontrados en {element_name}: {len(inner_complex_types)}")
                 #inner_complex_type = element.find(f'{prefix}:complexType', namespaces)
-                if inner_complex_types is not None:
-                    print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, procesando...")
-                    await explorar_complex_type(full_name, full_name, complex_types, namespaces, imports, extraccion_dir, 
-                                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                               operations, service_name, operation_actual, request_elements, response_elements, 
-                                               operation_name, processed_types, start_time, time_limit)
-                    continue  # Ya procesamos este elemento, pasamos al siguiente
+                if inner_complex_types:
+                    print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
+
+                    for inner_complex_type in inner_complex_types:
+                        sequence = inner_complex_type.find(f"{prefix}:sequence", namespaces)
+                        if sequence is not None:
+                            for sub_element in sequence.findall(f"{prefix}:element", namespaces):
+                                sub_element_name = sub_element.get("name")
+                                sub_element_type = sub_element.get("type", "complexType")  # Si no tiene tipo, es un complexType
+
+                                print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}")
+
+                                # Agregar el sub-elemento a la lista de request o response según corresponda
+                                if parent_element_name.startswith("request"):
+                                    request_elements.append(sub_element_name)
+                                else:
+                                    response_elements.append(sub_element_name)
             
             if element_type.startswith(("xsd:", "xs:")):
                 element_details = {

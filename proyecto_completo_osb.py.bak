@@ -730,7 +730,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 inner_complex_types = element.findall('.//xsd:complexType', namespaces)
                 print_with_line_number(f"🔍 Tipos complejos encontrados en {element_name}: {len(inner_complex_types)}")
                 #inner_complex_type = element.find(f'{prefix}:complexType', namespaces)
-                if inner_complex_type is not None:
+                if inner_complex_types is not None:
                     print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, procesando...")
                     await explorar_complex_type(full_name, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                                xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
