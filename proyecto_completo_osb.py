@@ -746,7 +746,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
 
                                 print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOcurs: {sub_element_minOccurs}")
                                 
-                                if sub_element_type.startswith(("xsd:", "xs:")):
+                                if sub_element_type and sub_element_type.startswith(("xsd:", "xs:")):
                                     full_name = f"{full_name}.{sub_element_name}" 
                                     element_details = {
                                         'elemento': parent_element_name.split('.')[0],  
