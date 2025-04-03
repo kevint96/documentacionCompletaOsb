@@ -524,7 +524,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     # 🚀 **Si `target_complex_type` está definido, buscar SOLO ese complexType.**
     if target_complex_type:
         #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
-         explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+        explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                               operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
         return request_elements, response_elements
@@ -537,7 +537,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         #print_with_line_number(f"Imports encontrados: {imports}")
 
         if complex_type in complex_types:
-             explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+            explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
     
@@ -611,7 +611,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         # Es un tipo complejo, llamar recursivamente
                         nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
                         #print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
-                         process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
+                        process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
         
                 else:
@@ -666,7 +666,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                             #print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
                             # Llamada recursiva si el sub-elemento es un complexType anidado
                             #print_with_line_number(f"🔄 sub_element: {sub_element}, full_name: {full_name} , sub_element_name: {sub_element_name} , parent_element_name: {parent_element_name}")
-                             process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
+                            process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
                                                  service_url, capa_proyecto, operations, service_name, operation_actual, namespaces, prefix)
         
     #st.toast(f"type_name: {type_name}")
@@ -715,7 +715,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
                     #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
-                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
+                    explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
                                           request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
@@ -781,7 +781,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             if not element_type:
                 # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
                     #print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
-                     process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces, prefix)
+                    process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces, prefix)
 
                                 
             if element_type.startswith(("xsd:", "xs:")):
@@ -806,7 +806,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
             elif element_type in complex_types:
                 #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
-                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
+                explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                       operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
 
@@ -816,7 +816,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 #print_with_line_number(f"🔄 : {prefix} , {nested_type}")
                 if nested_type in complex_types:
                     #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
-                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
+                    explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
                 elif prefix in namespaces:
@@ -829,7 +829,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         new_xsd_path = os.path.join(extraccion_dir, corrected_xsd_path)
                         #print_with_line_number(f"new_xsd_path: {new_xsd_path}")
 
-                         parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
+                        parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
                                        service_name, operation_actual, 
                                        target_complex_type=nested_type, 
@@ -1113,7 +1113,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     found = False  # Variable para rastrear si se encuentra la operación
 
     #print_with_line_number(f"URL generada: {url}")
-    wsdl_operations_map =  extraer_operaciones_expuestas_http(project_path)
+    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
@@ -1195,7 +1195,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         #print_with_line_number(f"xsd: {xsd}")
                         #start_time = time.time()  # Guardamos el tiempo inicial
-                        elementos_xsd =  parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
+                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #current_time = time.time()
                         #elapsed_time = current_time - start_time
                         #st.toast(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg")
@@ -1252,7 +1252,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     #print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
     ##print_with_line_number(f"URL generada: {url}")
-    wsdl_operations_map =  extraer_operaciones_expuestas_http(project_path)
+    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
     
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
@@ -1922,7 +1922,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         #print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
     
     # Llamar a la función principal de tu script
-    services_with_data =  extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
     #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
@@ -2130,7 +2130,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     ruta_proyecto = ruta.strip("/") 
                     
-                    combined_services =  generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+                    combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
                     #print_with_line_number(f"combined_services: {combined_services}")
                     
@@ -2911,7 +2911,7 @@ def main():
             if jar_file and plantilla_file and nombre_autor:
                 #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
                 with st.spinner("Generando documentación..."):
-                     generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor)
+                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
