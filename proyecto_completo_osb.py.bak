@@ -739,15 +739,31 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                         if sequence is not None:
                             for sub_element in sequence.findall(f"{prefix}:element", namespaces):
                                 sub_element_name = sub_element.get("name")
-                                sub_element_type = sub_element.get("type", "complexType")  # Si no tiene tipo, es un complexType
+                                sub_element_type = sub_element.get("type")  # Si no tiene tipo, es un complexType
+                                sub_element_minOccurs = sub_element.get("minOccurs")
+                                if sub_element_minOccurs is None:
+                                    sub_element_minOccurs = 0
 
-                                print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}")
+                                print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOcurs: {sub_element_minOccurs}")
+                                
+                                if sub_element_type.startswith(("xsd:", "xs:")):
+                                    full_name = f"{full_name}.{sub_element_name}" 
+                                    element_details = {
+                                        'elemento': parent_element_name.split('.')[0],  
+                                        'name': full_name,  
+                                        'type': sub_element_type,
+                                        'url': service_url,
+                                        'ruta': capa_proyecto,
+                                        'minOccurs': sub_element_minOccurs,
+                                        'operations': operations,
+                                        'service_name': service_name,
+                                        'operation_actual': operation_actual,
+                                    }
 
-                                # Agregar el sub-elemento a la lista de request o response según corresponda
-                                if parent_element_name.startswith("request"):
-                                    request_elements.append(sub_element_name)
-                                else:
-                                    response_elements.append(sub_element_name)
+                                    if 'Request' in parent_element_name:
+                                        request_elements.append(element_details)
+                                    elif 'Response' in parent_element_name:
+                                        response_elements.append(element_details)
             
             if element_type.startswith(("xsd:", "xs:")):
                 element_details = {
