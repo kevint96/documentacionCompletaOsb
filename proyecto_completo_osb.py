@@ -544,8 +544,8 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
 
-    print_with_line_number(f"Total elementos request: {len(request_elements)}")
-    print_with_line_number(f"Total elementos response: {len(response_elements)}")
+    #print_with_line_number(f"Total elementos request: {len(request_elements)}")
+    #print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
 
 
@@ -1886,7 +1886,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
     # Llamar a la función principal de tu script
     services_with_data = await extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
-    print_with_line_number(f"✅ services_with_data {services_with_data}")
+    #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -1921,7 +1921,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
         
         #print_with_line_number(f"unique_operations: {unique_operations}")
         
-        print_with_line_number(f"✅ unique_operations {unique_operations}")
+        #print_with_line_number(f"✅ unique_operations {unique_operations}")
         
         operation_elements = {}
         
