@@ -1253,7 +1253,7 @@ async def generar_operaciones_expuestas_http(project_path,operacion_a_documentar
 
                 services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                             
-                print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+                #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
                 
                 services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
                 
@@ -2111,7 +2111,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                     
                     combined_services = await generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    print_with_line_number(f"combined_services: {combined_services}")
+                    #print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     

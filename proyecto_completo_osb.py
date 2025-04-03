@@ -620,7 +620,13 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     
     async def process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces):
         """Función recursiva para recorrer elementos complexType y sus hijos sin perder la referencia del padre."""
+        
         prefix = "xsd"
+        
+        if prefix not in namespaces:
+            print_with_line_number(f"⚠️ El prefijo '{prefix}' no está en namespaces. Usando otro prefijo disponible.")
+            prefix = next(iter(namespaces.values()), '')  # Usa el primer prefijo disponible
+
         inner_complex_types = element.findall(f'{prefix}:complexType', namespaces)
         #print_with_line_number(f"🔍 Tipos complejos encontrados en {full_name}: {len(inner_complex_types)}")
 
