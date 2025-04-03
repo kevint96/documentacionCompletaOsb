@@ -629,6 +629,51 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 else:
                     return
         return
+    
+    async def process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces):
+        """Función recursiva para recorrer elementos complexType y sus hijos sin perder la referencia del padre."""
+        prefix = "xsd"
+        inner_complex_types = element.findall(f'{prefix}:complexType', namespaces)
+        print_with_line_number(f"🔍 Tipos complejos encontrados en {full_name}: {len(inner_complex_types)}")
+
+        if inner_complex_types:
+            print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
+            
+            for inner_complex_type in inner_complex_types:
+                sequence = inner_complex_type.find(f"{prefix}:sequence", namespaces)
+                if sequence is not None:
+                    for sub_element in sequence.findall(f"{prefix}:element", namespaces):
+                        sub_element_name = sub_element.get("name")
+                        sub_element_type = sub_element.get("type")  # Si no tiene tipo, es un complexType
+                        sub_element_minOccurs = sub_element.get("minOccurs", 0)
+                        
+                        print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOccurs: {sub_element_minOccurs}")
+                        
+                        if sub_element_type and sub_element_type.startswith(("xsd:", "xs:")):
+                            new_full_name = f"{full_name}.{sub_element_name}"
+                            element_details = {
+                                'elemento': parent_element_name.split('.')[0],  
+                                'name': new_full_name,  
+                                'type': sub_element_type,
+                                'url': service_url,
+                                'ruta': capa_proyecto,
+                                'minOccurs': sub_element_minOccurs,
+                                'operations': operations,
+                                'service_name': service_name,
+                                'operation_actual': operation_actual,
+                            }
+                            
+                            if 'Request' in parent_element_name:
+                                request_elements.append(element_details)
+                            elif 'Response' in parent_element_name:
+                                response_elements.append(element_details)
+                        
+                        elif not sub_element_type:
+                            print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
+                            # Llamada recursiva si el sub-elemento es un complexType anidado
+                            process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
+                                                 service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
+        
     #st.toast(f"type_name: {type_name}")
     #st.toast(f"parent_element_name: {parent_element_name}")
     #st.toast(f"xsd_file_path: {xsd_file_path}")
@@ -734,39 +779,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 if inner_complex_types:
                     print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
 
-                    for inner_complex_type in inner_complex_types:
-                        sequence = inner_complex_type.find(f"{prefix}:sequence", namespaces)
-                        if sequence is not None:
-                            for sub_element in sequence.findall(f"{prefix}:element", namespaces):
-                                sub_element_name = sub_element.get("name")
-                                sub_element_type = sub_element.get("type")  # Si no tiene tipo, es un complexType
-                                sub_element_minOccurs = sub_element.get("minOccurs")
-                                if sub_element_minOccurs is None:
-                                    sub_element_minOccurs = 0
+                    await process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
 
-                                print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOcurs: {sub_element_minOccurs}")
-                                
-                                if sub_element_type and sub_element_type.startswith(("xsd:", "xs:")):
-                                    full_name = f"{full_name}.{sub_element_name}" 
-                                    element_details = {
-                                        'elemento': parent_element_name.split('.')[0],  
-                                        'name': full_name,  
-                                        'type': sub_element_type,
-                                        'url': service_url,
-                                        'ruta': capa_proyecto,
-                                        'minOccurs': sub_element_minOccurs,
-                                        'operations': operations,
-                                        'service_name': service_name,
-                                        'operation_actual': operation_actual,
-                                    }
-
-                                    if 'Request' in parent_element_name:
-                                        request_elements.append(element_details)
-                                    elif 'Response' in parent_element_name:
-                                        response_elements.append(element_details)
-                                
-                                else:
-                                    print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}")
                                 
             if element_type.startswith(("xsd:", "xs:")):
                 element_details = {
