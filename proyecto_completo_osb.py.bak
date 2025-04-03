@@ -1196,8 +1196,8 @@ async def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_do
                         if operacion_a_documentar:
                             return osb_services
                                                     
-        if not found:  
-            st.error("⛔ No se encuentra la operación en el .jar ⛔")
+        # if not found:  
+            # st.error("⛔ No se encuentra la operación en el .jar ⛔")
 
     #st.success(f"osb_services: {osb_services}")
     return osb_services
