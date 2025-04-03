@@ -1434,7 +1434,7 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
         
     return None
 
-def get_namespace_prefixes(root):
+def get_namespace_prefixes(root, namespaces):
     """Obtiene un diccionario con los prefijos de los namespaces reales en el XML."""
     namespace_map = {v: k for k, v in namespaces.items()}  # Invertimos el diccionario
     return {
@@ -1503,7 +1503,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     
     def process_route_elements():
         """Busca servicios en elementos <con:route-node>, detectando los namespaces dinámicamente."""
-        ns_prefixes = get_namespace_prefixes(root)
+        ns_prefixes = get_namespace_prefixes(root, namespaces)  # 🔥 Pasamos 'namespaces' aquí
 
         con1_prefix = ns_prefixes.get("http://www.bea.com/wli/sb/stages/routing/config", "con1")
         con3_prefix = ns_prefixes.get("http://www.bea.com/wli/sb/stages/transform/config", "con3")
