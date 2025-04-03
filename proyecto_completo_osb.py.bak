@@ -545,6 +545,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
         
         if not complex_type:
+            complex_type = root_element_name[0].upper() + root_element_name[1:]
             await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)

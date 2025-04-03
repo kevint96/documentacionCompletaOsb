@@ -566,6 +566,8 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     if processed_types is None:
         #processed_types = set()
         processed_types = {}
+        
+    sin_tipo = False
 
     type_name = type_name.split(':')[-1]  
     
@@ -705,6 +707,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             print_with_line_number(f"🔄 element_name: {element_name}")
           
             if not element_type:
+                sin_tipo = True
                 element_type = element_name[0].upper() + element_name[1:]
             
             print_with_line_number(f"🔄 element_type: {element_type}")
@@ -740,7 +743,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 elif 'Response' in parent_element_name:
                     response_elements.append(element_details)
 
-            elif element_type in complex_types:
+            elif sin_tipo or element_type in complex_types:
                 print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 await explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
