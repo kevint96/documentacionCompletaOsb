@@ -726,6 +726,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             if not element_type:
                 # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
                 print_with_line_number(f"namespaces: {namespaces}")
+                prefix = xsd
                 print_with_line_number(f"Usando prefijo: {prefix}")
                 inner_complex_types = element.findall('.//xsd:complexType', namespaces)
                 print_with_line_number(f"🔍 Tipos complejos encontrados en {element_name}: {len(inner_complex_types)}")
@@ -734,7 +735,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                     print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
 
                     for inner_complex_type in inner_complex_types:
-                        sequence = inner_complex_type.find(f"xsd:sequence", namespaces)
+                        sequence = inner_complex_type.find(f"{prefix}:sequence", namespaces)
                         if sequence is not None:
                             for sub_element in sequence.findall(f"{prefix}:element", namespaces):
                                 sub_element_name = sub_element.get("name")
