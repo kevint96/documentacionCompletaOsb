@@ -746,19 +746,21 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             #st.toast(f"Encontrado elemento: {full_name}")
             
-            #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
+            print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             padre = get_last_before_dot(type_name)
-            #print_with_line_number(f"🔄 padre: {padre}")
-            #print_with_line_number(f"🔄 element_name: {element_name}")
+            print_with_line_number(f"🔄 padre: {padre}")
+            print_with_line_number(f"🔄 element_name: {element_name}")
 
-            #print_with_line_number(f"🔄 element_type: {element_type}")
-            #print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
+            print_with_line_number(f"🔄 element_type: {element_type}")
+            print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
             #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             #print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
+            print_with_line_number(f"🔄 prefix: {prefix}")
             simple_type = element.find(f'{prefix}:simpleType', namespaces)
+            print_with_line_number(f"🔄 simple_type: {simple_type}")
             if simple_type is not None:
                 restriction = simple_type.find(f'{prefix}:restriction', namespaces)
                 if restriction is not None and 'base' in restriction.attrib:

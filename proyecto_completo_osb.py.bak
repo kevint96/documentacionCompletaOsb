@@ -767,7 +767,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             
             if not element_type:
                 # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
-                    #print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
+                    print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
                     await process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces)
 
                                 
