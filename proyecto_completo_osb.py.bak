@@ -448,7 +448,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     if start_time is None:
         start_time = time.time()  # Guardamos el tiempo inicial
     
-    print_with_line_number(f"start_timee: {start_time}")
+    #print_with_line_number(f"start_timee: {start_time}")
     # 🔹 Asegurar que las listas no se reinicien
     if request_elements is None:
         request_elements = []
@@ -464,10 +464,10 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
-    print_with_line_number(f"extraccion_dir: {extraccion_dir}")
-    print_with_line_number(f"xsd_file_path: {xsd_file_path}")
-    print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
-    print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
+    #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
+    #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
+    #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
+    #print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
     
     if not os.path.isfile(ruta_corregida):
         st.error(f"El archivo XSD {ruta_corregida} no existe.")
@@ -483,7 +483,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     cdata_match = re.search(r'<!\[CDATA\[(.*?)\]\]>', xsd_content, re.DOTALL)
     if cdata_match:
         xsd_content = cdata_match.group(1)
-        print_with_line_number("Se ha extraído el contenido de CDATA correctamente")
+        #print_with_line_number("Se ha extraído el contenido de CDATA correctamente")
 
     try:
         root = ET.fromstring(xsd_content)
@@ -494,8 +494,8 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
     namespaces = extract_namespaces(xsd_content)
     imports = extract_imports(root)
 
-    print_with_line_number(f"Namespaces detectados: {namespaces}")
-    print_with_line_number(f"Imports encontrados: {imports}")
+    #print_with_line_number(f"Namespaces detectados: {namespaces}")
+    #print_with_line_number(f"Imports encontrados: {imports}")
     
     # for item in request_elements:
         # print_with_line_number(f"item['name'] request: {item['name']}")
@@ -512,7 +512,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     # 🔹 Tomar el primer prefijo encontrado en namespaces (xs o xsd)
     prefix = valid_prefixes[0]
-    print_with_line_number(f"prefix: {prefix}")
+    #print_with_line_number(f"prefix: {prefix}")
 
     # 🔹 Buscar complexTypes con el prefijo detectado dinámicamente
     complex_types = {
@@ -529,7 +529,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     # 🚀 **Si `target_complex_type` está definido, buscar SOLO ese complexType.**
     if target_complex_type:
-        print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
+        #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
         await explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                               operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
@@ -537,7 +537,7 @@ async def parse_xsd_file(project_path, xsd_file_path, operation_name, service_ur
 
     # 🔹 Si `target_complex_type` no está, procesamos TODO desde los elementos raíz.
     for root_element_name, complex_type in root_elements.items():
-        print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
+        #print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
 
         if complex_type in complex_types:
             await explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
@@ -567,9 +567,9 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     #st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     num_elementos_request = len(request_elements)
     num_elementos_response = len(response_elements)
-    print_with_line_number(f"parent_element_name: {parent_element_name}")
-    print_with_line_number(f"Total elementos request: {num_elementos_request}")
-    print_with_line_number(f"Total elementos response: {num_elementos_response}")
+    #print_with_line_number(f"parent_element_name: {parent_element_name}")
+    #print_with_line_number(f"Total elementos request: {num_elementos_request}")
+    #print_with_line_number(f"Total elementos response: {num_elementos_response}")
     
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
@@ -694,25 +694,25 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
     
     if 'Request' in parent_element_name:
         if type_name in processed_types and num_elementos_request > 6000:
-            print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
+            #print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
             
     if 'Response' in parent_element_name:
         if type_name in processed_types and num_elementos_response > 6000:
-            print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
+            #print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
     if evita:
-        print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
+        #print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
         
         agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
 
         return
     if type_name in complex_types:
-        print_with_line_number(f"Explorando complexType: {type_name}")
+        #print_with_line_number(f"Explorando complexType: {type_name}")
 
         # 🔹 Buscar un prefijo válido
         prefix = next((p for p in ['xs', 'xsd'] if p in namespaces), None)
@@ -731,7 +731,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 if extension is not None and 'base' in extension.attrib:
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
-                    print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
+                    #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
                     await explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
@@ -741,7 +741,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             #st.warning(f"⚠ No se encontró ni 'sequence' ni 'extension' en {type_name}")
             return  # Si no hay ni sequence ni extensión, no hay nada más que hacer
 
-        #print_with_line_number(f"Usando prefijo: {prefix}")
+        ##print_with_line_number(f"Usando prefijo: {prefix}")
 
         if prefix not in namespaces:
             st.error(f"⛔ Error: el prefijo '{prefix}' no está en namespaces: {namespaces}")
@@ -1449,10 +1449,10 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
-        print_with_line_number("Archivo no válido o no encontrado.")
+        #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+    #print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1476,7 +1476,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                    #print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
                 
                 else:
                     request_element = branch.find(".//con:request", namespaces)
@@ -1512,7 +1512,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                        #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
         return services_for_operations
 
     def process_callout_elements():
@@ -1524,7 +1524,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
+                    #print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
     
@@ -1536,7 +1536,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
     seguir = True
 
-    print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
+    #print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
     #print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
 
     return {op: list(set(services)) for op, services in services_for_operations.items()}
@@ -1886,7 +1886,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
     # Llamar a la función principal de tu script
     services_with_data = await extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
-    #print_with_line_number(f"✅ services_with_data {services_with_data}")
+    print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
