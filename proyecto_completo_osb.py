@@ -728,7 +728,7 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
                 print_with_line_number(f"namespaces: {namespaces}")
                 prefix = "xsd"
                 print_with_line_number(f"Usando prefijo: {prefix}")
-                inner_complex_types = element.find(f'{prefix}:complexType', namespaces)
+                inner_complex_types = element.findall(f'{prefix}:complexType', namespaces)
                 print_with_line_number(f"🔍 Tipos complejos encontrados en {element_name}: {len(inner_complex_types)}")
                 #inner_complex_type = element.find(f'{prefix}:complexType', namespaces)
                 if inner_complex_types:
