@@ -1253,7 +1253,7 @@ async def generar_operaciones_expuestas_http(project_path,operacion_a_documentar
 
         services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                     
-        #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+        print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
         
         services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
         
@@ -1440,10 +1440,10 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
-        #print_with_line_number("Archivo no válido o no encontrado.")
+        print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    #print_with_line_number(f"pipeline_path: {pipeline_path}")
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1467,7 +1467,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    #print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                    print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
                 
                 else:
                     request_element = branch.find(".//con:request", namespaces)
@@ -1490,7 +1490,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
                         services_for_operations[operation_name].add(service_ref)
-                        #print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
+                        print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
 
     def process_route_elements():
@@ -1503,7 +1503,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
         return services_for_operations
 
     def process_callout_elements():
@@ -1515,7 +1515,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    #print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
+                    print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
     
@@ -1527,7 +1527,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
     seguir = True
 
-    #print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
+    print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
     #print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
 
     return {op: list(set(services)) for op, services in services_for_operations.items()}
