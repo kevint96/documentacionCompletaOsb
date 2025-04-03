@@ -2056,10 +2056,6 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
         
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
-                
-                #st.write(f"🔹 Procesando operación: {operation}")
-                st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
-                st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
 
                 #print_with_line_number(f"elements['request']: {elements['request']}")
                 if not elements['request']:
@@ -2073,8 +2069,12 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
 
                 if elements['request']:
                     
-                    st.write(f"🔹 Proyecto {elements['ruta'][0]['ruta'].lstrip('/')}")
                     st.write(f"⏳ Creando documentacion operacion: {operation}")
+                    st.write(f"🔹 Proyecto {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    
+                    st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
+                    st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
+                    
                     
                     #if total_operaciones == 1:
                         #progress_bar_general = st.progress(2)
