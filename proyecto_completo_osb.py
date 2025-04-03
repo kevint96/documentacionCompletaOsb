@@ -694,9 +694,10 @@ async def explorar_complex_type(type_name, parent_element_name, complex_types, n
             if element_minOccurs is None:
                 element_minOccurs = 0
            
-            #st.toast(f"element_name: {element_name}")
-            #st.toast(f"element_type: {element_type}")
-            #st.toast(f"element_minOccurs: {element_minOccurs}")
+            print_with_line_number(f"element_name: {element_name}")
+            print_with_line_number(f"element_type: {element_type}")
+            print_with_line_number(f"element_minOccurs: {element_minOccurs}")
+            print_with_line_number(f"prefix: {prefix}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             #st.toast(f"Encontrado elemento: {full_name}")
             
