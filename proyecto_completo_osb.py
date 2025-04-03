@@ -1932,16 +1932,15 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
             return
         
         if total_operaciones > 1:
-            progress_bar_general = st.progress(0)
-        
-        if "progress_bar_general" not in st.session_state:
-            st.session_state["progress_bar_general"] = st.progress(0)
-        
+            if "progress_bar_general" not in st.session_state:
+                st.session_state["progress_bar_general"] = st.progress(0)
+                #progress_bar_general = st.progress(0)
+  
         # 🔹 Iterar sobre cada operación
         for idx, operation in enumerate(unique_operations, start=1):
             if total_operaciones > 1:
                 progreso_actual = int((idx / total_operaciones) * 100)
-                progress_bar_general.progress(progreso_actual)  # 🔄 Actualizar barra general
+                st.session_state["progress_bar_general"].progress(progreso_actual)  # 🔄 Actualizar barra general
                 #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
             else:
                 print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
@@ -2032,7 +2031,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                 # 🔹 Actualizar progreso de generación de documentos
                 if total_operaciones > 1:
                     progreso_actual = int(((idx + total_operaciones) / (total_operaciones * 2)) * 100)
-                    progress_bar_general.progress(progreso_actual)
+                    st.session_state["progress_bar_general"].progress(progreso_actual)
 
                 if elements['request']:
                     
@@ -2158,7 +2157,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                     total_tablas = len(doc.tables)
                     #st.success(f"🔍 Total de tablas en el documento: {total_tablas}")
                     if total_operaciones == 1:
-                        progress_bar_general = st.progress(30)
+                        st.session_state["progress_bar_general"] = st.progress(30)
                     
                     tabla_cabecera_entrada_numero = 4
                     tabla_cabecera_entrada = doc.tables[tabla_cabecera_entrada_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
@@ -2266,7 +2265,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                         #st.success(f"fila[3].text: {fila[3].text}")
                     
                     if total_operaciones == 1:
-                        progress_bar_general.progress(50)
+                        st.session_state["progress_bar_general"].progress(50)
                     
                     # Limpiar la tabla antes de agregar elementos de esta operación
                     while len(tabla_response.rows) > 2:
@@ -2320,7 +2319,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                             idx_response += 1  # Incrementar solo en este bloque
                     
                     if total_operaciones == 1:
-                        progress_bar_general.progress(75)
+                        st.session_state["progress_bar_general"].progress(75)
                     
                     #st.success("___________________________________________")
                     
@@ -2345,7 +2344,7 @@ async def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,
                     st.success(f"📄 Documento generado: ✅ {nombre_documento}")
                     
                     if total_operaciones == 1:
-                        progress_bar_general.progress(100)
+                        st.session_state["progress_bar_general"].progress(100)
                     
                     
                     # 📌 Agregar el documento al ZIP
