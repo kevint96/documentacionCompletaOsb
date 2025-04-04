@@ -1886,508 +1886,6 @@ def reemplazar_marcador_con_imagen(doc, marcador, diagrama_path):
             return doc  # Retornar el documento modificado
     return doc  # Retornar el documento si no se encontró el marcador
 
-
-def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
-    """Función que ejecuta la generación de documentación."""
-    
-    zip_files = []
-    generoArchivo = False
-    
-    # Extraer ruta del proyecto desde el .jar
-    jdeveloper_projects_dir = jar_path
-    
-    #print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
-    
-    if not jdeveloper_projects_dir:
-        st.error("No se pudo determinar la ruta del proyecto desde el .jar.")
-        return
-
-    # 📌 Definir la ruta del directorio temporal correctamente
-    temp_dir = os.path.join(tempfile.gettempdir(), "documentacion_osb")
-    ruta_temporal = temp_dir  # Obtener la ruta temporal
-
-    if not isinstance(temp_dir, str) or not temp_dir:
-        st.error("⛔ Error: La ruta temporal no es válida.")
-    else:
-        # 📌 Verificar si la carpeta existe antes de intentar eliminarla
-        if os.path.exists(temp_dir):
-            try:
-                shutil.rmtree(temp_dir)  # 🔥 Borra todo el contenido anterior
-                #st.warning("📂 Se limpiaron los archivos temporales previos.")
-            except Exception as e:
-                st.error(f"⛔ No se pudo eliminar la carpeta temporal: {e}")
-
-        # 📌 Crear nuevamente la carpeta temporal limpia
-        os.makedirs(temp_dir, exist_ok=True)
-        #print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
-    
-    # Llamar a la función principal de tu script
-    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
-    
-    #print_with_line_number(f"✅ services_with_data {services_with_data}")
-    
-    es_type = False
-    
-    # Initialize an empty set to store unique operation names
-    operation_names = set()
-    
-    if services_with_data:
-
-        # Iterate through each tuple of request and response elements in services_with_data
-        for request_elements, response_elements in services_with_data:
-            # Iterate through each element in request_elements and response_elements
-            for element in request_elements + response_elements:
-                if 'Type' in element['elemento']:
-                    es_type = True
-                #operation_name = element['elemento'].replace('Request', '').replace('Response', '').replace('Type', '')
-                ##print_with_line_number(f"operation_name: {operation_name}")
-                service_name = element['service_name']
-                # Agregar todas las operaciones de la lista 'operations'
-                if 'operations' in element:
-                    operation_names.update(element['operations'])  # Agrega todas las operaciones a operation_names
-
-        # Convert the set to a sorted list to get the operation names in alphabetical order
-        unique_operations = sorted(operation_names)
-        
-        operaciones_formateadas = "\n".join(f"* {op}" for op in unique_operations)
-        
-        
-        # 🔹 Si operacion_a_documentar tiene un valor, filtrar solo esa operación
-        if operacion_a_documentar:
-            unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
-            
-        
-        #print_with_line_number(f"unique_operations: {unique_operations}")
-        
-        #print_with_line_number(f"✅ unique_operations {unique_operations}")
-        
-        operation_elements = {}
-        
-        
-        total_operaciones = len(unique_operations)
-        if total_operaciones == 0:
-            st.warning("⚠️ No hay operaciones que documentar.")
-            return
-        
-        if total_operaciones > 1:
-            if "progress_bar_general" not in st.session_state:
-                st.session_state["progress_bar_general"] = st.progress(0)
-                #progress_bar_general = st.progress(0)
-  
-        # 🔹 Iterar sobre cada operación
-        for idx, operation in enumerate(unique_operations, start=1):
-            if total_operaciones > 1:
-                progreso_actual = int((idx / total_operaciones) * 100)
-                st.session_state["progress_bar_general"].progress(progreso_actual)  # 🔄 Actualizar barra general
-                #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
-            else:
-                print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
-            
-            
-            if es_type:
-                request_key = f"{operation}RequestType"
-                response_key = f"{operation}ResponseType"
-            else:
-                request_key = f"{operation}Request"
-                response_key = f"{operation}Response"
-            
-            # Initialize lists to store request and response elements for the current operation
-            request_elements = []
-            response_elements = []
-            url_elements = []
-            capa_proyecto = []
-            minOccurs_elements = []
-            
-            # Iterate through services_with_data to find matching elements
-            for request_data, response_data in services_with_data:
-                for element in request_data:
-                    if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
-                        request_elements.append({'name': element['name'], 'type': element['type'], 'minOccurs': element['minOccurs']})
-                        url_elements.append({'url': element['url']})
-                        capa_proyecto.append({'ruta': element['ruta']})
-                        minOccurs_elements.append({'minOccurs': element['minOccurs']})
-                        service_name = element['service_name']
-                
-                for element in response_data:
-                    if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
-                        response_elements.append({'name': element['name'], 'type': element['type'], 'minOccurs': element['minOccurs']})
-                        service_name = element['service_name']
-            
-            # Store the collected elements in the dictionary
-            operation_elements[operation] = {
-                'request': request_elements,
-                'response': response_elements,
-                'url': url_elements,
-                'ruta': capa_proyecto, 
-                'minOccurs': minOccurs_elements,
-                'service_name': service_name
-            }
-        #print_with_line_number(f"operation_elements: {operation_elements}")
-        ##print_with_line_number(f"service_name: {service_name}")
-        # Print the result
-        # 📂 Crear un solo ZIP para todas las operaciones
-        zip_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
-        zip_path = zip_buffer.name  # Ruta del archivo ZIP
-        
-        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
-
-                #print_with_line_number(f"elements['request']: {elements['request']}")
-                if not elements['request']:
-                    st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
-                    continue  # Si no hay request, no genera el documento
-
-                # 🔹 Actualizar progreso de generación de documentos
-                if total_operaciones > 1:
-                    progreso_actual = int(((idx + total_operaciones) / (total_operaciones * 2)) * 100)
-                    st.session_state["progress_bar_general"].progress(progreso_actual)
-
-                if elements['request']:
-                    
-                    st.write(f"⏳ Creando documentacion operacion: {operation}")
-                    st.write(f"🔹 Proyecto {elements['ruta'][0]['ruta'].lstrip('/')}")
-                    
-                    st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
-                    st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
-                    
-                    
-                    #if total_operaciones == 1:
-                        #progress_bar_general = st.progress(2)
-                    
-                    contiene_cabecera_entrada = False
-                    contiene_cabecera_salida = False
-                    
-                    if any('cabeceraEntrada.' in elem['name'] for elem in elements['request']):
-                        #st.write("Se encontró al menos un elemento con '.cabeceraEntrada.'")
-                        contiene_cabecera_entrada = True
-                    
-                    if any('cabeceraSalida.' in elem['name'] for elem in elements['response']):
-                        #st.write("Se encontró al menos un elemento con '.cabeceraSalida.'")
-                        contiene_cabecera_salida = True
-                        
-                    # Cargar el documento de la plantilla
-                    doc = Document(plantilla_path)
-                    
-                    # Contar el número de tablas en el documento
-                    num_tables = len(doc.tables)
-                    
-                    #print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
-
-                    # Mostrar cada tabla
-                    # for i, table in enumerate(doc.tables):
-                        # #print_with_line_number(f"\nTabla {i+1}:")
-                        # for row in table.rows:
-                            # row_data = [cell.text for cell in row.cells]
-                            # print_with_line_number('\t'.join(row_data))
-                    
-                    url = ""
-                    ruta =""
-                    minOccurs = ""
-                    
-                    for elem in elements['url']:
-                        url = elem['url']
-                        
-                    for elem in elements['ruta']:
-                        ruta = elem['ruta']
-                    
-                    for elem in elements['minOccurs']:
-                        minOccurs = elem['minOccurs']
-                        
-                    #st.success(f"url: {url}")
-                    
-                    #st.success(f"ruta: {ruta}")
-                    
-                    #st.success(f"business: {business}")
-                    
-                    fecha_actual = datetime.now()
-                    fecha_formateada = fecha_actual.strftime("%d/%m/%Y")
-                    
-                    
-                    ruta_proyecto = ruta.strip("/") 
-                    
-                    combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
-                    
-                    print_with_line_number(f"combined_services: {combined_services}")
-                    
-                    #print_with_line_number(f"operation: {operation}")
-                    
-                    diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
-                    
-                    st.write(f"diagrama_path: {diagrama_path}")
-                    
-                    if os.path.exists(diagrama_path):
-                        #doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
-                        marcador = "{Imagen_diagrama}"
-                        # Obtener el ancho de la página disponible
-                        section = doc.sections[0]  # Suponemos que la plantilla tiene una sola sección horizontal
-                        #print_with_line_number(f"section: {section}")
-                        page_width = section.page_width
-                        left_margin = section.left_margin
-                        right_margin = section.right_margin
-
-                        # Calcular el ancho disponible para la imagen
-                        max_width = page_width - left_margin - right_margin
-
-                        for para in doc.paragraphs:
-                            if marcador in para.text:
-                                #print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
-                                para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
-                                run = para.add_run()
-                                run.add_picture(diagrama_path, width=max_width)  # Ajustar la imagen al ancho máximo
-                                break  # Solo reemplazamos la primera coincidencia
-                    
-                    
-                    #st.success(f"operation: {operation}")
-                    
-                    #st.success(f"elements: {elements}")
-                    
-                    
-                    
-                    # Definir las variables y sus valores
-                    variables = {
-                        '{nombre_servicio_inicial}': service_name,
-                        '{nombre_servicio_secundario}': service_name,
-                        '{nombre_servicio}': service_name,
-                        '{nombre_operacion_inicial}' : operation,
-                        '{nombre_operacion}': operation,
-                        '{unique_operations}': operaciones_formateadas,
-                        '{nombre_servicio_contrato}': service_name,
-                        '{nombre_servicio_wsdl}': service_name,
-                        '{nombre_servicio_contrato2}': service_name,
-                        '{nombre_servicio_tabla}': operation,
-                        '{fecha}': fecha_formateada,
-                        '{autor_inicial}': nombre_autor,
-                        '{autor}': nombre_autor,
-                        '{autor2}': 'Julian Orjuela',
-                        '{url}': url,
-                        '{operacion_legado}': minOccurs,
-                        '{proyecto_abc}': 'TENENCIA_COMPORTAMIENTO_ABC'
-                        # Añade más variables según sea necesario
-                    }
-                    #st.success(f"service_name: {service_name}")
-                    #st.success(f"variables: {variables}")
-                    
-                    total_tablas = len(doc.tables)
-                    #st.success(f"🔍 Total de tablas en el documento: {total_tablas}")
-                    if total_operaciones == 1:
-                        st.session_state["progress_bar_general"] = st.progress(30)
-                    
-                    tabla_cabecera_entrada_numero = 4
-                    tabla_cabecera_entrada = doc.tables[tabla_cabecera_entrada_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
-
-                    tabla_request_numero = 5
-                    tabla_request = doc.tables[tabla_request_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
-                    
-                    tabla_cabecera_salida_numero = 6
-                    tabla_cabecera_salida = doc.tables[tabla_cabecera_salida_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
-                    
-                    tabla_response_numero = 7
-                    tabla_response = doc.tables[tabla_response_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
-                    
-                    if tabla_cabecera_salida_numero > total_tablas:
-                        st.error(f"⛔ Error: Se intentó acceder a la tabla {tabla_cabecera_salida_numero}, pero el documento solo tiene {total_tablas} tablas.")
-                        return  # Salir para evitar el error
-                    
-                    # Listas para almacenar las filas de cada subtabla
-                    cabecera_salida = []
-                    datos_respuesta = []
-                    
-                    # Variables de control
-                    seccion_actual = None
-                    
-                    # Datos por defecto para LONGITUD y OBSERVACIÓN
-                    default_longitud = "default"
-                    default_observacion = ""
-                    
-                    # Limpiar la tabla antes de agregar elementos de esta operación
-                    if not contiene_cabecera_entrada:
-                        tbl = tabla_cabecera_entrada._element
-                        tbl.getparent().remove(tbl)
-                        while len(tabla_cabecera_entrada.rows) > 1:
-                            tabla_cabecera_entrada._element.remove(tabla_cabecera_entrada.rows[1]._element)
-                            
-                    # Limpiar la tabla antes de agregar elementos de esta operación
-                    if not contiene_cabecera_salida:
-                        tbl = tabla_cabecera_salida._element
-                        tbl.getparent().remove(tbl)
-                        while len(tabla_cabecera_salida.rows) > 1:
-                            tabla_cabecera_salida._element.remove(tabla_cabecera_salida.rows[1]._element)
-                    
-                    # Limpiar la tabla antes de agregar elementos de esta operación
-                    while len(tabla_cabecera_entrada.rows) > 2:
-                        tabla_cabecera_entrada._element.remove(tabla_cabecera_entrada.rows[2]._element)
-                        
-                    # Limpiar la tabla antes de agregar elementos de esta operación
-                    while len(tabla_cabecera_salida.rows) > 2:
-                        tabla_cabecera_salida._element.remove(tabla_cabecera_salida.rows[2]._element)
-
-                    # Limpiar la tabla antes de agregar elementos de esta operación
-                    while len(tabla_request.rows) > 2:
-                        tabla_request._element.remove(tabla_request.rows[2]._element)
-                        
-                    # Limpiar la tabla antes de agregar elementos de esta operación
-                    while len(tabla_response.rows) > 2:
-                        tabla_response._element.remove(tabla_response.rows[2]._element)
-                    
-                    # Procesar los datos
-                    idx_cabecera = 1  # Contador para "cabeceraEntrada"
-                    idx_request = 1   # Contador para el else
-                    for elem in elements['request']: 
-                        
-                        obligatorio = "NO"
-                        #if 'cabeceraEntrada.' not in elem['name']:
-                        # Añadir una nueva fila al final de la tabla
-                        #fila[0].text = operation + "Request" + "." + elem['name']
-                        if 'cabeceraEntrada' in elem['name']:
-                            fila_cabecera_entrada = tabla_cabecera_entrada.add_row().cells
-                            fila_cabecera_entrada[0].text = str(idx_cabecera)
-                            fila_cabecera_entrada[1].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
-                            fila_cabecera_entrada[2].text = elem['name']
-                            campo = fila_cabecera_entrada[2].text.split('.')[-1]
-                            fila_cabecera_entrada[2].text = campo
-                            #st.success(f"fila[1].text: {fila[1].text}")
-                            if elem['minOccurs'] == '1':
-                                obligatorio = "SI"
-                            fila_cabecera_entrada[3].text = obligatorio
-                            fila_cabecera_entrada[4].text = elem['type']
-                            tipo_campo = fila_cabecera_entrada[4].text.split(':')[-1]
-                            if tipo_campo == 'string':
-                                tipo_campo = 'String'
-                            fila_cabecera_entrada[4].text = tipo_campo
-                            
-                            idx_cabecera += 1  # Incrementar solo en este bloque
-                        else:
-                            fila = tabla_request.add_row().cells
-                            fila[0].text = str(idx_request)
-                            fila[1].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
-                            fila[2].text = elem['name']
-                            campo = fila[2].text.split('.')[-1]
-                            fila[2].text = campo
-                            #st.success(f"fila[1].text: {fila[1].text}")
-                            if elem['minOccurs'] == '1':
-                                obligatorio = "SI"
-                            fila[3].text = obligatorio
-                            fila[4].text = elem['type']
-                            tipo_campo = fila[4].text.split(':')[-1]
-                            if tipo_campo == 'string':
-                                tipo_campo = 'String'
-                            fila[4].text = tipo_campo
-                            idx_request += 1  # Incrementar solo en este bloque
-                        #st.success(f"fila[3].text: {fila[3].text}")
-                    
-                    if total_operaciones == 1:
-                        st.session_state["progress_bar_general"].progress(50)
-                    
-                    # Limpiar la tabla antes de agregar elementos de esta operación
-                    while len(tabla_response.rows) > 2:
-                        tabla_response._element.remove(tabla_response.rows[2]._element)
-                    
-                    # Procesar los datos
-                    idx_cabecera = 1  # Contador para "cabeceraEntrada"
-                    idx_response = 1   # Contador para el else
-                    for elem in elements['response']:
-                        
-                        obligatorio = "NO"
-                        #if 'cabeceraSalida.' not in elem['name']:
-                        # Añadir una nueva fila al final de la tabla
-                        # Rellenar la fila con los datos correspondientes
-                        #fila[0].text = operation + "Response" + "." + elem['name']
-                        if 'cabeceraSalida' in elem['name']:
-                            fila_cabecera_salida = tabla_cabecera_salida.add_row().cells
-                            fila_cabecera_salida[0].text = str(idx_cabecera)
-                            fila_cabecera_salida[1].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
-                            fila_cabecera_salida[2].text = elem['name']
-                            campo = fila_cabecera_salida[2].text.split('.')[-1]
-                            fila_cabecera_salida[2].text = campo
-                            #st.success(f"fila[1].text: {fila[1].text}")
-                            if elem['minOccurs'] == '1':
-                                obligatorio = "SI"
-                            fila_cabecera_salida[3].text = obligatorio
-                            fila_cabecera_salida[4].text = elem['type']
-                            tipo_campo = fila_cabecera_salida[4].text.split(':')[-1]
-                            if tipo_campo == 'string':
-                                tipo_campo = 'String'
-                            fila_cabecera_salida[4].text = tipo_campo
-                            idx_cabecera += 1
-                        else:
-                            fila = tabla_response.add_row().cells
-                            fila[0].text = str(idx_response)
-                            fila[1].text = elem['name']
-                            #st.success(f"fila[0].text: {fila[0].text}")
-                            fila[2].text = elem['name']
-                            campo = fila[2].text.split('.')[-1]
-                            fila[2].text = campo
-                            #st.success(f"fila[1].text: {fila[1].text}")
-                            if elem['minOccurs'] == '1':
-                                obligatorio = "SI"
-                            fila[3].text = obligatorio
-                            fila[4].text = elem['type']
-                            tipo_campo = fila[4].text.split(':')[-1]
-                            if tipo_campo == 'string':
-                                tipo_campo = 'String'
-                            fila[4].text = tipo_campo
-                            idx_response += 1  # Incrementar solo en este bloque
-                    
-                    if total_operaciones == 1:
-                        st.session_state["progress_bar_general"].progress(75)
-                    
-                    #st.success("___________________________________________")
-                    
-                    #st.success(f"✅ temp_dir  {temp_dir }")
-                    #st.success(f"✅ ruta_temporal  {ruta_temporal }")
-
-                    # Lista para almacenar las rutas de los documentos generados
-                    documentos_generados = []
-
-                    ruta_proyecto = ruta.strip("/")  # Asegurar que la ruta no tenga "/" al inicio
-                    #st.success(f"✅ ruta_proyecto  {ruta_proyecto }")
-                    nombre_documento = f"Especificación Servicio WSDL {operation}.docx"
-                    
-                    # Crear la ruta dentro de la carpeta temporal
-                    carpeta_destino = os.path.join(ruta_temporal, ruta_proyecto)
-                    os.makedirs(carpeta_destino, exist_ok=True)  # Crear la carpeta si no existe
-                    
-                    ruta_guardado = os.path.join(carpeta_destino, nombre_documento)
-                    
-                    doc_nuevo = replace_text_in_doc(doc, variables)
-                    doc_nuevo.save(ruta_guardado)  # Guardar en la carpeta temporal
-                    st.success(f"📄 Documento generado: ✅ {nombre_documento}")
-                    
-                    if total_operaciones == 1:
-                        st.session_state["progress_bar_general"].progress(100)
-                    
-                    
-                    # 📌 Agregar el documento al ZIP
-                    if os.path.exists(ruta_guardado):
-                        zipf.write(ruta_guardado, os.path.join(ruta_proyecto, nombre_documento))
-                        #st.success(f"📄 Documento agregado al ZIP: {ruta_guardado}")
-                    else:
-                        st.warning(f"⚠️ Documento no encontrado: {ruta_guardado}")
-                    
-                    generoArchivo = True
-                        
-        # 📥 Permitir la descarga del ZIP final
-        with open(zip_path, "rb") as file:
-            zip_bytes = file.read()
-        
-        st.session_state["progress_bar_general"].progress(100)  # ¡Completado!
-        st.success("Documentación generada con éxito!")
-
-        # 🔹 Agregar un pequeño delay para asegurar que el ZIP esté listo
-        time.sleep(2)  # Esperar 2 segundos antes de mostrar la descarga
-
-        # 🔹 Descargar automáticamente el ZIP sin necesidad de clic
-        st.download_button(
-            label="📥 Descargar TODOS los documentos en ZIP",
-            data=zip_bytes,
-            file_name="Documentos_Completos.zip",
-            mime="application/zip",
-            key="download_all",
-        )
-
 def obtener_operaciones(project_path):
 
     operations =[]
@@ -2482,6 +1980,25 @@ def descargar_diagrama(uml_url, ruta_destino):
     else:
         print(f"Error al descargar diagrama: {response.status_code}")
         return None
+
+def obtener_informacion_legados(combined_services,operacion_a_documentar=None):
+    
+    # Diccionario de salida
+    business_services = {}
+
+    # Filtrar solo claves que empiezan con 'REFERENCIA_'
+    for key, value in combined_services.get(operacion_a_documentar, {}).items():
+        if key.startswith("REFERENCIA_") and isinstance(value, dict):
+            print_with_line_number(f"value: {value}")
+            for inner_key, inner_value in value.items():
+                if isinstance(inner_value, str) and "BusinessServices" in inner_value:
+                    business_services[inner_value] = {
+                        "nombre": inner_key,
+                        "path": inner_value
+                    }
+                    print_with_line_number(f"business_services: {business_services}")
+    
+    return business_services
 
 def generar_diagramas_operaciones(project_name, service_name, combined_services2, operacion_a_documentar=None):
     """
@@ -2890,6 +2407,509 @@ def main():
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
+
+def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor):
+    """Función que ejecuta la generación de documentación."""
+    
+    zip_files = []
+    generoArchivo = False
+    
+    # Extraer ruta del proyecto desde el .jar
+    jdeveloper_projects_dir = jar_path
+    
+    #print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
+    
+    if not jdeveloper_projects_dir:
+        st.error("No se pudo determinar la ruta del proyecto desde el .jar.")
+        return
+
+    # 📌 Definir la ruta del directorio temporal correctamente
+    temp_dir = os.path.join(tempfile.gettempdir(), "documentacion_osb")
+    ruta_temporal = temp_dir  # Obtener la ruta temporal
+
+    if not isinstance(temp_dir, str) or not temp_dir:
+        st.error("⛔ Error: La ruta temporal no es válida.")
+    else:
+        # 📌 Verificar si la carpeta existe antes de intentar eliminarla
+        if os.path.exists(temp_dir):
+            try:
+                shutil.rmtree(temp_dir)  # 🔥 Borra todo el contenido anterior
+                #st.warning("📂 Se limpiaron los archivos temporales previos.")
+            except Exception as e:
+                st.error(f"⛔ No se pudo eliminar la carpeta temporal: {e}")
+
+        # 📌 Crear nuevamente la carpeta temporal limpia
+        os.makedirs(temp_dir, exist_ok=True)
+        #print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
+    
+    # Llamar a la función principal de tu script
+    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+    
+    #print_with_line_number(f"✅ services_with_data {services_with_data}")
+    
+    es_type = False
+    
+    # Initialize an empty set to store unique operation names
+    operation_names = set()
+    
+    if services_with_data:
+
+        # Iterate through each tuple of request and response elements in services_with_data
+        for request_elements, response_elements in services_with_data:
+            # Iterate through each element in request_elements and response_elements
+            for element in request_elements + response_elements:
+                if 'Type' in element['elemento']:
+                    es_type = True
+                #operation_name = element['elemento'].replace('Request', '').replace('Response', '').replace('Type', '')
+                ##print_with_line_number(f"operation_name: {operation_name}")
+                service_name = element['service_name']
+                # Agregar todas las operaciones de la lista 'operations'
+                if 'operations' in element:
+                    operation_names.update(element['operations'])  # Agrega todas las operaciones a operation_names
+
+        # Convert the set to a sorted list to get the operation names in alphabetical order
+        unique_operations = sorted(operation_names)
+        
+        operaciones_formateadas = "\n".join(f"* {op}" for op in unique_operations)
+        
+        
+        # 🔹 Si operacion_a_documentar tiene un valor, filtrar solo esa operación
+        if operacion_a_documentar:
+            unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
+            
+        
+        #print_with_line_number(f"unique_operations: {unique_operations}")
+        
+        #print_with_line_number(f"✅ unique_operations {unique_operations}")
+        
+        operation_elements = {}
+        
+        
+        total_operaciones = len(unique_operations)
+        if total_operaciones == 0:
+            st.warning("⚠️ No hay operaciones que documentar.")
+            return
+        
+        if total_operaciones > 1:
+            if "progress_bar_general" not in st.session_state:
+                st.session_state["progress_bar_general"] = st.progress(0)
+                #progress_bar_general = st.progress(0)
+  
+        # 🔹 Iterar sobre cada operación
+        for idx, operation in enumerate(unique_operations, start=1):
+            if total_operaciones > 1:
+                progreso_actual = int((idx / total_operaciones) * 100)
+                st.session_state["progress_bar_general"].progress(progreso_actual)  # 🔄 Actualizar barra general
+                #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
+            else:
+                print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
+            
+            
+            if es_type:
+                request_key = f"{operation}RequestType"
+                response_key = f"{operation}ResponseType"
+            else:
+                request_key = f"{operation}Request"
+                response_key = f"{operation}Response"
+            
+            # Initialize lists to store request and response elements for the current operation
+            request_elements = []
+            response_elements = []
+            url_elements = []
+            capa_proyecto = []
+            minOccurs_elements = []
+            
+            # Iterate through services_with_data to find matching elements
+            for request_data, response_data in services_with_data:
+                for element in request_data:
+                    if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
+                        request_elements.append({'name': element['name'], 'type': element['type'], 'minOccurs': element['minOccurs']})
+                        url_elements.append({'url': element['url']})
+                        capa_proyecto.append({'ruta': element['ruta']})
+                        minOccurs_elements.append({'minOccurs': element['minOccurs']})
+                        service_name = element['service_name']
+                
+                for element in response_data:
+                    if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
+                        response_elements.append({'name': element['name'], 'type': element['type'], 'minOccurs': element['minOccurs']})
+                        service_name = element['service_name']
+            
+            # Store the collected elements in the dictionary
+            operation_elements[operation] = {
+                'request': request_elements,
+                'response': response_elements,
+                'url': url_elements,
+                'ruta': capa_proyecto, 
+                'minOccurs': minOccurs_elements,
+                'service_name': service_name
+            }
+        #print_with_line_number(f"operation_elements: {operation_elements}")
+        ##print_with_line_number(f"service_name: {service_name}")
+        # Print the result
+        # 📂 Crear un solo ZIP para todas las operaciones
+        zip_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+        zip_path = zip_buffer.name  # Ruta del archivo ZIP
+        
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
+
+                #print_with_line_number(f"elements['request']: {elements['request']}")
+                if not elements['request']:
+                    st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
+                    continue  # Si no hay request, no genera el documento
+
+                # 🔹 Actualizar progreso de generación de documentos
+                if total_operaciones > 1:
+                    progreso_actual = int(((idx + total_operaciones) / (total_operaciones * 2)) * 100)
+                    st.session_state["progress_bar_general"].progress(progreso_actual)
+
+                if elements['request']:
+                    
+                    st.write(f"⏳ Creando documentacion operacion: {operation}")
+                    st.write(f"🔹 Proyecto {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    
+                    st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
+                    st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
+                    
+                    
+                    #if total_operaciones == 1:
+                        #progress_bar_general = st.progress(2)
+                    
+                    contiene_cabecera_entrada = False
+                    contiene_cabecera_salida = False
+                    
+                    if any('cabeceraEntrada.' in elem['name'] for elem in elements['request']):
+                        #st.write("Se encontró al menos un elemento con '.cabeceraEntrada.'")
+                        contiene_cabecera_entrada = True
+                    
+                    if any('cabeceraSalida.' in elem['name'] for elem in elements['response']):
+                        #st.write("Se encontró al menos un elemento con '.cabeceraSalida.'")
+                        contiene_cabecera_salida = True
+                        
+                    # Cargar el documento de la plantilla
+                    doc = Document(plantilla_path)
+                    
+                    # Contar el número de tablas en el documento
+                    num_tables = len(doc.tables)
+                    
+                    #print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
+
+                    # Mostrar cada tabla
+                    # for i, table in enumerate(doc.tables):
+                        # #print_with_line_number(f"\nTabla {i+1}:")
+                        # for row in table.rows:
+                            # row_data = [cell.text for cell in row.cells]
+                            # print_with_line_number('\t'.join(row_data))
+                    
+                    url = ""
+                    ruta =""
+                    minOccurs = ""
+                    
+                    for elem in elements['url']:
+                        url = elem['url']
+                        
+                    for elem in elements['ruta']:
+                        ruta = elem['ruta']
+                    
+                    for elem in elements['minOccurs']:
+                        minOccurs = elem['minOccurs']
+                        
+                    #st.success(f"url: {url}")
+                    
+                    #st.success(f"ruta: {ruta}")
+                    
+                    #st.success(f"business: {business}")
+                    
+                    fecha_actual = datetime.now()
+                    fecha_formateada = fecha_actual.strftime("%d/%m/%Y")
+                    
+                    
+                    ruta_proyecto = ruta.strip("/") 
+                    
+                    combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+                    
+                    print_with_line_number(f"combined_services: {combined_services}")
+                    
+                    #print_with_line_number(f"operation: {operation}")
+                    business_services_legados = obtener_informacion_legados(combined_services,operacion_a_documentar)
+                    
+                    diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
+                    
+                    st.write(f"diagrama_path: {diagrama_path}")
+                    
+                    if os.path.exists(diagrama_path):
+                        #doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
+                        marcador = "{Imagen_diagrama}"
+                        # Obtener el ancho de la página disponible
+                        section = doc.sections[0]  # Suponemos que la plantilla tiene una sola sección horizontal
+                        #print_with_line_number(f"section: {section}")
+                        page_width = section.page_width
+                        left_margin = section.left_margin
+                        right_margin = section.right_margin
+
+                        # Calcular el ancho disponible para la imagen
+                        max_width = page_width - left_margin - right_margin
+
+                        for para in doc.paragraphs:
+                            if marcador in para.text:
+                                #print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
+                                para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
+                                run = para.add_run()
+                                run.add_picture(diagrama_path, width=max_width)  # Ajustar la imagen al ancho máximo
+                                break  # Solo reemplazamos la primera coincidencia
+                    
+                    
+                    #st.success(f"operation: {operation}")
+                    
+                    #st.success(f"elements: {elements}")
+                    
+                    
+                    
+                    # Definir las variables y sus valores
+                    variables = {
+                        '{nombre_servicio_inicial}': service_name,
+                        '{nombre_servicio_secundario}': service_name,
+                        '{nombre_servicio}': service_name,
+                        '{nombre_operacion_inicial}' : operation,
+                        '{nombre_operacion}': operation,
+                        '{unique_operations}': operaciones_formateadas,
+                        '{nombre_servicio_contrato}': service_name,
+                        '{nombre_servicio_wsdl}': service_name,
+                        '{nombre_servicio_contrato2}': service_name,
+                        '{nombre_servicio_tabla}': operation,
+                        '{fecha}': fecha_formateada,
+                        '{autor_inicial}': nombre_autor,
+                        '{autor}': nombre_autor,
+                        '{autor2}': 'Julian Orjuela',
+                        '{url}': url,
+                        '{operacion_legado}': minOccurs,
+                        '{proyecto_abc}': 'TENENCIA_COMPORTAMIENTO_ABC'
+                        # Añade más variables según sea necesario
+                    }
+                    #st.success(f"service_name: {service_name}")
+                    #st.success(f"variables: {variables}")
+                    
+                    total_tablas = len(doc.tables)
+                    #st.success(f"🔍 Total de tablas en el documento: {total_tablas}")
+                    if total_operaciones == 1:
+                        st.session_state["progress_bar_general"] = st.progress(30)
+                    
+                    tabla_cabecera_entrada_numero = 4
+                    tabla_cabecera_entrada = doc.tables[tabla_cabecera_entrada_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
+
+                    tabla_request_numero = 5
+                    tabla_request = doc.tables[tabla_request_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
+                    
+                    tabla_cabecera_salida_numero = 6
+                    tabla_cabecera_salida = doc.tables[tabla_cabecera_salida_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
+                    
+                    tabla_response_numero = 7
+                    tabla_response = doc.tables[tabla_response_numero - 1]  # Las tablas se indexan desde 0, por eso restamos 1
+                    
+                    if tabla_cabecera_salida_numero > total_tablas:
+                        st.error(f"⛔ Error: Se intentó acceder a la tabla {tabla_cabecera_salida_numero}, pero el documento solo tiene {total_tablas} tablas.")
+                        return  # Salir para evitar el error
+                    
+                    # Listas para almacenar las filas de cada subtabla
+                    cabecera_salida = []
+                    datos_respuesta = []
+                    
+                    # Variables de control
+                    seccion_actual = None
+                    
+                    # Datos por defecto para LONGITUD y OBSERVACIÓN
+                    default_longitud = "default"
+                    default_observacion = ""
+                    
+                    # Limpiar la tabla antes de agregar elementos de esta operación
+                    if not contiene_cabecera_entrada:
+                        tbl = tabla_cabecera_entrada._element
+                        tbl.getparent().remove(tbl)
+                        while len(tabla_cabecera_entrada.rows) > 1:
+                            tabla_cabecera_entrada._element.remove(tabla_cabecera_entrada.rows[1]._element)
+                            
+                    # Limpiar la tabla antes de agregar elementos de esta operación
+                    if not contiene_cabecera_salida:
+                        tbl = tabla_cabecera_salida._element
+                        tbl.getparent().remove(tbl)
+                        while len(tabla_cabecera_salida.rows) > 1:
+                            tabla_cabecera_salida._element.remove(tabla_cabecera_salida.rows[1]._element)
+                    
+                    # Limpiar la tabla antes de agregar elementos de esta operación
+                    while len(tabla_cabecera_entrada.rows) > 2:
+                        tabla_cabecera_entrada._element.remove(tabla_cabecera_entrada.rows[2]._element)
+                        
+                    # Limpiar la tabla antes de agregar elementos de esta operación
+                    while len(tabla_cabecera_salida.rows) > 2:
+                        tabla_cabecera_salida._element.remove(tabla_cabecera_salida.rows[2]._element)
+
+                    # Limpiar la tabla antes de agregar elementos de esta operación
+                    while len(tabla_request.rows) > 2:
+                        tabla_request._element.remove(tabla_request.rows[2]._element)
+                        
+                    # Limpiar la tabla antes de agregar elementos de esta operación
+                    while len(tabla_response.rows) > 2:
+                        tabla_response._element.remove(tabla_response.rows[2]._element)
+                    
+                    # Procesar los datos
+                    idx_cabecera = 1  # Contador para "cabeceraEntrada"
+                    idx_request = 1   # Contador para el else
+                    for elem in elements['request']: 
+                        
+                        obligatorio = "NO"
+                        #if 'cabeceraEntrada.' not in elem['name']:
+                        # Añadir una nueva fila al final de la tabla
+                        #fila[0].text = operation + "Request" + "." + elem['name']
+                        if 'cabeceraEntrada' in elem['name']:
+                            fila_cabecera_entrada = tabla_cabecera_entrada.add_row().cells
+                            fila_cabecera_entrada[0].text = str(idx_cabecera)
+                            fila_cabecera_entrada[1].text = elem['name']
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila_cabecera_entrada[2].text = elem['name']
+                            campo = fila_cabecera_entrada[2].text.split('.')[-1]
+                            fila_cabecera_entrada[2].text = campo
+                            #st.success(f"fila[1].text: {fila[1].text}")
+                            if elem['minOccurs'] == '1':
+                                obligatorio = "SI"
+                            fila_cabecera_entrada[3].text = obligatorio
+                            fila_cabecera_entrada[4].text = elem['type']
+                            tipo_campo = fila_cabecera_entrada[4].text.split(':')[-1]
+                            if tipo_campo == 'string':
+                                tipo_campo = 'String'
+                            fila_cabecera_entrada[4].text = tipo_campo
+                            
+                            idx_cabecera += 1  # Incrementar solo en este bloque
+                        else:
+                            fila = tabla_request.add_row().cells
+                            fila[0].text = str(idx_request)
+                            fila[1].text = elem['name']
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila[2].text = elem['name']
+                            campo = fila[2].text.split('.')[-1]
+                            fila[2].text = campo
+                            #st.success(f"fila[1].text: {fila[1].text}")
+                            if elem['minOccurs'] == '1':
+                                obligatorio = "SI"
+                            fila[3].text = obligatorio
+                            fila[4].text = elem['type']
+                            tipo_campo = fila[4].text.split(':')[-1]
+                            if tipo_campo == 'string':
+                                tipo_campo = 'String'
+                            fila[4].text = tipo_campo
+                            idx_request += 1  # Incrementar solo en este bloque
+                        #st.success(f"fila[3].text: {fila[3].text}")
+                    
+                    if total_operaciones == 1:
+                        st.session_state["progress_bar_general"].progress(50)
+                    
+                    # Limpiar la tabla antes de agregar elementos de esta operación
+                    while len(tabla_response.rows) > 2:
+                        tabla_response._element.remove(tabla_response.rows[2]._element)
+                    
+                    # Procesar los datos
+                    idx_cabecera = 1  # Contador para "cabeceraEntrada"
+                    idx_response = 1   # Contador para el else
+                    for elem in elements['response']:
+                        
+                        obligatorio = "NO"
+                        #if 'cabeceraSalida.' not in elem['name']:
+                        # Añadir una nueva fila al final de la tabla
+                        # Rellenar la fila con los datos correspondientes
+                        #fila[0].text = operation + "Response" + "." + elem['name']
+                        if 'cabeceraSalida' in elem['name']:
+                            fila_cabecera_salida = tabla_cabecera_salida.add_row().cells
+                            fila_cabecera_salida[0].text = str(idx_cabecera)
+                            fila_cabecera_salida[1].text = elem['name']
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila_cabecera_salida[2].text = elem['name']
+                            campo = fila_cabecera_salida[2].text.split('.')[-1]
+                            fila_cabecera_salida[2].text = campo
+                            #st.success(f"fila[1].text: {fila[1].text}")
+                            if elem['minOccurs'] == '1':
+                                obligatorio = "SI"
+                            fila_cabecera_salida[3].text = obligatorio
+                            fila_cabecera_salida[4].text = elem['type']
+                            tipo_campo = fila_cabecera_salida[4].text.split(':')[-1]
+                            if tipo_campo == 'string':
+                                tipo_campo = 'String'
+                            fila_cabecera_salida[4].text = tipo_campo
+                            idx_cabecera += 1
+                        else:
+                            fila = tabla_response.add_row().cells
+                            fila[0].text = str(idx_response)
+                            fila[1].text = elem['name']
+                            #st.success(f"fila[0].text: {fila[0].text}")
+                            fila[2].text = elem['name']
+                            campo = fila[2].text.split('.')[-1]
+                            fila[2].text = campo
+                            #st.success(f"fila[1].text: {fila[1].text}")
+                            if elem['minOccurs'] == '1':
+                                obligatorio = "SI"
+                            fila[3].text = obligatorio
+                            fila[4].text = elem['type']
+                            tipo_campo = fila[4].text.split(':')[-1]
+                            if tipo_campo == 'string':
+                                tipo_campo = 'String'
+                            fila[4].text = tipo_campo
+                            idx_response += 1  # Incrementar solo en este bloque
+                    
+                    if total_operaciones == 1:
+                        st.session_state["progress_bar_general"].progress(75)
+                    
+                    #st.success("___________________________________________")
+                    
+                    #st.success(f"✅ temp_dir  {temp_dir }")
+                    #st.success(f"✅ ruta_temporal  {ruta_temporal }")
+
+                    # Lista para almacenar las rutas de los documentos generados
+                    documentos_generados = []
+
+                    ruta_proyecto = ruta.strip("/")  # Asegurar que la ruta no tenga "/" al inicio
+                    #st.success(f"✅ ruta_proyecto  {ruta_proyecto }")
+                    nombre_documento = f"Especificación Servicio WSDL {operation}.docx"
+                    
+                    # Crear la ruta dentro de la carpeta temporal
+                    carpeta_destino = os.path.join(ruta_temporal, ruta_proyecto)
+                    os.makedirs(carpeta_destino, exist_ok=True)  # Crear la carpeta si no existe
+                    
+                    ruta_guardado = os.path.join(carpeta_destino, nombre_documento)
+                    
+                    doc_nuevo = replace_text_in_doc(doc, variables)
+                    doc_nuevo.save(ruta_guardado)  # Guardar en la carpeta temporal
+                    st.success(f"📄 Documento generado: ✅ {nombre_documento}")
+                    
+                    if total_operaciones == 1:
+                        st.session_state["progress_bar_general"].progress(100)
+                    
+                    
+                    # 📌 Agregar el documento al ZIP
+                    if os.path.exists(ruta_guardado):
+                        zipf.write(ruta_guardado, os.path.join(ruta_proyecto, nombre_documento))
+                        #st.success(f"📄 Documento agregado al ZIP: {ruta_guardado}")
+                    else:
+                        st.warning(f"⚠️ Documento no encontrado: {ruta_guardado}")
+                    
+                    generoArchivo = True
+                        
+        # 📥 Permitir la descarga del ZIP final
+        with open(zip_path, "rb") as file:
+            zip_bytes = file.read()
+        
+        st.session_state["progress_bar_general"].progress(100)  # ¡Completado!
+        st.success("Documentación generada con éxito!")
+
+        # 🔹 Agregar un pequeño delay para asegurar que el ZIP esté listo
+        time.sleep(2)  # Esperar 2 segundos antes de mostrar la descarga
+
+        # 🔹 Descargar automáticamente el ZIP sin necesidad de clic
+        st.download_button(
+            label="📥 Descargar TODOS los documentos en ZIP",
+            data=zip_bytes,
+            file_name="Documentos_Completos.zip",
+            mime="application/zip",
+            key="download_all",
+        )
+
 
 if __name__ == "__main__":
     main()
