@@ -2645,7 +2645,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    print_with_line_number(f"combined_services: {combined_services}")
+                    #print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,operacion_a_documentar)
@@ -2682,6 +2682,10 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         page_width = section.page_width
                         left_margin = section.left_margin
                         right_margin = section.right_margin
+                        
+                        print_with_line_number(f"page_width: {page_width}")
+                        print_with_line_number(f"left_margin: {left_margin}")
+                        print_with_line_number(f"right_margin: {right_margin}")
 
                         # Calcular el ancho disponible para la imagen
                         max_width = page_width - left_margin - right_margin
