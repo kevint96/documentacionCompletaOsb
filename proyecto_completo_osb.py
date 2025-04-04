@@ -1995,16 +1995,16 @@ def obtener_informacion_legados(combined_services,operacion_a_documentar=None):
     # Filtrar solo claves que empiezan con 'REFERENCIA_'
     for key, value in combined_services.get(operacion_a_documentar, {}).items():
         if key.startswith("REFERENCIA_") and isinstance(value, dict):
-            #print_with_line_number(f"value: {value}")
+            print_with_line_number(f"value: {value}")
             for inner_key, inner_value in value.items():
                 if isinstance(inner_value, str) and "BusinessServices" in inner_value:
-                    #print_with_line_number(f"inner_value: {inner_value}")
+                    print_with_line_number(f"inner_value: {inner_value}")
                     partes = inner_value.split('/')
                     if len(partes) >= 3:
                         proyecto = partes[0]
                         nombre_servicio = partes[-1]
                         business_services[proyecto].append(f"{nombre_servicio}:{inner_key}")
-                        #print_with_line_number(f"business_services: {business_services}")
+                        print_with_line_number(f"business_services: {business_services}")
     
     return business_services
 
@@ -2645,7 +2645,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    #print_with_line_number(f"combined_services: {combined_services}")
+                    print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,operacion_a_documentar)
