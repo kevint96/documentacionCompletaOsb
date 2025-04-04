@@ -1192,7 +1192,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                     if not operacion_a_documentar or operation_name == operacion_a_documentar:
                         #print_with_line_number(f"operation_actual: {operation_actual}")
-                        print_with_line_number(f"🔍 Analizando operacion: {operation_actual}")
+                        #print_with_line_number(f"🔍 Analizando operacion: {operation_actual}")
                         #print_with_line_number(f"service_name: {service_name}")
                         #print_with_line_number(f"operation_name: {operation_name}")
                         #print_with_line_number(f"service_url: {service_url}")
@@ -2787,15 +2787,15 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
-                    print_with_line_number(f"combined_services: {combined_services}")
+                    #print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operation)
                     
-                    print_with_line_number(f"business_services_legados: {business_services_legados}")
+                    #print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
                     
-                    print_with_line_number(f"texto_legados: {texto_legados}")
+                    #print_with_line_number(f"texto_legados: {texto_legados}")
                     
                     target_table = None
                     for table in doc.tables:
@@ -2828,13 +2828,13 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         left_margin = section.left_margin
                         right_margin = section.right_margin
                         
-                        print_with_line_number(f"page_width: {page_width}")
-                        print_with_line_number(f"left_margin: {left_margin}")
-                        print_with_line_number(f"right_margin: {right_margin}")
+                        #print_with_line_number(f"page_width: {page_width}")
+                        #print_with_line_number(f"left_margin: {left_margin}")
+                        #print_with_line_number(f"right_margin: {right_margin}")
 
                         # Calcular el ancho disponible para la imagen
                         max_width = page_width - left_margin - right_margin
-                        print_with_line_number(f"max_width: {max_width}")
+                        #print_with_line_number(f"max_width: {max_width}")
 
                         for para in doc.paragraphs:
                             if marcador in para.text:
