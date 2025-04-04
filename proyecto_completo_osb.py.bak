@@ -1987,7 +1987,7 @@ def descargar_diagrama(uml_url, ruta_destino):
         print(f"Error al descargar diagrama: {response.status_code}")
         return None
 
-def obtener_informacion_legados(combined_services, operacion_a_documentar=None):
+def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operacion_a_documentar=None):
     business_services = defaultdict(list)
 
     for operacion, detalles in combined_services.items():
@@ -2021,6 +2021,12 @@ def obtener_informacion_legados(combined_services, operacion_a_documentar=None):
                             for proxy in proxies:
                                 if isinstance(proxy, str):
                                     nombre_proxy = proxy.split('/')[-1]
+                                    initial_proxy_path = os.path.join(jdeveloper_projects_dir, proxy + ".ProxyService")
+                                    print_with_line_number(f"🔍initial_proxy_path: {initial_proxy_path}")
+                                    pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, jdeveloper_projects_dir)
+                                    print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
+                                    ex = extraer_operaciones_pipeline_exp(pipeline_path, operacion_a_documentar)
+                                    print_with_line_number(f"🔍ex: {ex}")
                                     business_services[proyecto].append(f"{nombre_servicio}:{nombre_proxy}")
                                     print_with_line_number(f"business_services (referencia): {business_services}")
 
@@ -2666,7 +2672,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
-                    business_services_legados = obtener_informacion_legados(combined_services,operacion_a_documentar)
+                    business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operacion_a_documentar)
                     
                     print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
