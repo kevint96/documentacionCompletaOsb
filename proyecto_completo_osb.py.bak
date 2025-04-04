@@ -2599,6 +2599,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         os.makedirs(temp_dir, exist_ok=True)
         #print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
     
+    if "progress_bar_general" not in st.session_state:
+        st.session_state["progress_bar_general"] = st.progress(0)
+    #progress_bar_general = st.progress(0)
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
@@ -2648,9 +2651,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             return
         
         if total_operaciones > 1:
-            if "progress_bar_general" not in st.session_state:
-                st.session_state["progress_bar_general"] = st.progress(0)
-                #progress_bar_general = st.progress(0)
+            st.session_state["progress_bar_general"].progress(15)
+            #progress_bar_general = st.progress(0)
   
         # 🔹 Iterar sobre cada operación
         for idx, operation in enumerate(unique_operations, start=1):
@@ -2788,7 +2790,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
-                    business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operacion_a_documentar)
+                    business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operation)
                     
                     print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
