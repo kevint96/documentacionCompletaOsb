@@ -2066,7 +2066,6 @@ def extraer_operaciones_business(pipeline_path, operations):
                     if cantidad_route_nodes == 1:
                         service_element = route.find(".//con1:service", namespaces)
                         if service_element is not None:
-                            operation_name = operations[0]
                             services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                             print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
         return services_for_operations
@@ -2138,7 +2137,9 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
                                     print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
                                     ex = extraer_operaciones_business(pipeline_path, operacion_a_documentar)
                                     print_with_line_number(f"🔍ex: {ex}")
-                                    business_services[proyecto].append(f"{nombre_servicio}:{nombre_proxy}")
+                                    for clave, lista in ex.items():
+                                        nombre_servicio = lista.split('/')[-1]
+                                        business_services[proyecto].append(f"{nombre_servicio}:{clave}")
                                     print_with_line_number(f"business_services (referencia): {business_services}")
 
     return business_services
