@@ -2689,6 +2689,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                         # Calcular el ancho disponible para la imagen
                         max_width = page_width - left_margin - right_margin
+                        print_with_line_number(f"max_width: {max_width}")
 
                         for para in doc.paragraphs:
                             if marcador in para.text:
