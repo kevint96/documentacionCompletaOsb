@@ -1984,7 +1984,7 @@ def descargar_diagrama(uml_url, ruta_destino):
 def obtener_informacion_legados(combined_services,operacion_a_documentar=None):
     
     # Diccionario de salida
-    business_services = []
+    business_services = defaultdict(list)
 
     # Filtrar solo claves que empiezan con 'REFERENCIA_'
     for key, value in combined_services.get(operacion_a_documentar, {}).items():
@@ -1992,8 +1992,13 @@ def obtener_informacion_legados(combined_services,operacion_a_documentar=None):
             print_with_line_number(f"value: {value}")
             for inner_key, inner_value in value.items():
                 if isinstance(inner_value, str) and "BusinessServices" in inner_value:
-                    business_services.append(f"{inner_value}: {inner_key}")
-                    print_with_line_number(f"business_services: {business_services}")
+                    print_with_line_number(f"inner_value: {inner_value}")
+                    partes = inner_value.split('/')
+                    if len(partes) >= 3:
+                        proyecto = partes[0]
+                        nombre_servicio = partes[-1]
+                        business_services[proyecto].append(f"{nombre_servicio}:{inner_key}")
+                        print_with_line_number(f"business_services: {business_services}")
     
     return business_services
 
