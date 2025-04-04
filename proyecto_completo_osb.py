@@ -95,6 +95,12 @@ def replace_text_in_paragraph(paragraph, replacements):
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
                 apply_format(paragraph.runs[0],'Times New Roman',10,False,0)    # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+                
+            if key in '{informacion_legados}':
+                paragraph.clear()  # Limpiar el párrafo
+                paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
+                apply_format(paragraph.runs[0],'Times New Roman',10,False,0)    # Aplicar formato al texto del párrafo
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             
             if key in '{nombre_servicio}':
                 paragraph.clear()  # Limpiar el párrafo
@@ -2002,6 +2008,15 @@ def obtener_informacion_legados(combined_services,operacion_a_documentar=None):
     
     return business_services
 
+def formatear_legados_para_doc(business_services):
+    resultado = []
+    for i, (proyecto, servicios) in enumerate(business_services.items(), start=1):
+        resultado.append(f"{i}. {proyecto}:")
+        for servicio in servicios:
+            nombre_bs, nombre_operacion = servicio.split(':')
+            resultado.append(f"   * Business: {nombre_bs} Operacion: {nombre_operacion}")
+    return "\n".join(resultado)
+
 def generar_diagramas_operaciones(project_name, service_name, combined_services2, operacion_a_documentar=None):
     """
     Genera diagramas de secuencia para cada operación en combined_services2.
@@ -2635,6 +2650,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,operacion_a_documentar)
                     
+                    texto_legados = formatear_legados_para_doc(business_services_legados)
+                    
                     diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
                     
                     st.write(f"diagrama_path: {diagrama_path}")
@@ -2675,6 +2692,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         '{nombre_operacion_inicial}' : operation,
                         '{nombre_operacion}': operation,
                         '{unique_operations}': operaciones_formateadas,
+                        '{informacion_legados}': texto_legados,
                         '{nombre_servicio_contrato}': service_name,
                         '{nombre_servicio_wsdl}': service_name,
                         '{nombre_servicio_contrato2}': service_name,
