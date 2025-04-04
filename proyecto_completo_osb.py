@@ -2650,7 +2650,10 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,operacion_a_documentar)
                     
+                    print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
+                    
+                    print_with_line_number(f"texto_legados: {texto_legados}")
                     
                     target_table = None
                     for table in doc.tables:
@@ -2696,7 +2699,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                                 #print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
                                 para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
                                 run = para.add_run()
-                                run.add_picture(diagrama_path)  # Ajustar la imagen al ancho máximo
+                                run.add_picture(diagrama_path, width=max_width)  # Ajustar la imagen al ancho máximo
                                 break  # Solo reemplazamos la primera coincidencia
                     
                     
