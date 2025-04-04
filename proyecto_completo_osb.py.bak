@@ -1987,25 +1987,43 @@ def descargar_diagrama(uml_url, ruta_destino):
         print(f"Error al descargar diagrama: {response.status_code}")
         return None
 
-def obtener_informacion_legados(combined_services,operacion_a_documentar=None):
-    
-    # Diccionario de salida
+def obtener_informacion_legados(combined_services, operacion_a_documentar=None):
     business_services = defaultdict(list)
 
-    # Filtrar solo claves que empiezan con 'REFERENCIA_'
-    for key, value in combined_services.get(operacion_a_documentar, {}).items():
-        if key.startswith("REFERENCIA_") and isinstance(value, dict):
-            print_with_line_number(f"value: {value}")
-            for inner_key, inner_value in value.items():
-                if isinstance(inner_value, str) and "BusinessServices" in inner_value:
-                    print_with_line_number(f"inner_value: {inner_value}")
-                    partes = inner_value.split('/')
-                    if len(partes) >= 3:
-                        proyecto = partes[0]
-                        nombre_servicio = partes[-1]
-                        business_services[proyecto].append(f"{nombre_servicio}:{inner_key}")
-                        print_with_line_number(f"business_services: {business_services}")
-    
+    for operacion, detalles in combined_services.items():
+        if operacion_a_documentar == operacion:
+            for key, value in detalles.items():
+                # CASO 1: Estructura tipo REFERENCIA_...
+                if key.startswith("REFERENCIA_") and isinstance(value, dict):
+                    print_with_line_number(f"value: {value}")
+                    for inner_key, inner_value in value.items():
+                        if isinstance(inner_value, str) and "BusinessServices" in inner_value:
+                            print_with_line_number(f"inner_value: {inner_value}")
+                            partes = inner_value.split('/')
+                            if len(partes) >= 3:
+                                proyecto = partes[0]
+                                nombre_servicio = partes[-1]
+                                business_services[proyecto].append(f"{nombre_servicio}:{inner_key}")
+                                print_with_line_number(f"business_services: {business_services}")
+
+            # CASO 2: Cuando no hay REFERENCIA_ pero sí hay Referencia con BusinessServices
+            referencias = detalles.get("Referencia", [])
+            if isinstance(referencias, list):
+                for ref in referencias:
+                    if isinstance(ref, str) and "BusinessServices" in ref:
+                        partes = ref.split('/')
+                        if len(partes) >= 3:
+                            proyecto = partes[0]
+                            nombre_servicio = partes[-1]
+
+                            # Buscar el proxy (si existe)
+                            proxies = detalles.get("Proxy", [])
+                            for proxy in proxies:
+                                if isinstance(proxy, str):
+                                    nombre_proxy = proxy.split('/')[-1]
+                                    business_services[proyecto].append(f"{nombre_servicio}:{nombre_proxy}")
+                                    print_with_line_number(f"business_services (referencia): {business_services}")
+
     return business_services
 
 def formatear_legados_para_doc(business_services):
