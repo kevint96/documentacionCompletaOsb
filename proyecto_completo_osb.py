@@ -2660,13 +2660,13 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                     if target_table:
                         # Insertar los datos en la tabla
-                        for proyecto, servicios in business_services_legados.items():
+                        for legado, servicios in business_services_legados.items():
                             for servicio in servicios:
-                                business, operation = servicio.split(":")
+                                business, op = servicio.split(":")
                                 row = target_table.add_row().cells
-                                row[0].text = proyecto  # PROYECTO
+                                row[0].text = legado  # PROYECTO
                                 row[1].text = business  # BUSINESS
-                                row[2].text = operation  # OPERACIÓN
+                                row[2].text = op  # OPERACIÓN
                     
                     diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
                     
