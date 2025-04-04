@@ -2138,8 +2138,9 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
                                     ex = extraer_operaciones_business(pipeline_path, operacion_a_documentar)
                                     print_with_line_number(f"🔍ex: {ex}")
                                     for clave, lista in ex.items():
-                                        nombre_servicio = lista.split('/')[-1]
-                                        business_services[proyecto].append(f"{nombre_servicio}:{clave}")
+                                        for valor in lista:
+                                            nombre_servicio = valor.split('/')[-1]
+                                            business_services[proyecto].append(f"{nombre_servicio}:{clave}")
                                     print_with_line_number(f"business_services (referencia): {business_services}")
 
     return business_services

@@ -2098,7 +2098,10 @@ def extraer_operaciones_business(pipeline_path, operations):
 
 
 def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operacion_a_documentar=None):
+    
     business_services = defaultdict(list)
+    
+    print_with_line_number(f"combined_services: {combined_services}, jdeveloper_projects_dir: {jdeveloper_projects_dir}, operacion_a_documentar: {operacion_a_documentar} ")
 
     for operacion, detalles in combined_services.items():
         if operacion_a_documentar == operacion:
