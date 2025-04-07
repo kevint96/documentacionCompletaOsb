@@ -1578,6 +1578,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                                 #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                             else:
                                 operation_name = operations
+                                print_with_line_number(f"operation_name: {operation_name}")
                                 services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                                 #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                                 
