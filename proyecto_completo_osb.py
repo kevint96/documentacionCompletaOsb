@@ -2091,7 +2091,7 @@ def extraer_operaciones_business(pipeline_path, operations):
                     if assign_node:
                         xquery_text = assign_node[0].find(".//con2:xqueryText", namespaces={"con2": "http://www.bea.com/wli/sb/stages/config"})
                         if xquery_text is not None and xquery_text.text:
-                            operation_name = xquery_text.text.strip().replace(" ", "").replace("'", "")
+                            operation_name = xquery_text.text.strip().replace(" ", "").replace("'", "").replace('"','')
                             print_with_line_number(f"✔️ Nombre operación TUXEDO desde assign: {operation_name}")
                 if operation_name:
                     services_for_operations[operation_name].add(service_ref)
