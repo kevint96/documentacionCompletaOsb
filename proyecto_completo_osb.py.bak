@@ -2790,6 +2790,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             else:
                 request_key = f"{operation}Request"
                 response_key = f"{operation}Response"
+                
+            if not operacion_a_documentar:
+                operacion_a_documentar = operation
             
             # Initialize lists to store request and response elements for the current operation
             request_elements = []
@@ -2903,7 +2906,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     fecha_formateada = fecha_actual.strftime("%d/%m/%Y")
                     
                     
-                    ruta_proyecto = ruta.strip("/") 
+                    ruta_proyecto = ruta.strip("/")
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
                     
