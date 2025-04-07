@@ -1680,6 +1680,17 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         extract_services_and_operations(root.findall(".//routing:route", namespaces), 'routing', 'service', 'operation')
         extract_services_and_operations(root.findall(".//pipeline:flow", namespaces), 'pipeline', 'service', 'operation')
         
+        # 🔍 Buscar servicios TUXEDO en <con4:service ref="...">
+        service_tuxedo_elements = root.findall(".//routing:route//routing:service", namespaces)
+        print_with_line_number(f"service_tuxedo_elements: {service_tuxedo_elements}")
+        for service_element in service_tuxedo_elements:
+            service_ref = service_element.attrib.get('ref', '')
+            print_with_line_number(f"service_ref: {service_ref}")
+            if "TUXEDO" in service_ref.upper():
+                operation_name = service_ref.split("/")[-1]
+                print_with_line_number(f"operation_name: {operation_name}")
+                services_for_operations[operation_name] = service_ref
+
         return services_for_operations
     
     except Exception as e:
