@@ -1502,7 +1502,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
         print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    #print_with_line_number(f"pipeline_path: {pipeline_path}")
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
