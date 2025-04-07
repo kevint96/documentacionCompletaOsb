@@ -1271,14 +1271,14 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
-        print_with_line_number(f"project_name: {project_name}")
-        print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number(f"osb_file_path: {osb_file_path}")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        print_with_line_number(f"service_url: {service_url}")
-        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"operations: {operations}")
+        #print_with_line_number(f"project_name: {project_name}")
+        #print_with_line_number(f"service_name: {service_name}")
+        #print_with_line_number(f"osb_file_path: {osb_file_path}")
+        #print_with_line_number(f"pipeline_path: {pipeline_path}")
+        #print_with_line_number(f"service_url: {service_url}")
+        #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
         if operacion_a_documentar:
             operations = operacion_a_documentar
 
@@ -1288,7 +1288,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
             
             services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
             
-            print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+            #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
             for operation, proxy_list in services_for_operations_exp.items():
                 combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1308,7 +1308,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
                 
                 services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
                 
-                print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+                #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
                 for operation, proxy_list in services_for_operations_exp.items():
                     combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1319,7 +1319,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
                     else:
                         combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
                 
-        print_with_line_number(f"combined_services: {combined_services}")
+        #print_with_line_number(f"combined_services: {combined_services}")
                 
         combined_services2 = separar_ebs_abc_business(project_path,combined_services)
                 
@@ -1611,16 +1611,16 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
 
 def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_operations):
     osb_services = []
-    print_with_line_number("========= LLAMADA A extraer_operaciones_pipeline_ebs =========")
-    print_with_line_number(f"services_for_operations: {services_for_operations}")
+    #print_with_line_number("========= LLAMADA A extraer_operaciones_pipeline_ebs =========")
+    #print_with_line_number(f"services_for_operations: {services_for_operations}")
     
     for operacion, paths in services_for_operations.items():
-        print_with_line_number(f"operacion: {operacion}")
-        print_with_line_number(f"paths: {paths}")
+        #print_with_line_number(f"operacion: {operacion}")
+        #print_with_line_number(f"paths: {paths}")
         for path2 in paths:
-            print_with_line_number(f"path2: {path2}")
-            print_with_line_number("********** INICIO PROCESO **********")
-            print_with_line_number(f"Operacion: {operacion}, Path: {path2}")
+            #print_with_line_number(f"path2: {path2}")
+            #print_with_line_number("********** INICIO PROCESO **********")
+            #print_with_line_number(f"Operacion: {operacion}, Path: {path2}")
             
             if 'Proxies' in path2:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, path2 + ".ProxyService")
@@ -1629,31 +1629,31 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             else:
                 continue
             
-            print_with_line_number(f"OSB File Path: {osb_file_path}")
+            #print_with_line_number(f"OSB File Path: {osb_file_path}")
             
             project_name = extract_project_name_from_proxy(osb_file_path)
             if project_name is None:
                 continue
             
             pipeline_path = osb_file_path if 'Pipeline' in path2 else extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             
             with open(osb_file_path, 'r', encoding="utf-8") as f:
                 content = f.read()
                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
                 wsdl_relative_path = extract_wsdl_relative_path(content)
             
-            print_with_line_number(f"Service Name: {service_name}")
-            print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
+            #print_with_line_number(f"Service Name: {service_name}")
+            #print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
             
             if wsdl_relative_path:
                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                 operations = extract_wsdl_operations(wsdl_path)
-                print_with_line_number(f"Operations: {operations}")
+                #print_with_line_number(f"Operations: {operations}")
             
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+            #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-            print_with_line_number(f"Service for Operations: {service_for_operations}")
+            #print_with_line_number(f"Service for Operations: {service_for_operations}")
             
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
@@ -1663,7 +1663,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
                 #osb_services.append((operacion, path2))
                 #print_with_line_number(f"Service Refs: {service_refs}")
     
-    print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
+    #print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
     #print_with_line_number("********** FIN PROCESO **********")
     return osb_services
 
@@ -1671,7 +1671,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
     service_refs = set()
     services_for_operations = {}
     
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+    #print_with_line_number(f"pipeline_path: {pipeline_path}")
     
     namespaces = {
         'transform': 'http://www.bea.com/wli/sb/stages/transform/config',
@@ -1712,13 +1712,13 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         
         # 🔍 Buscar servicios TUXEDO en <con4:service ref="...">
         service_tuxedo_elements = root.findall(".//routing:route//routing:service", namespaces)
-        print_with_line_number(f"service_tuxedo_elements: {service_tuxedo_elements}")
+        #print_with_line_number(f"service_tuxedo_elements: {service_tuxedo_elements}")
         for service_element in service_tuxedo_elements:
             service_ref = service_element.attrib.get('ref', '')
-            print_with_line_number(f"service_ref: {service_ref}")
+            #print_with_line_number(f"service_ref: {service_ref}")
             if "TUXEDO" in service_ref.upper():
                 operation_name = service_ref.split("/")[-1]
-                print_with_line_number(f"operation_name: {operation_name}")
+                #print_with_line_number(f"operation_name: {operation_name}")
                 services_for_operations[operation_name] = service_ref
                 
         
@@ -1729,7 +1729,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         })
         for service_element in template_service_elements:
             service_ref = service_element.attrib.get('ref', '')
-            print_with_line_number(f"service_ref: {service_ref}")
+            #print_with_line_number(f"service_ref: {service_ref}")
             if "TUXEDO" in service_ref.upper():
                 # Buscar el assign relacionado al nombre de operación dentro de la misma sección
                 assign_node = root.find(".//con:template-overrides//con1:assign", {
@@ -2141,16 +2141,16 @@ def extraer_operaciones_business(pipeline_path, operations):
                             
             else:
                 service_element = route.find(".//con1:service", namespaces)
-                print_with_line_number(f"service_element: {service_element}")
+                #print_with_line_number(f"service_element: {service_element}")
                 service_ref = service_element.attrib.get('ref', '')
-                print_with_line_number(f"service_ref: {service_ref}")
+                #print_with_line_number(f"service_ref: {service_ref}")
                 if "TUXEDO" in service_ref.upper():
                     assign_node = root.findall(".//con1:assign[@varName='NOMBRE_SERVICIO_TUXEDO']",namespaces={"con1": "http://www.bea.com/wli/sb/stages/transform/config"})
                     if assign_node:
                         xquery_text = assign_node[0].find(".//con2:xqueryText", namespaces={"con2": "http://www.bea.com/wli/sb/stages/config"})
                         if xquery_text is not None and xquery_text.text:
                             operation_name = xquery_text.text.strip().replace(" ", "").replace("'", "").replace('"','')
-                            print_with_line_number(f"✔️ Nombre operación TUXEDO desde assign: {operation_name}")
+                            #print_with_line_number(f"✔️ Nombre operación TUXEDO desde assign: {operation_name}")
                 if operation_name:
                     services_for_operations[operation_name].add(service_ref)
                     
@@ -2227,16 +2227,16 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
             for key, value in detalles.items():
                 # CASO 1: Estructura tipo REFERENCIA_...
                 if key.startswith("REFERENCIA_") and isinstance(value, dict):
-                    print_with_line_number(f"value: {value}")
+                    #print_with_line_number(f"value: {value}")
                     for inner_key, inner_value in value.items():
                         if isinstance(inner_value, str) and "BusinessServices" in inner_value:
-                            print_with_line_number(f"inner_value: {inner_value}")
+                            #print_with_line_number(f"inner_value: {inner_value}")
                             partes = inner_value.split('/')
                             if len(partes) >= 3:
                                 proyecto = partes[0]
                                 nombre_servicio = partes[-1]
                                 business_services[proyecto].append(f"{nombre_servicio}:{inner_key}")
-                                print_with_line_number(f"business_services: {business_services}")
+                                #print_with_line_number(f"business_services: {business_services}")
 
             # CASO 2: Cuando no hay REFERENCIA_ pero sí hay Referencia con BusinessServices
             referencias = detalles.get("Referencia", [])
@@ -2254,16 +2254,16 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
                                 if isinstance(proxy, str):
                                     nombre_proxy = proxy.split('/')[-1]
                                     initial_proxy_path = os.path.join(jdeveloper_projects_dir, proxy + ".ProxyService")
-                                    print_with_line_number(f"🔍initial_proxy_path: {initial_proxy_path}")
+                                    #print_with_line_number(f"🔍initial_proxy_path: {initial_proxy_path}")
                                     pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, jdeveloper_projects_dir)
-                                    print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
+                                    #print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
                                     ex = extraer_operaciones_business(pipeline_path, operacion_a_documentar)
-                                    print_with_line_number(f"🔍ex: {ex}")
+                                    #print_with_line_number(f"🔍ex: {ex}")
                                     for clave, lista in ex.items():
                                         for valor in lista:
                                             nombre_servicio = valor.split('/')[-1]
                                             business_services[proyecto].append(f"{nombre_servicio}:{clave}")
-                                    print_with_line_number(f"business_services (referencia): {business_services}")
+                                    #print_with_line_number(f"business_services (referencia): {business_services}")
 
     return business_services
 

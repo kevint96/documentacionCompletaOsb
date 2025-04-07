@@ -1319,7 +1319,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
                     else:
                         combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
                 
-                #print_with_line_number(f"combined_services: {combined_services}")
+        print_with_line_number(f"combined_services: {combined_services}")
                 
         combined_services2 = separar_ebs_abc_business(project_path,combined_services)
                 
