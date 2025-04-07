@@ -1587,7 +1587,11 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
 
 def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_operations):
     osb_services = []
+    print_with_line_number("========= LLAMADA A extraer_operaciones_pipeline_ebs =========")
+    print_with_line_number(f"ID del objeto services_for_operations: {id(services_for_operations)}")
+    print_with_line_number(f"Contenido inicial: {services_for_operations}")
     print_with_line_number(f"services_for_operations: {services_for_operations}")
+    print_with_line_number(">>>>> LLAMADA A extraer_operaciones_pipeline_ebs")
     
     for operacion, paths in services_for_operations.items():
         print_with_line_number(f"operacion: {operacion}")
@@ -1633,11 +1637,14 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
                 osb_services.append((operacion, rutas_de_servicio))
+                print_with_line_number(f"<<<<< Agregado al resultado: {operacion} -> {rutas_de_servicio}")
             #else:
                 #service_refs = extract_service_refs_from_pipeline(pipeline_path)
                 #osb_services.append((operacion, path2))
                 #print_with_line_number(f"Service Refs: {service_refs}")
     
+    print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
+    print_with_line_number(f"Resultado acumulado: {osb_services}")
     #print_with_line_number("********** FIN PROCESO **********")
     return osb_services
 
