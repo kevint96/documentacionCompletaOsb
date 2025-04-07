@@ -1591,7 +1591,6 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
     print_with_line_number(f"ID del objeto services_for_operations: {id(services_for_operations)}")
     print_with_line_number(f"Contenido inicial: {services_for_operations}")
     print_with_line_number(f"services_for_operations: {services_for_operations}")
-    print_with_line_number(">>>>> LLAMADA A extraer_operaciones_pipeline_ebs")
     
     for operacion, paths in services_for_operations.items():
         print_with_line_number(f"operacion: {operacion}")
