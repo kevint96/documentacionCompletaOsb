@@ -848,9 +848,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     else:
                         st.warning(f"No se encontró el namespace para el prefijo {prefix}")
                 else:
-                    st.warning(f"complexType {element_type} no encontrado en el XSD")
+                    st.warning(f"{operation_name} complexType {element_type} no encontrado en el XSD")
     else:
-            st.warning(f"complexType {type_name} no encontrado en el XSD")
+            st.warning(f"{operation_name} complexType {type_name} no encontrado en el XSD")
 
 def agregar_lista_elementos(parent_element_name,type_name,element_type,service_url,capa_proyecto,element_minOccurs,operations,service_name,operation_actual,request_elements,response_elements):
     
