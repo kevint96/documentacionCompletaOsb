@@ -1280,24 +1280,24 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
         print_with_line_number(f"service_url: {service_url}")
         print_with_line_number(f"capa_proyecto: {capa_proyecto}")
         if operacion_a_documentar:
-            operations = operacion_a_documentar
+            if operacion_a_documentar in operations:
 
-            services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
-                        
-            #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
-            
-            services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
-            
-            #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+                services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operacion_a_documentar)
+                            
+                print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+                
+                services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
+                
+                #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
-            for operation, proxy_list in services_for_operations_exp.items():
-                combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
+                for operation, proxy_list in services_for_operations_exp.items():
+                    combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
 
-            for operation, reference_list in services_for_operations_ebs:
-                if operation in combined_services:
-                    combined_services[operation]['Referencia'] = reference_list
-                else:
-                    combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
+                for operation, reference_list in services_for_operations_ebs:
+                    if operation in combined_services:
+                        combined_services[operation]['Referencia'] = reference_list
+                    else:
+                        combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
                     
         else:
             for operation in operations:
