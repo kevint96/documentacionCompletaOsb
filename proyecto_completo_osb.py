@@ -1576,10 +1576,6 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     return {op: list(set(services)) for op, services in services_for_operations.items()}
 
 def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_operations):
-    print_with_line_number("→ ENTRANDO A extraer_operaciones_pipeline_ebs")
-    print_with_line_number("→ Stack trace de entrada:")
-    import traceback
-    traceback.print_stack()
     osb_services = []
     print_with_line_number("========= LLAMADA A extraer_operaciones_pipeline_ebs =========")
     print_with_line_number(f"ID del objeto services_for_operations: {id(services_for_operations)}")
