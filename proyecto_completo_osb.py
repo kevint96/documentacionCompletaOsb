@@ -42,7 +42,6 @@ import asyncio
 PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
 # Mapeo especial de caracteres para la codificación de PlantUML
 PLANTUML_ENCODING = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
-operaciones_procesadas = set()
 
 def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
@@ -1267,31 +1266,60 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
         #print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
+        #print_with_line_number(f"operations: {operations}")
         #print_with_line_number(f"project_name: {project_name}")
         #print_with_line_number(f"service_name: {service_name}")
         #print_with_line_number(f"osb_file_path: {osb_file_path}")
         #print_with_line_number(f"pipeline_path: {pipeline_path}")
         #print_with_line_number(f"service_url: {service_url}")
         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
-        operaciones_a_procesar = [operacion_a_documentar] if operacion_a_documentar else operations
+        if operacion_a_documentar:
+            operations = operacion_a_documentar
 
-        for operation in operaciones_a_procesar:
-            services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, [operation])
-            services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path, services_for_operations_exp)
-
+            services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
+                        
+            #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+            
+            services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
+            
             print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
-            for op, proxy_list in services_for_operations_exp.items():
-                combined_services[op] = {'Proxy': proxy_list, 'Referencia': []}
+            for operation, proxy_list in services_for_operations_exp.items():
+                combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
 
-            for op, reference_list in services_for_operations_ebs:
-                if op in combined_services:
-                    combined_services[op]['Referencia'] = reference_list
+            for operation, reference_list in services_for_operations_ebs:
+                if operation in combined_services:
+                    combined_services[operation]['Referencia'] = reference_list
                 else:
-                    combined_services[op] = {'Proxy': [], 'Referencia': reference_list}
+                    combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
+                    
+        else:
+            for operation in operations:
 
-            combined_services2 = separar_ebs_abc_business(project_path, combined_services)
+                services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
+                            
+                #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+                
+                services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
+                
+                print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+
+                for operation, proxy_list in services_for_operations_exp.items():
+                    combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
+
+                for operation, reference_list in services_for_operations_ebs:
+                    if operation in combined_services:
+                        combined_services[operation]['Referencia'] = reference_list
+                    else:
+                        combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
+                
+                #print_with_line_number(f"combined_services: {combined_services}")
+                
+        combined_services2 = separar_ebs_abc_business(project_path,combined_services)
+                
+        #print_with_line_number(f"combined_services2: {combined_services2}")
+                
+        #generar_diagramas_operaciones(project_name,combined_services2)
             
     return combined_services2
 
@@ -1578,8 +1606,6 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
 def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_operations):
     osb_services = []
     print_with_line_number("========= LLAMADA A extraer_operaciones_pipeline_ebs =========")
-    print_with_line_number(f"ID del objeto services_for_operations: {id(services_for_operations)}")
-    print_with_line_number(f"Contenido inicial: {services_for_operations}")
     print_with_line_number(f"services_for_operations: {services_for_operations}")
     
     for operacion, paths in services_for_operations.items():
@@ -1626,14 +1652,12 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
                 osb_services.append((operacion, rutas_de_servicio))
-                print_with_line_number(f"<<<<< Agregado al resultado: {operacion} -> {rutas_de_servicio}")
             #else:
                 #service_refs = extract_service_refs_from_pipeline(pipeline_path)
                 #osb_services.append((operacion, path2))
                 #print_with_line_number(f"Service Refs: {service_refs}")
     
     print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
-    print_with_line_number(f"Resultado acumulado: {osb_services}")
     #print_with_line_number("********** FIN PROCESO **********")
     return osb_services
 
