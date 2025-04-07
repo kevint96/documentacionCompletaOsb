@@ -1698,25 +1698,27 @@ def definir_operaciones_internas_pipeline(pipeline_path):
             "con": "http://www.bea.com/wli/sb/stages/config",
             "con1": "http://www.bea.com/wli/sb/stages/routing/config"
         })
-        print_with_line_number(f"service_tuxedo_elements: {service_tuxedo_elements}")
-        if "TUXEDO" in service_ref.upper():
-            # Buscar el assign relacionado al nombre de operación dentro de la misma sección
-            assign_node = root.find(".//con:template-overrides//con1:assign", {
-                "con1": "http://www.bea.com/wli/sb/stages/transform/config"
-            })
-            operation_name = ""
-            if assign_node is not None:
-                xquery_text = assign_node.find(".//con2:xqueryText", {
-                    "con2": "http://www.bea.com/wli/sb/stages/config"
+        for service_element in template_service_elements:
+            service_ref = service_element.attrib.get('ref', '')
+            print_with_line_number(f"service_ref: {service_ref}")
+            if "TUXEDO" in service_ref.upper():
+                # Buscar el assign relacionado al nombre de operación dentro de la misma sección
+                assign_node = root.find(".//con:template-overrides//con1:assign", {
+                    "con1": "http://www.bea.com/wli/sb/stages/transform/config"
                 })
-                if xquery_text is not None and xquery_text.text:
-                    operation_name = xquery_text.text.strip().replace(" ", "").replace('"', "").replace("'", "")
-            
-            # Si no se encontró con assign, usar fallback desde el ref
-            if not operation_name:
-                operation_name = service_ref.split("/")[-1]
+                operation_name = ""
+                if assign_node is not None:
+                    xquery_text = assign_node.find(".//con2:xqueryText", {
+                        "con2": "http://www.bea.com/wli/sb/stages/config"
+                    })
+                    if xquery_text is not None and xquery_text.text:
+                        operation_name = xquery_text.text.strip().replace(" ", "").replace('"', "").replace("'", "")
+                
+                # Si no se encontró con assign, usar fallback desde el ref
+                if not operation_name:
+                    operation_name = service_ref.split("/")[-1]
 
-            services_for_operations[operation_name] = service_ref
+                services_for_operations[operation_name] = service_ref
 
         
         return services_for_operations

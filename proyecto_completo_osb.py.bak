@@ -1691,7 +1691,34 @@ def definir_operaciones_internas_pipeline(pipeline_path):
                 operation_name = service_ref.split("/")[-1]
                 print_with_line_number(f"operation_name: {operation_name}")
                 services_for_operations[operation_name] = service_ref
+                
+        
+        template_service_elements = root.findall(".//con:template-overrides//con1:route/con1:service", {
+            **namespaces,
+            "con": "http://www.bea.com/wli/sb/stages/config",
+            "con1": "http://www.bea.com/wli/sb/stages/routing/config"
+        })
+        print_with_line_number(f"service_tuxedo_elements: {service_tuxedo_elements}")
+        if "TUXEDO" in service_ref.upper():
+            # Buscar el assign relacionado al nombre de operación dentro de la misma sección
+            assign_node = root.find(".//con:template-overrides//con1:assign", {
+                "con1": "http://www.bea.com/wli/sb/stages/transform/config"
+            })
+            operation_name = ""
+            if assign_node is not None:
+                xquery_text = assign_node.find(".//con2:xqueryText", {
+                    "con2": "http://www.bea.com/wli/sb/stages/config"
+                })
+                if xquery_text is not None and xquery_text.text:
+                    operation_name = xquery_text.text.strip().replace(" ", "").replace('"', "").replace("'", "")
+            
+            # Si no se encontró con assign, usar fallback desde el ref
+            if not operation_name:
+                operation_name = service_ref.split("/")[-1]
 
+            services_for_operations[operation_name] = service_ref
+
+        
         return services_for_operations
     
     except Exception as e:
@@ -2095,6 +2122,38 @@ def extraer_operaciones_business(pipeline_path, operations):
                             print_with_line_number(f"✔️ Nombre operación TUXEDO desde assign: {operation_name}")
                 if operation_name:
                     services_for_operations[operation_name].add(service_ref)
+                    
+                    
+        return services_for_operations
+        
+    
+    def process_route_elements_template():
+        """Busca servicios en elementos <con:route-node>. template"""
+        template_service_elements = root.findall(".//con:template-overrides//con1:route/con1:service", {
+            **namespaces,
+            "con": "http://www.bea.com/wli/sb/stages/config",
+            "con1": "http://www.bea.com/wli/sb/stages/routing/config"
+        })
+        for service_element in template_service_elements:
+            service_ref = service_element.attrib.get('ref', '')
+            if "TUXEDO" in service_ref.upper():
+                # Buscar el assign relacionado al nombre de operación dentro de la misma sección
+                assign_node = root.find(".//con:template-overrides//con1:assign", {
+                    "con1": "http://www.bea.com/wli/sb/stages/transform/config"
+                })
+                operation_name = ""
+                if assign_node is not None:
+                    xquery_text = assign_node.find(".//con2:xqueryText", {
+                        "con2": "http://www.bea.com/wli/sb/stages/config"
+                    })
+                    if xquery_text is not None and xquery_text.text:
+                        operation_name = xquery_text.text.strip().replace(" ", "").replace('"', "").replace("'", "")
+                
+                # Si no se encontró con assign, usar fallback desde el ref
+                if not operation_name:
+                    operation_name = service_ref.split("/")[-1]
+
+                services_for_operations[operation_name] = service_ref
                     
                     
         return services_for_operations
