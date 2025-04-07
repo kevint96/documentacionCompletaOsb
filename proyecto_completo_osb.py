@@ -1671,7 +1671,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
     service_refs = set()
     services_for_operations = {}
     
-    #print_with_line_number(f"pipeline_path: {pipeline_path}")
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
     
     namespaces = {
         'transform': 'http://www.bea.com/wli/sb/stages/transform/config',
