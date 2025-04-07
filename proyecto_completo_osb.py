@@ -1105,10 +1105,12 @@ def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None)
                                     operations = extract_wsdl_operations(wsdl_path)
                                     if operacion_a_documentar: 
                                         if operacion_a_documentar in operations:
+                                            print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                                             wsdl_operations_map[wsdl_path] = (
                                                 operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                             )
                                     else:
+                                        print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                                         wsdl_operations_map[wsdl_path] = (
                                             operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                         )
@@ -1266,6 +1268,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     ##print_with_line_number(f"URL generada: {url}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar)
     
+    print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
         # Desempaquetar la tupla
