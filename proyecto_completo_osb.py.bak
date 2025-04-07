@@ -1069,7 +1069,7 @@ def extract_wsdl_operations(wsdl_path):
                 operations.add(operation_name)  # Agregamos el nombre de la operación al conjunto
     return list(operations)  # Convertimos el conjunto de vuelta a lista antes de devolverlo
 
-def extraer_operaciones_expuestas_http(project_path):
+def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None):
     wsdl_operations_map = {}
     for root, dirs, files in os.walk(project_path):
         if os.path.basename(root) == "Proxies":
@@ -1103,9 +1103,15 @@ def extraer_operaciones_expuestas_http(project_path):
                                     
                                     #st.success(f"wsdl_path: {wsdl_path}")
                                     operations = extract_wsdl_operations(wsdl_path)
-                                    wsdl_operations_map[wsdl_path] = (
-                                        operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
-                                    )
+                                    if operacion_a_documentar 
+                                        if operacion_a_documentar in operations:
+                                            wsdl_operations_map[wsdl_path] = (
+                                                operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
+                                            )
+                                    else:
+                                        wsdl_operations_map[wsdl_path] = (
+                                            operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
+                                        )
     #st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
     return wsdl_operations_map
 
@@ -1258,7 +1264,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     #print("🔹 URL de la imagen PNG:", plantuml_url_png)
 
     ##print_with_line_number(f"URL generada: {url}")
-    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
+    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar)
     
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
