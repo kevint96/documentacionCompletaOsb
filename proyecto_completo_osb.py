@@ -1554,7 +1554,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                                 #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                             else:
                                 operation_name = operations
-                                print_with_line_number(f"operation_name: {operation_name}")
+                                #print_with_line_number(f"operation_name: {operation_name}")
                                 services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
                                 #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                                 
@@ -2595,8 +2595,14 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                 print_with_line_number(f"Error en la solicitud de la imagen: {e}")
     
     return diagrama_path
-    
 
+def obtener_service_name_por_operacion(services_with_data, operation):
+    for grupo in services_with_data:
+        for elemento in grupo:
+            if elemento.get('operation_actual') == operation:
+                return elemento.get('service_name')
+    return None  # Si no encuentra nada
+    
 def main():
     st.markdown(
     "<h1 style='text-align: center;'>📄 Generador de Documentación OSB</h1>",
@@ -2753,9 +2759,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             if total_operaciones > 1:
                 progreso_actual = int((idx / total_operaciones) * 100)
                 st.session_state["progress_bar_general"].progress(progreso_actual)  # 🔄 Actualizar barra general
-                print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
-            else:
-                print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
+                #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
+            #else:
+                #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
             
             
             if es_type:
@@ -2819,6 +2825,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 #print_with_line_number(f"lista_operaciones: {lista_operaciones}")
                 operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
                 #print_with_line_number(f"elements['request']: {elements['request']}")
+                service_name = obtener_service_name_por_operacion(services_with_data, operation)
+                print_with_line_number(f"service_name: {service_name}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
                     continue  # Si no hay request, no genera el documento
