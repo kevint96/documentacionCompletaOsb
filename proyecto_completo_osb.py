@@ -2719,6 +2719,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 #operation_name = element['elemento'].replace('Request', '').replace('Response', '').replace('Type', '')
                 ##print_with_line_number(f"operation_name: {operation_name}")
                 service_name = element['service_name']
+                print_with_line_number(f"service_name: {service_name}")
                 # Agregar todas las operaciones de la lista 'operations'
                 if 'operations' in element:
                     operation_names.update(element['operations'])  # Agrega todas las operaciones a operation_names
@@ -2734,7 +2735,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
             
         
-        #print_with_line_number(f"unique_operations: {unique_operations}")
+        print_with_line_number(f"unique_operations: {unique_operations}")
         
         #print_with_line_number(f"✅ unique_operations {unique_operations}")
         
@@ -2786,11 +2787,13 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         capa_proyecto.append({'ruta': element['ruta']})
                         minOccurs_elements.append({'minOccurs': element['minOccurs']})
                         service_name = element['service_name']
+                        print_with_line_number(f"service_name: {service_name}")
                 
                 for element in response_data:
                     if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
                         response_elements.append({'name': element['name'], 'type': element['type'], 'minOccurs': element['minOccurs']})
                         service_name = element['service_name']
+                        print_with_line_number(f"service_name: {service_name}")
             
             # Store the collected elements in the dictionary
             operation_elements[operation] = {
@@ -3153,7 +3156,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                     ruta_proyecto = elements['ruta'][0]['ruta'].lstrip('/')  # Asegurar que la ruta no tenga "/" al inicio
                     #st.success(f"✅ ruta_proyecto  {ruta_proyecto }")
-                    nombre_documento = f"Especificación Servicio WSDL {operation}.docx"
+                    nombre_documento = f"Especificación Servicio WSDL - {service_name}-{operation}.docx"
                     
                     # Crear la ruta dentro de la carpeta temporal
                     carpeta_destino = os.path.join(ruta_temporal, ruta_proyecto)
