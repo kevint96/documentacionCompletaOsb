@@ -2824,7 +2824,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 lista_operaciones = elements['lista_operaciones']
                 #print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
                 lista_operaciones = sorted(obtener_valor_por_operacion(services_with_data, operation, 'operations'))
-                print_with_line_number(f"lista_operaciones: {lista_operaciones}")
+                #print_with_line_number(f"lista_operaciones: {lista_operaciones}")
                 operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
                 #print_with_line_number(f"elements['request']: {elements['request']}")
                 service_name = obtener_valor_por_operacion(services_with_data, operation, 'service_name')

@@ -3184,6 +3184,16 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     doc_nuevo.save(ruta_guardado)  # Guardar en la carpeta temporal
                     st.success(f"📄 Documento generado: ✅ {nombre_documento}")
                     
+                    st.markdown(
+                        """
+                        <script>
+                        var element = window.parent.document.querySelector('section.main');
+                        element.scrollTo({ top: element.scrollHeight, behavior: "smooth" });
+                        </script>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    
                     if total_operaciones == 1:
                         st.session_state["progress_bar_general"].progress(100)
                     
