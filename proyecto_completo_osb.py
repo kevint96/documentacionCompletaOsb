@@ -2777,6 +2777,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             url_elements = []
             capa_proyecto = []
             minOccurs_elements = []
+            lista_operaciones = []
             
             # Iterate through services_with_data to find matching elements
             for request_data, response_data in services_with_data:
@@ -2786,7 +2787,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         url_elements.append({'url': element['url']})
                         capa_proyecto.append({'ruta': element['ruta']})
                         minOccurs_elements.append({'minOccurs': element['minOccurs']})
-                        print_with_line_number(f"service_name: {service_name}")
+                        service_name = element['service_name']
+                        lista_operaciones.append(element['operations'])
                 
                 for element in response_data:
                     if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
@@ -2800,7 +2802,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'url': url_elements,
                 'ruta': capa_proyecto, 
                 'minOccurs': minOccurs_elements,
-                'service_name': service_name
+                'service_name': service_name,
+                'lista_operaciones': lista_operaciones
             }
         #print_with_line_number(f"operation_elements: {operation_elements}")
         print_with_line_number(f"service_name: {service_name}")
@@ -2811,7 +2814,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
-
+                
+                print_with_line_number(f"elements: {elements}")
                 #print_with_line_number(f"elements['request']: {elements['request']}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
