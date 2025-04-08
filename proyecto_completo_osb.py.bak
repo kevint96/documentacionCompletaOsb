@@ -1238,34 +1238,7 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     combined_services = {}
     found = False  # Variable para rastrear si se encuentra la operación
     
-    plantuml_code = """@startuml
-    Alice->Bob : I am using hex
-    @enduml"""
-    
-    hex_string = plantuml_to_hex(plantuml_code)
-    #print_with_line_number(f"hex_string: {hex_string}")
-    
-    # URL final
-    plantuml_url_png = f"https://www.plantuml.com/plantuml/png/{hex_string}"
-    #st.image(plantuml_url_png)
-    #print("🔹 URL de la imagen PNG:", plantuml_url_png)
-    
-    
-    uml_example = """@startuml
-    Alice -> Bob: Authentication Request
-    Bob --> Alice: Authentication Response
-    @enduml"""
-
-    # Generar URL
-    uml_url = generate_plantuml_url(uml_example)
-    #print_with_line_number(f"URL del diagrama: {uml_url}")
-    
-    # URL final
-    plantuml_url_png = {uml_url}
-    #st.image(plantuml_url_png)
-    #print("🔹 URL de la imagen PNG:", plantuml_url_png)
-
-    ##print_with_line_number(f"URL generada: {url}")
+    print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar)
     
     print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")

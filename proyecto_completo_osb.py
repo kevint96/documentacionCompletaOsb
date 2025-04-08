@@ -1114,7 +1114,7 @@ def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None)
                                         wsdl_operations_map[wsdl_path] = (
                                             operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                         )
-    #st.success(f"✅ wsdl_operations_map {wsdl_operations_map}")
+    print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
     return wsdl_operations_map
 
 def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
