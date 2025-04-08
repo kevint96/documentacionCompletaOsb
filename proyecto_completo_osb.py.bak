@@ -2726,10 +2726,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         #print_with_line_number(f"service_name: {service_name}")
         # Convert the set to a sorted list to get the operation names in alphabetical order
         unique_operations = sorted(operation_names)
-        
-        operaciones_formateadas = "\n".join(f"* {op}" for op in unique_operations)
-        
-        
+
         # 🔹 Si operacion_a_documentar tiene un valor, filtrar solo esa operación
         if operacion_a_documentar:
             unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
@@ -2777,7 +2774,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             url_elements = []
             capa_proyecto = []
             minOccurs_elements = []
-            lista_operaciones = []
+            lista_operaciones_proyecto = []
             
             # Iterate through services_with_data to find matching elements
             for request_data, response_data in services_with_data:
@@ -2788,7 +2785,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         capa_proyecto.append({'ruta': element['ruta']})
                         minOccurs_elements.append({'minOccurs': element['minOccurs']})
                         service_name = element['service_name']
-                        lista_operaciones = element['operations']
+                        lista_operaciones_proyecto = element['operations']
                 
                 for element in response_data:
                     if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
@@ -2803,7 +2800,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'ruta': capa_proyecto, 
                 'minOccurs': minOccurs_elements,
                 'service_name': service_name,
-                'lista_operaciones': lista_operaciones
+                'lista_operaciones': lista_operaciones_proyecto
             }
         #print_with_line_number(f"operation_elements: {operation_elements}")
         print_with_line_number(f"service_name: {service_name}")
@@ -2816,7 +2813,11 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
                 
                 print_with_line_number(f"elements: {elements}")
-                print_with_line_number(f"elements lista_operaciones: {elements['lista_operaciones']}")
+                lista_operaciones = elements['lista_operaciones']
+                print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
+                lista_operaciones = sorted(lista_operaciones)
+                print_with_line_number(f"lista_operaciones: {lista_operaciones}")
+                operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
                 #print_with_line_number(f"elements['request']: {elements['request']}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
