@@ -2701,7 +2701,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
     
-    print_with_line_number(f"✅ services_with_data {services_with_data}")
+    #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -2723,7 +2723,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 if 'operations' in element:
                     operation_names.update(element['operations'])  # Agrega todas las operaciones a operation_names
 
-        print_with_line_number(f"service_name: {service_name}")
+        #print_with_line_number(f"service_name: {service_name}")
         # Convert the set to a sorted list to get the operation names in alphabetical order
         unique_operations = sorted(operation_names)
         
@@ -2788,7 +2788,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         capa_proyecto.append({'ruta': element['ruta']})
                         minOccurs_elements.append({'minOccurs': element['minOccurs']})
                         service_name = element['service_name']
-                        lista_operaciones.append(element['operations'])
+                        lista_operaciones = element['operations']
                 
                 for element in response_data:
                     if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
@@ -2816,6 +2816,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
                 
                 print_with_line_number(f"elements: {elements}")
+                print_with_line_number(f"elements lista_operaciones: {elements['lista_operaciones']}")
                 #print_with_line_number(f"elements['request']: {elements['request']}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
