@@ -2598,10 +2598,12 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
 
 def obtener_service_name_por_operacion(services_with_data, operation):
     for grupo in services_with_data:
-        for elemento in grupo:
-            if elemento.get('operation_actual') == operation:
-                return elemento.get('service_name')
-    return None  # Si no encuentra nada
+        # Aseguramos que estamos accediendo a la lista dentro de la tupla
+        if isinstance(grupo, (list, tuple)) and len(grupo) > 0:
+            for elemento in grupo[0]:  # grupo[0] es la lista con los diccionarios
+                if isinstance(elemento, dict) and elemento.get('operation_actual') == operation:
+                    return elemento.get('service_name')
+    return None
     
 def main():
     st.markdown(
