@@ -1105,16 +1105,16 @@ def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None)
                                     operations = extract_wsdl_operations(wsdl_path)
                                     if operacion_a_documentar: 
                                         if operacion_a_documentar in operations:
-                                            print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+                                            #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                                             wsdl_operations_map[wsdl_path] = (
                                                 operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                             )
                                     else:
-                                        print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+                                        #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                                         wsdl_operations_map[wsdl_path] = (
                                             operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                         )
-    print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
+    #print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
     return wsdl_operations_map
 
 def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
@@ -1238,29 +1238,29 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     combined_services = {}
     found = False  # Variable para rastrear si se encuentra la operación
     
-    print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+    #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar)
     
-    print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
+    #print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
-        print_with_line_number(f"project_name: {project_name}")
-        print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number(f"osb_file_path: {osb_file_path}")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        print_with_line_number(f"service_url: {service_url}")
-        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"operations: {operations}")
+        #print_with_line_number(f"project_name: {project_name}")
+        #print_with_line_number(f"service_name: {service_name}")
+        #print_with_line_number(f"osb_file_path: {osb_file_path}")
+        #print_with_line_number(f"pipeline_path: {pipeline_path}")
+        #print_with_line_number(f"service_url: {service_url}")
+        #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
         if operacion_a_documentar:
             if operacion_a_documentar in operations:
 
                 services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operacion_a_documentar)
                             
-                print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+                #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
                 
                 services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
                 
@@ -1478,7 +1478,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
         print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+    #print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
