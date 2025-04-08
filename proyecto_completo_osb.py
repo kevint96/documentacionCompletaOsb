@@ -2884,7 +2884,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     ruta_proyecto = elements['ruta'][0]['ruta'].lstrip('/')
                     
-                    combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+                    combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operation)
                     
                     #print_with_line_number(f"combined_services: {combined_services}")
                     
