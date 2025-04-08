@@ -2828,7 +2828,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
                 #print_with_line_number(f"elements['request']: {elements['request']}")
                 service_name = obtener_service_name_por_operacion(services_with_data, operation)
-                print_with_line_number(f"service_name: {service_name}")
+                #print_with_line_number(f"service_name: {service_name}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
                     continue  # Si no hay request, no genera el documento
@@ -2840,8 +2840,10 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                 if elements['request']:
                     
+                    st.write(f"⬇️ Operacion:{idx} de {total_operaciones} ⬆️")
                     st.write(f"⏳ Creando documentacion operacion: {operation}")
-                    st.write(f"🔹 Proyecto {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    st.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    st.write(f"🔗 Servicio: {service_name}")
                     
                     st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
                     st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")

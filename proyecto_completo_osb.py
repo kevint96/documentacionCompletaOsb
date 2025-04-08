@@ -2596,13 +2596,13 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
     
     return diagrama_path
 
-def obtener_service_name_por_operacion(services_with_data, operation):
+def obtener_valor_por_operacion(services_with_data, operation, parametro):
     for grupo in services_with_data:
         # Aseguramos que estamos accediendo a la lista dentro de la tupla
         if isinstance(grupo, (list, tuple)) and len(grupo) > 0:
             for elemento in grupo[0]:  # grupo[0] es la lista con los diccionarios
                 if isinstance(elemento, dict) and elemento.get('operation_actual') == operation:
-                    return elemento.get('service_name')
+                    return elemento.get(parametro)
     return None
     
 def main():
@@ -2823,11 +2823,11 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 #print_with_line_number(f"elements: {elements}")
                 lista_operaciones = elements['lista_operaciones']
                 #print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
-                lista_operaciones = sorted(lista_operaciones)
-                #print_with_line_number(f"lista_operaciones: {lista_operaciones}")
+                lista_operaciones = sorted(obtener_valor_por_operacion(services_with_data, operation, 'operations'))
+                print_with_line_number(f"lista_operaciones: {lista_operaciones}")
                 operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
                 #print_with_line_number(f"elements['request']: {elements['request']}")
-                service_name = obtener_service_name_por_operacion(services_with_data, operation)
+                service_name = obtener_valor_por_operacion(services_with_data, operation, 'service_name')
                 #print_with_line_number(f"service_name: {service_name}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
@@ -2840,7 +2840,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                 if elements['request']:
                     
-                    st.write(f"⬇️ Operacion:{idx} de {total_operaciones} ⬆️")
+                    st.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
                     st.write(f"⏳ Creando documentacion operacion: {operation}")
                     st.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
                     st.write(f"🔗 Servicio: {service_name}")
