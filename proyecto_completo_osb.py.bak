@@ -2732,7 +2732,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
             
         
-        print_with_line_number(f"unique_operations: {unique_operations}")
+        #print_with_line_number(f"unique_operations: {unique_operations}")
         
         #print_with_line_number(f"✅ unique_operations {unique_operations}")
         
@@ -2755,7 +2755,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 st.session_state["progress_bar_general"].progress(progreso_actual)  # 🔄 Actualizar barra general
                 #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
             else:
-                print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
+                #print_with_line_number(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
             
             
             if es_type:
@@ -2803,7 +2803,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'lista_operaciones': lista_operaciones_proyecto
             }
         #print_with_line_number(f"operation_elements: {operation_elements}")
-        print_with_line_number(f"service_name: {service_name}")
+        #print_with_line_number(f"service_name: {service_name}")
         # Print the result
         # 📂 Crear un solo ZIP para todas las operaciones
         zip_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
@@ -2812,11 +2812,11 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
                 
-                print_with_line_number(f"elements: {elements}")
+                #print_with_line_number(f"elements: {elements}")
                 lista_operaciones = elements['lista_operaciones']
-                print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
+                #print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
                 lista_operaciones = sorted(lista_operaciones)
-                print_with_line_number(f"lista_operaciones: {lista_operaciones}")
+                #print_with_line_number(f"lista_operaciones: {lista_operaciones}")
                 operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
                 #print_with_line_number(f"elements['request']: {elements['request']}")
                 if not elements['request']:
