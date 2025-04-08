@@ -2719,11 +2719,11 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 #operation_name = element['elemento'].replace('Request', '').replace('Response', '').replace('Type', '')
                 ##print_with_line_number(f"operation_name: {operation_name}")
                 service_name = element['service_name']
-                print_with_line_number(f"service_name: {service_name}")
                 # Agregar todas las operaciones de la lista 'operations'
                 if 'operations' in element:
                     operation_names.update(element['operations'])  # Agrega todas las operaciones a operation_names
 
+        print_with_line_number(f"service_name: {service_name}")
         # Convert the set to a sorted list to get the operation names in alphabetical order
         unique_operations = sorted(operation_names)
         
@@ -2786,14 +2786,12 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         url_elements.append({'url': element['url']})
                         capa_proyecto.append({'ruta': element['ruta']})
                         minOccurs_elements.append({'minOccurs': element['minOccurs']})
-                        service_name = element['service_name']
                         print_with_line_number(f"service_name: {service_name}")
                 
                 for element in response_data:
                     if element.get('operation_actual') == operation:  # ✅ Verificar por operación exacta
                         response_elements.append({'name': element['name'], 'type': element['type'], 'minOccurs': element['minOccurs']})
                         service_name = element['service_name']
-                        print_with_line_number(f"service_name: {service_name}")
             
             # Store the collected elements in the dictionary
             operation_elements[operation] = {
@@ -2805,7 +2803,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'service_name': service_name
             }
         #print_with_line_number(f"operation_elements: {operation_elements}")
-        ##print_with_line_number(f"service_name: {service_name}")
+        print_with_line_number(f"service_name: {service_name}")
         # Print the result
         # 📂 Crear un solo ZIP para todas las operaciones
         zip_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
