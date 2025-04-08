@@ -3183,17 +3183,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     doc_nuevo = replace_text_in_doc(doc, variables)
                     doc_nuevo.save(ruta_guardado)  # Guardar en la carpeta temporal
                     st.success(f"📄 Documento generado: ✅ {nombre_documento}")
-                    
-                    st.markdown(
-                        """
-                        <script>
-                        var element = window.parent.document.querySelector('section.main');
-                        element.scrollTo({ top: element.scrollHeight, behavior: "smooth" });
-                        </script>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                    
+
                     if total_operaciones == 1:
                         st.session_state["progress_bar_general"].progress(100)
                     
@@ -3206,6 +3196,20 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         st.warning(f"⚠️ Documento no encontrado: {ruta_guardado}")
                     
                     generoArchivo = True
+                    
+                    st.markdown(
+                        """
+                        <script>
+                        setTimeout(() => {
+                            var element = window.parent.document.querySelector('section.main');
+                            if (element) {
+                                element.scrollTo({ top: element.scrollHeight, behavior: "smooth" });
+                            }
+                        }, 300); // Espera un poco a que se renderice todo
+                        </script>
+                        """,
+                        unsafe_allow_html=True
+                    )
                         
         # 📥 Permitir la descarga del ZIP final
         with open(zip_path, "rb") as file:
