@@ -2837,13 +2837,13 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                 # 🔹 Actualizar progreso de generación de documentos
                 if total_operaciones > 1:
-                    progreso_actual = int(((idx + total_operaciones) / (total_operaciones * 2)) * 100)
+                    progreso_actual = int(((idx + 1) / total_operaciones) * 100)
                     st.session_state["progress_bar_general"].progress(progreso_actual)
 
                 if elements['request']:
                     
                     st.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
-                    log_area.write(f"⏳Generando documentacion operacion {operation} ⬇️ Operacion {idx} de {total_operaciones} ⬆️")
+                    log_area.write(f"{operation} ⬇️ Operacion {idx} de {total_operaciones} ⬆️")
                     st.write(f"⏳ Creando documentacion operacion: {operation}")
                     st.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
                     st.write(f"🔗 Servicio: {service_name}")
