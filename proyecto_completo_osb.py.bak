@@ -2710,20 +2710,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     log_area.write("📂 Leyendo archivos del JAR...")
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
-    
-    st.markdown(
-        """
-        <script>
-        setTimeout(() => {
-            var element = window.parent.document.querySelector('section.main');
-            if (element) {
-                element.scrollTo({ top: element.scrollHeight, behavior: "smooth" });
-            }
-        }, 100);
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+
     #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
@@ -2776,9 +2763,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             if total_operaciones > 1:
                 progreso_actual = int((idx / total_operaciones) * 100)
                 st.session_state["progress_bar_general"].progress(progreso_actual)  # 🔄 Actualizar barra general
-                log_area.write(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
+                log_area.write(f"⏳ Actualizando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
             else:
-                log_area.write(f"⏳ Procesando operación {idx}/{total_operaciones}: {operation}")
+                log_area.write(f"⏳ Actualizando operación {idx}/{total_operaciones}: {operation}")
             
             
             if es_type:
@@ -2856,9 +2843,13 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 if elements['request']:
                     
                     st.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
+                    log_area.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
                     st.write(f"⏳ Creando documentacion operacion: {operation}")
+                    log_area.write(f"⏳ Creando documentacion operacion: {operation}")
                     st.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    log_area.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
                     st.write(f"🔗 Servicio: {service_name}")
+                    log_area.write(f"🔗 Servicio: {service_name}")
                     
                     st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
                     st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
