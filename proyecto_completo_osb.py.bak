@@ -2838,7 +2838,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 # 🔹 Actualizar progreso de generación de documentos
                 if total_operaciones > 1:
                     progreso_actual = int(((idx + 1) / total_operaciones) * 100)
-                    st.session_state["progress_bar_general"].progress(progreso_actual)
+                    st.session_state["progress_bar_general"].progress(progreso_actual / 100)
 
                 if elements['request']:
                     
