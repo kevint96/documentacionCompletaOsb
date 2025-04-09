@@ -1134,12 +1134,12 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        print_with_line_number(f"wsdl_path: {wsdl_path}")
         #print_with_line_number(f"operations: {operations}")
         #print_with_line_number(f"project_name: {project_name}")
         #print_with_line_number(f"service_name: {service_name}")
         #print_with_line_number(f"osb_file_path: {osb_file_path}")
-        #print_with_line_number(f"pipeline_path: {pipeline_path}")
+        print_with_line_number(f"pipeline_path: {pipeline_path}")
         #print_with_line_number(f"service_url: {service_url}")
         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
@@ -1213,7 +1213,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #current_time = time.time()
                         #elapsed_time = current_time - start_time
                         #st.toast(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg")
-                        #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
+                        print_with_line_number(f"elementos_xsd: {elementos_xsd}")
 
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
 
