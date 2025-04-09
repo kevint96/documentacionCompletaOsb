@@ -1145,7 +1145,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
 
         imports = extract_xsd_import_paths(wsdl_path)
         #print_with_line_number(f"wsdl_path: {wsdl_path}")
-        #print_with_line_number(f"imports: {imports}")
+        print_with_line_number(f"imports: {imports}")
         
         #print_with_line_number(f"project_path: {project_path}")
         # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
@@ -1163,7 +1163,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
         
-        #print_with_line_number(f"imports despues: {imports}")
+        print_with_line_number(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             for operation in operations:
@@ -1185,7 +1185,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     else:
                         operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
-            #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
+            print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
 
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
