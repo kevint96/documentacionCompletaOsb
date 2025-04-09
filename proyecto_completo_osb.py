@@ -2711,7 +2711,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
 
-    #print_with_line_number(f"✅ services_with_data {services_with_data}")
+    print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -2812,7 +2812,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'service_name': service_name,
                 'lista_operaciones': lista_operaciones_proyecto
             }
-        #print_with_line_number(f"operation_elements: {operation_elements}")
+        print_with_line_number(f"operation_elements: {operation_elements}")
         #print_with_line_number(f"service_name: {service_name}")
         # Print the result
         # 📂 Crear un solo ZIP para todas las operaciones
@@ -2911,7 +2911,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operation)
                     
-                    #print_with_line_number(f"combined_services: {combined_services}")
+                    print_with_line_number(f"combined_services: {combined_services}")
                     
                     #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operation)
