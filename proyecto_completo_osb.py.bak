@@ -1133,7 +1133,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     for wsdl_path, data in wsdl_operations_map.items():
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
-        
+        operation_to_xsd = {}
         print_with_line_number(f"wsdl_path: {wsdl_path}")
         #print_with_line_number(f"operations: {operations}")
         #print_with_line_number(f"project_name: {project_name}")
