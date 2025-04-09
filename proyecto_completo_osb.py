@@ -1199,7 +1199,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     #print_with_line_number(f"operation_actual: {operation_actual}")
                     #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                     if not operacion_a_documentar or operation_name == operacion_a_documentar:
-                        #print_with_line_number(f"operation_actual: {operation_actual}")
+                        print_with_line_number(f"operation_actual: {operation_actual}")
                         #print_with_line_number(f"🔍 Analizando operacion: {operation_actual}")
                         #print_with_line_number(f"service_name: {service_name}")
                         #print_with_line_number(f"operation_name: {operation_name}")
@@ -1207,7 +1207,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
                         #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                        #print_with_line_number(f"xsd: {xsd}")
+                        print_with_line_number(f"xsd: {xsd}")
                         #start_time = time.time()  # Guardamos el tiempo inicial
                         elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #current_time = time.time()
