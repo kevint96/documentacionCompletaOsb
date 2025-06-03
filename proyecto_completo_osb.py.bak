@@ -2617,7 +2617,11 @@ def main():
     # 📌 Agregar elementos al menú lateral
     with st.sidebar:
         jar_file = st.file_uploader("Sube el archivo .jar con dependencias", type=["jar"])
-        plantilla_file = st.file_uploader("Sube la plantilla de Word", type=["docx"])
+        # Ruta relativa a las plantillas
+        RUTA_BASE = os.path.join("plantillas", "Plantilla2.docx")
+        
+        #plantilla_file = st.file_uploader("Sube la plantilla de Word", type=["docx"])
+        plantilla_file = Document(RUTA_BASE)
         if jar_file:
             jar_path = "temp.jar"
 
