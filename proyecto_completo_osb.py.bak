@@ -2200,8 +2200,7 @@ def extraer_operaciones_business(pipeline_path, operations):
                 operation_name = op_el.text.strip()
                 print_with_line_number(f"operation_name: {operation_name}")
 
-                if operation_name in operations:
-                    services_for_operations[operation_name].add(service_ref)
+                services_for_operations[operation_name].add(service_ref)
 
         return services_for_operations
         

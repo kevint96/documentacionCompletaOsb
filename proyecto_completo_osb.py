@@ -2037,10 +2037,10 @@ def descargar_diagrama(uml_url, ruta_destino):
 def extraer_operaciones_business(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
-    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+    #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
-        print_with_line_number("Archivo no válido o no encontrado.")
+        #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
     print_with_line_number(f"pipeline_path: {pipeline_path}")
@@ -2189,16 +2189,16 @@ def extraer_operaciones_business(pipeline_path, operations):
         
         for route in template_service_elements:
             service_el = route.find("con1:service", namespaces)
-            print_with_line_number(f"service_el: {service_el}")
+            #print_with_line_number(f"service_el: {service_el}")
             op_el = route.find("con1:operation", namespaces)
-            print_with_line_number(f"op_el: {op_el}")
+            #print_with_line_number(f"op_el: {op_el}")
 
             if service_el is not None and op_el is not None:
                 service_ref = service_el.attrib.get('ref', '')
-                print_with_line_number(f"service_ref: {service_ref}")
+                #print_with_line_number(f"service_ref: {service_ref}")
                 
                 operation_name = op_el.text.strip()
-                print_with_line_number(f"operation_name: {operation_name}")
+                #print_with_line_number(f"operation_name: {operation_name}")
 
                 services_for_operations[operation_name].add(service_ref)
 
@@ -2226,23 +2226,23 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
     
     business_services = defaultdict(list)
     
-    print_with_line_number(f"combined_services: {combined_services}, jdeveloper_projects_dir: {jdeveloper_projects_dir}, operacion_a_documentar: {operacion_a_documentar} ")
+    #print_with_line_number(f"combined_services: {combined_services}, jdeveloper_projects_dir: {jdeveloper_projects_dir}, operacion_a_documentar: {operacion_a_documentar} ")
 
     for operacion, detalles in combined_services.items():
         if operacion_a_documentar == operacion:
             for key, value in detalles.items():
                 # CASO 1: Estructura tipo REFERENCIA_...
                 if key.startswith("REFERENCIA_") and isinstance(value, dict):
-                    print_with_line_number(f"value: {value}")
+                    #print_with_line_number(f"value: {value}")
                     for inner_key, inner_value in value.items():
                         if isinstance(inner_value, str) and "BusinessServices" in inner_value:
-                            print_with_line_number(f"inner_value: {inner_value}")
+                            #print_with_line_number(f"inner_value: {inner_value}")
                             partes = inner_value.split('/')
                             if len(partes) >= 3:
                                 proyecto = partes[0]
                                 nombre_servicio = partes[-1]
                                 business_services[proyecto].append(f"{nombre_servicio}:{inner_key}")
-                                print_with_line_number(f"business_services: {business_services}")
+                                #print_with_line_number(f"business_services: {business_services}")
 
             # CASO 2: Cuando no hay REFERENCIA_ pero sí hay Referencia con BusinessServices
             referencias = detalles.get("Referencia", [])
@@ -2260,16 +2260,16 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
                                 if isinstance(proxy, str):
                                     nombre_proxy = proxy.split('/')[-1]
                                     initial_proxy_path = os.path.join(jdeveloper_projects_dir, proxy + ".ProxyService")
-                                    print_with_line_number(f"🔍initial_proxy_path: {initial_proxy_path}")
+                                    #print_with_line_number(f"🔍initial_proxy_path: {initial_proxy_path}")
                                     pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, jdeveloper_projects_dir)
-                                    print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
+                                    #print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
                                     ex = extraer_operaciones_business(pipeline_path, operacion_a_documentar)
-                                    print_with_line_number(f"🔍ex: {ex}")
+                                    #print_with_line_number(f"🔍ex: {ex}")
                                     for clave, lista in ex.items():
                                         for valor in lista:
                                             nombre_servicio = valor.split('/')[-1]
                                             business_services[proyecto].append(f"{nombre_servicio}:{clave}")
-                                    print_with_line_number(f"business_services (referencia): {business_services}")
+                                    #print_with_line_number(f"business_services (referencia): {business_services}")
 
     return business_services
 
