@@ -2874,7 +2874,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         contiene_cabecera_salida = True
                         
                     # Cargar el documento de la plantilla
-                    doc = Document(plantilla_path)
+                    doc = plantilla_path
                     
                     # Contar el número de tablas en el documento
                     num_tables = len(doc.tables)
@@ -2920,7 +2920,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operation)
                     
-                    #print_with_line_number(f"business_services_legados: {business_services_legados}")
+                    print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
                     
                     #print_with_line_number(f"texto_legados: {texto_legados}")
