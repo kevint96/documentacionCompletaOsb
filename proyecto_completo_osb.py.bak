@@ -2037,13 +2037,13 @@ def descargar_diagrama(uml_url, ruta_destino):
 def extraer_operaciones_business(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
-    #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
         print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    #print_with_line_number(f"pipeline_path: {pipeline_path}")
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -2178,11 +2178,37 @@ def extraer_operaciones_business(pipeline_path, operations):
                     #print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
+    def process_template_overrides():
+        # Buscar estructuras como:
+        # /con:pipelineEntry/con:router/con:template-overrides/con:action-override/con1:route
+        template_service_elements = root.findall(".//con:router/con:template-overrides//con1:route", {
+            **namespaces,
+            "con": "http://www.bea.com/wli/sb/pipeline/config",
+            "con1": "http://www.bea.com/wli/sb/stages/routing/config"
+        })
+        
+        for route in template_routes:
+            service_el = route.find("con1:service", namespaces)
+            op_el = route.find("con1:operation", namespaces)
+
+            if service_el is not None and op_el is not None:
+                service_ref = service_el.attrib.get('ref', '')
+                
+                operation_name = op_el.text.strip()
+
+                if operation_name in operations:
+                    services_for_operations[operation_name].add(service_ref)
+
+        return services_for_operations
+        
+
     
     branch_found = process_branch_elements()
     flow_found = process_flow_elements()
     route_found = process_route_elements()
     callout_found = process_callout_elements()
+    route_elements_template_found = process_route_elements_template()
+    template_overrides_found = process_template_overrides()
     
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
     seguir = True

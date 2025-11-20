@@ -2037,13 +2037,13 @@ def descargar_diagrama(uml_url, ruta_destino):
 def extraer_operaciones_business(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
-    #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
         print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    #print_with_line_number(f"pipeline_path: {pipeline_path}")
+    print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -2189,41 +2189,22 @@ def extraer_operaciones_business(pipeline_path, operations):
         
         for route in template_routes:
             service_el = route.find("con1:service", namespaces)
+            print_with_line_number(f"service_el: {service_el}")
             op_el = route.find("con1:operation", namespaces)
+            print_with_line_number(f"op_el: {op_el}")
 
             if service_el is not None and op_el is not None:
                 service_ref = service_el.attrib.get('ref', '')
+                print_with_line_number(f"service_ref: {service_ref}")
                 
                 operation_name = op_el.text.strip()
+                print_with_line_number(f"operation_name: {operation_name}")
 
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_ref)
 
         return services_for_operations
         
-        # for service_element in template_service_elements:
-            # service_ref = service_element.attrib.get('ref', '')
-            # if "TUXEDO" in service_ref.upper():
-                # # Buscar el assign relacionado al nombre de operación dentro de la misma sección
-                # assign_node = root.find(".//con:template-overrides//con1:assign", {
-                    # "con1": "http://www.bea.com/wli/sb/stages/transform/config"
-                # })
-                # operation_name = ""
-                # if assign_node is not None:
-                    # xquery_text = assign_node.find(".//con2:xqueryText", {
-                        # "con2": "http://www.bea.com/wli/sb/stages/config"
-                    # })
-                    # if xquery_text is not None and xquery_text.text:
-                        # operation_name = xquery_text.text.strip().replace(" ", "").replace('"', "").replace("'", "")
-                
-                # # Si no se encontró con assign, usar fallback desde el ref
-                # if not operation_name:
-                    # operation_name = service_ref.split("/")[-1]
-
-                # services_for_operations[operation_name] = service_ref
-                    
-                    
-        # return services_for_operations
 
     
     branch_found = process_branch_elements()
@@ -2231,6 +2212,7 @@ def extraer_operaciones_business(pipeline_path, operations):
     route_found = process_route_elements()
     callout_found = process_callout_elements()
     route_elements_template_found = process_route_elements_template()
+    template_overrides_found = process_template_overrides()
     
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
     seguir = True
