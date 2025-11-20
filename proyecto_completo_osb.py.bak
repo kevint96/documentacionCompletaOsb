@@ -2944,12 +2944,12 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operation)
                     
-                    print_with_line_number(f"combined_services: {combined_services}")
+                    #print_with_line_number(f"combined_services: {combined_services}")
                     
-                    print_with_line_number(f"operation: {operation}")
+                    #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operation)
                     
-                    print_with_line_number(f"business_services_legados: {business_services_legados}")
+                    #print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
                     
                     #print_with_line_number(f"texto_legados: {texto_legados}")
@@ -2957,7 +2957,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     target_table = None
                     for table in doc.tables:
                         if any("Información legados" in cell.text for row in table.rows for cell in row.cells):
-                            print_with_line_number(f"Información legados: {business_services_legados}")
+                            #print_with_line_number(f"Información legados: {business_services_legados}")
                             target_table = table
                             break
 
