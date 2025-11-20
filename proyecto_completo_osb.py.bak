@@ -43,7 +43,7 @@ PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
 # Mapeo especial de caracteres para la codificación de PlantUML
 PLANTUML_ENCODING = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 
-def print_with_line_number(msg):
+def #print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
     st.success(f"Linea {line_number}: {msg}")
@@ -1475,7 +1475,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
-        print_with_line_number("Archivo no válido o no encontrado.")
+        #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
     #print_with_line_number(f"pipeline_path: {pipeline_path}")
@@ -2043,7 +2043,7 @@ def extraer_operaciones_business(pipeline_path, operations):
         #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+    #print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -2440,7 +2440,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                                    
                                         # if key == ultima_clave:
                                             # uml.append(f"{project} -> {proxy_name[0]}: Retorna respuesta")
-                                            # print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
+                                            # #print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                         # # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
                                         # #procesar_referencias(referencia_padre,value,business_name, project, data, uml, profundidad + 1)
 
@@ -2576,7 +2576,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                                 procesar_referencias(proxy_ebs,referencia,proxy, proxy_ebs, data, uml)
                                 #if not existen_mas_referencias_proyecto:
                                     # uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                                    # print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                                    # #print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                                 if proyecto_referencia_abc != proyecto_ebs:
                                     uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                                     #print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
@@ -2619,9 +2619,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         file.write(response.content)
                         #print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
                 else:
-                    print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
+                    #print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
             except Exception as e:
-                print_with_line_number(f"Error en la solicitud de la imagen: {e}")
+                #print_with_line_number(f"Error en la solicitud de la imagen: {e}")
     
     return diagrama_path
 
@@ -2915,7 +2915,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         # #print_with_line_number(f"\nTabla {i+1}:")
                         # for row in table.rows:
                             # row_data = [cell.text for cell in row.cells]
-                            # print_with_line_number('\t'.join(row_data))
+                            # #print_with_line_number('\t'.join(row_data))
                     
                     url = ""
                     ruta = elements['ruta'][0]['ruta'].lstrip('/')
