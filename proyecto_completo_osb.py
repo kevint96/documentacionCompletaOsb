@@ -2187,7 +2187,7 @@ def extraer_operaciones_business(pipeline_path, operations):
             "con1": "http://www.bea.com/wli/sb/stages/routing/config"
         })
         
-        for route in template_routes:
+        for route in template_service_elements:
             service_el = route.find("con1:service", namespaces)
             print_with_line_number(f"service_el: {service_el}")
             op_el = route.find("con1:operation", namespaces)
