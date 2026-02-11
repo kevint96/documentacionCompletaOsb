@@ -1846,7 +1846,7 @@ def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
         print_with_line_number(f"service_name: {service_name}")
         
         #for proxy in service_data.get("Proxy", []):
-            print_with_line_number(f"proxy: {proxy}")
+            #print_with_line_number(f"proxy: {proxy}")
 
         # Recorrer las Referencias
         for referencia in service_data.get("Referencia", []):
