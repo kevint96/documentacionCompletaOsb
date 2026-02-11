@@ -1679,7 +1679,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             #else:
                 #service_refs = extract_service_refs_from_pipeline(pipeline_path)
                 #osb_services.append((operacion, path2))
-                print_with_line_number(f"Service Refs: {service_refs}")
+                #print_with_line_number(f"Service Refs: {service_refs}")
     
     print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
     print_with_line_number("********** FIN PROCESO **********")
