@@ -455,7 +455,6 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         start_time = time.time()  # Guardamos el tiempo inicial
     
     print_with_line_number(f"start_timee: {start_time}")
-    visited_nodes = set()
     # 🔹 Asegurar que las listas no se reinicien
     if request_elements is None:
         request_elements = []
@@ -533,76 +532,32 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
         explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                              operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit,visited_nodes)
+                              operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
         return request_elements, response_elements
 
     # 🔹 Si `target_complex_type` no está, procesamos TODO desde los elementos raíz.
-    # for root_element_name, complex_type in root_elements.items():
-        # print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
+    for root_element_name, complex_type in root_elements.items():
+        print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
         
-        # print_with_line_number(f"Namespaces detectados: {namespaces}")
-        # print_with_line_number(f"Imports encontrados: {imports}")
+        print_with_line_number(f"Namespaces detectados: {namespaces}")
+        print_with_line_number(f"Imports encontrados: {imports}")
 
-        # if complex_type in complex_types:
-            # explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
-                                  # xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                  # operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
-    
-    # 🚀 Solo procesar raíces si NO viene un target específico
-    if not target_complex_type:
-        for root_element_name, complex_type in root_elements.items():
-            print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
-
-            if complex_type in complex_types:
-                explorar_complex_type(
-                    complex_type,
-                    root_element_name,
-                    complex_types,
-                    namespaces,
-                    imports,
-                    extraccion_dir,
-                    xsd_file_path,
-                    project_path,
-                    service_url,
-                    capa_proyecto,
-                    operacion_business,
-                    operations,
-                    service_name,
-                    operation_actual,
-                    request_elements,
-                    response_elements,
-                    operation_name,
-                    processed_types,
-                    start_time,
-                    time_limit,
-                    visited_nodes
-                )
-    
+        if complex_type in complex_types:
+            explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+                                  xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
+                                  operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
     
     print_with_line_number(f"Total elementos request: {len(request_elements)}")
     print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
 
-def append_unique(element_list, element_details):
-    if not any(e['name'] == element_details['name'] for e in element_list):
-        element_list.append(element_details)
 
 def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
-                          start_time=None, time_limit=0.60,visited_nodes=None):
+                          start_time=None, time_limit=0.60):
     """Explora recursivamente un complexType y extrae sus elementos internos."""
     
-    # 🔒 Evitar reprocesar el mismo tipo en el mismo path
-    visit_key = f"{type_name}|{parent_element_name}"
-    
-    if visit_key in visited_nodes:
-        return
-    
-    if visited_nodes is None:
-        visited_nodes = set()
-
-    visited_nodes.add(visit_key)
     current_time = time.time()
     elapsed_time = current_time - start_time
     if processed_types is None:
@@ -627,17 +582,11 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     
     def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
-        
-        print_with_line_number(f"🔄 process_type_recursively parent_element_name: {parent_element_name}")
-        
-        for k in processed_types.keys():
-            print_with_line_number(f"CLAVES PROCESSED_TYPES: {k}")
-            
-        if parent_element_name in processed_types:
+        if type_name in processed_types:
             print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
             print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
             
-            for element in processed_types[parent_element_name]:
+            for element in processed_types[type_name]:
                 evita = evitar_recursion(parent_element_name, element['name'])
                 
                 if not evita:
@@ -661,18 +610,12 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         #st.toast(f"📋 Agregado: {element_details}")
                         
                         if 'Request' in parent_element_name:
-                            #request_elements.append(element_details)
-                            append_unique(request_elements, element_details)
+                            request_elements.append(element_details)
                         elif 'Response' in parent_element_name:
-                            #response_elements.append(element_details)
-                            append_unique(response_elements, element_details)
+                            response_elements.append(element_details)
                     else:
                         # Es un tipo complejo, llamar recursivamente
                         nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
-                        
-                        for k in processed_types.keys():
-                            print_with_line_number(f"CLAVES PROCESSED_TYPES: {k}")
-                            
                         print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
                         process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
@@ -721,11 +664,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                             }
                             
                             if 'Request' in parent_element_name:
-                                #request_elements.append(element_details)
-                                append_unique(request_elements, element_details)
+                                request_elements.append(element_details)
                             elif 'Response' in parent_element_name:
-                                #response_elements.append(element_details)
-                                append_unique(response_elements, element_details)
+                                response_elements.append(element_details)
                         
                         elif not sub_element_type:
                             print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
@@ -737,7 +678,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     #st.toast(f"type_name: {type_name}")
     #st.toast(f"parent_element_name: {parent_element_name}")
     #st.toast(f"xsd_file_path: {xsd_file_path}")
-    processed_types.setdefault(parent_element_name, [])  # ✅ Registrar que ya se visitó este tipo
+    processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
     evita = evitar_recursion(parent_element_name, type_name)
     
     if 'Request' in parent_element_name:
@@ -783,7 +724,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
-                                          request_elements, response_elements, operation_name,processed_types, start_time, time_limit,visited_nodes)
+                                          request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
                     return  # Salimos porque ya delegamos la exploración a la base
                 
             #st.warning(f"⚠ No se encontró ni 'sequence' ni 'extension' en {type_name}")
@@ -831,7 +772,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             print_with_line_number(f"🔄 element_type: {element_type}")
             print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
             #st.toast(f"🔄 padre: {padre}")
-            add_child(processed_types, parent_element_name, element_name, element_type, element_minOccurs)
+            add_child(processed_types, padre, element_name, element_type, element_minOccurs)
             print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
             print_with_line_number(f"🔄 prefix: {prefix}")
@@ -865,17 +806,15 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 print_with_line_number(f"🔄 element_type.startswith: {element_type}")
                 
                 if 'Request' in parent_element_name:
-                    #request_elements.append(element_details)
-                    append_unique(request_elements, element_details)
+                    request_elements.append(element_details)
                 elif 'Response' in parent_element_name:
-                    #response_elements.append(element_details)
-                    append_unique(response_elements, element_details)
+                    response_elements.append(element_details)
 
             elif element_type in complex_types:
                 print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                      operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit,visited_nodes)
+                                      operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
 
             elif ':' in element_type:
                 prefix, nested_type = element_type.split(':')
@@ -885,7 +824,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit,visited_nodes)
+                                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
                 elif prefix in namespaces:
                     namespace = namespaces[prefix]
                     if namespace in imports:
@@ -932,11 +871,9 @@ def agregar_lista_elementos(parent_element_name,type_name,element_type,service_u
                 #st.toast(f"Agregando elemento primitivo: {element_details}")
 
     if 'Request' in parent_element_name:
-        #request_elements.append(element_details)
-        append_unique(request_elements, element_details)
+        request_elements.append(element_details)
     elif 'Response' in parent_element_name:
-        #response_elements.append(element_details)
-        append_unique(response_elements, element_details)
+        response_elements.append(element_details)
     
     print_with_line_number(f"⚠ element_details {element_details}, INTERNO.")
     
@@ -1701,7 +1638,7 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             #else:
                 #service_refs = extract_service_refs_from_pipeline(pipeline_path)
                 #osb_services.append((operacion, path2))
-                #print_with_line_number(f"Service Refs: {service_refs}")
+                print_with_line_number(f"Service Refs: {service_refs}")
     
     print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
     print_with_line_number("********** FIN PROCESO **********")
