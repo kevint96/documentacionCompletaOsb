@@ -590,7 +590,7 @@ def append_unique(element_list, element_details):
 def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
-                          start_time=None, time_limit=0.60,visited_nodes):
+                          start_time=None, time_limit=0.60,visited_nodes=None):
     """Explora recursivamente un complexType y extrae sus elementos internos."""
     
     # 🔒 Evitar reprocesar el mismo tipo en el mismo path
@@ -598,6 +598,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     
     if visit_key in visited_nodes:
         return
+    
+    if visited_nodes is None:
+        visited_nodes = set()
 
     visited_nodes.add(visit_key)
     current_time = time.time()
