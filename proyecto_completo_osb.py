@@ -765,8 +765,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             
             print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
             print_with_line_number(f"🔄 processed_types: {processed_types}")
-            #padre = get_last_before_dot(type_name)
-            #print_with_line_number(f"🔄 padre: {padre}")
+            padre = get_last_before_dot(type_name)
+            print_with_line_number(f"🔄 padre: {padre}")
             print_with_line_number(f"🔄 element_name: {element_name}")
 
             print_with_line_number(f"🔄 element_type: {element_type}")
