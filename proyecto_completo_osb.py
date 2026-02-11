@@ -627,11 +627,11 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     
     def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
-        if type_name in processed_types:
+        if parent_element_name in processed_types:
             print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
             print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
             
-            for element in processed_types[type_name]:
+            for element in processed_types[parent_element_name]:
                 evita = evitar_recursion(parent_element_name, element['name'])
                 
                 if not evita:
@@ -663,6 +663,10 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     else:
                         # Es un tipo complejo, llamar recursivamente
                         nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
+                        
+                        for k in processed_types.keys():
+                            print_with_line_number(f"CLAVES PROCESSED_TYPES: {k}")
+                            
                         print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
                         process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
