@@ -737,7 +737,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     #st.toast(f"type_name: {type_name}")
     #st.toast(f"parent_element_name: {parent_element_name}")
     #st.toast(f"xsd_file_path: {xsd_file_path}")
-    processed_types.setdefault(type_name, [])  # ✅ Registrar que ya se visitó este tipo
+    processed_types.setdefault(parent_element_name, [])  # ✅ Registrar que ya se visitó este tipo
     evita = evitar_recursion(parent_element_name, type_name)
     
     if 'Request' in parent_element_name:
