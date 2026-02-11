@@ -627,6 +627,12 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     
     def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
+        
+        print_with_line_number(f"🔄 process_type_recursively parent_element_name: {parent_element_name}")
+        
+        for k in processed_types.keys():
+            print_with_line_number(f"CLAVES PROCESSED_TYPES: {k}")
+            
         if parent_element_name in processed_types:
             print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
             print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
