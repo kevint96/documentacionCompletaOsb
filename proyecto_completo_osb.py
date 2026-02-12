@@ -43,7 +43,7 @@ PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
 # Mapeo especial de caracteres para la codificación de PlantUML
 PLANTUML_ENCODING = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 
-def#print_with_line_number(msg):
+def print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
     st.success(f"Linea {line_number}: {msg}")
