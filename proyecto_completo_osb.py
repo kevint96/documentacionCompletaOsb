@@ -524,7 +524,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     # 🔹 Buscar todos los elementos principales con el prefijo detectado
     root_elements = {
         elem.attrib.get('name', ''): elem.attrib.get('type', '').split(':')[-1]
-        for elem in root.findall(f".//{prefix}:element", namespaces)
+        for elem in root.findall(f"{prefix}:element", namespaces)
     }
 
     # 🚀 **Si `target_complex_type` está definido, buscar SOLO ese complexType.**
