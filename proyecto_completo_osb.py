@@ -2619,9 +2619,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         file.write(response.content)
                        #print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
                 else:
-                   #print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
+                   print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
             except Exception as e:
-               #print_with_line_number(f"Error en la solicitud de la imagen: {e}")
+               print_with_line_number(f"Error en la solicitud de la imagen: {e}")
     
     return diagrama_path
 
