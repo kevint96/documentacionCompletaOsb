@@ -43,7 +43,7 @@ PLANTUML_SERVER = "https://www.plantuml.com/plantuml/png/"
 # Mapeo especial de caracteres para la codificación de PlantUML
 PLANTUML_ENCODING = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 
-def print_with_line_number(msg):
+def#print_with_line_number(msg):
     caller_frame = inspect.currentframe().f_back
     line_number = caller_frame.f_lineno
     st.success(f"Linea {line_number}: {msg}")
@@ -454,7 +454,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     if start_time is None:
         start_time = time.time()  # Guardamos el tiempo inicial
     
-    print_with_line_number(f"start_timee: {start_time}")
+   #print_with_line_number(f"start_timee: {start_time}")
     # 🔹 Asegurar que las listas no se reinicien
     if request_elements is None:
         request_elements = []
@@ -470,10 +470,10 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
     ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
-    print_with_line_number(f"extraccion_dir: {extraccion_dir}")
-    print_with_line_number(f"xsd_file_path: {xsd_file_path}")
-    print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
-    print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
+   #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
+   #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
+   #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
+   #print_with_line_number(f"Ruta corregida FINAL: {ruta_corregida}")
     
     if not os.path.isfile(ruta_corregida):
         st.error(f"El archivo XSD {ruta_corregida} no existe.")
@@ -489,7 +489,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     cdata_match = re.search(r'<!\[CDATA\[(.*?)\]\]>', xsd_content, re.DOTALL)
     if cdata_match:
         xsd_content = cdata_match.group(1)
-        print_with_line_number("Se ha extraído el contenido de CDATA correctamente")
+       #print_with_line_number("Se ha extraído el contenido de CDATA correctamente")
 
     try:
         root = ET.fromstring(xsd_content)
@@ -500,8 +500,8 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     namespaces = extract_namespaces(xsd_content)
     imports = extract_imports(root)
 
-    print_with_line_number(f"Namespaces detectados: {namespaces}")
-    print_with_line_number(f"Imports encontrados: {imports}")
+   #print_with_line_number(f"Namespaces detectados: {namespaces}")
+   #print_with_line_number(f"Imports encontrados: {imports}")
     
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
@@ -512,7 +512,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
     # 🔹 Tomar el primer prefijo encontrado en namespaces (xs o xsd)
     prefix = valid_prefixes[0]
-    print_with_line_number(f"prefix: {prefix}")
+   #print_with_line_number(f"prefix: {prefix}")
 
     # 🔹 Buscar complexTypes con el prefijo detectado dinámicamente
     complex_types = {
@@ -529,7 +529,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
     # 🚀 **Si `target_complex_type` está definido, buscar SOLO ese complexType.**
     if target_complex_type:
-        print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
+       #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
         explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                               operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
@@ -537,18 +537,18 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
     # 🔹 Si `target_complex_type` no está, procesamos TODO desde los elementos raíz.
     for root_element_name, complex_type in root_elements.items():
-        print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
+       #print_with_line_number(f"Procesando raíz: {root_element_name} -> {complex_type}")
         
-        print_with_line_number(f"Namespaces detectados: {namespaces}")
-        print_with_line_number(f"Imports encontrados: {imports}")
+       #print_with_line_number(f"Namespaces detectados: {namespaces}")
+       #print_with_line_number(f"Imports encontrados: {imports}")
 
         if complex_type in complex_types:
             explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
     
-    print_with_line_number(f"Total elementos request: {len(request_elements)}")
-    print_with_line_number(f"Total elementos response: {len(response_elements)}")
+   #print_with_line_number(f"Total elementos request: {len(request_elements)}")
+   #print_with_line_number(f"Total elementos response: {len(response_elements)}")
     return request_elements, response_elements
 
 
@@ -572,9 +572,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     #st.write(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg (Límite: {time_limit} seg)")
     num_elementos_request = len(request_elements)
     num_elementos_response = len(response_elements)
-    print_with_line_number(f"parent_element_name: {parent_element_name}")
-    print_with_line_number(f"Total elementos request: {num_elementos_request}")
-    print_with_line_number(f"Total elementos response: {num_elementos_response}")
+   #print_with_line_number(f"parent_element_name: {parent_element_name}")
+   #print_with_line_number(f"Total elementos request: {num_elementos_request}")
+   #print_with_line_number(f"Total elementos response: {num_elementos_response}")
     
     # if start_time and elapsed_time > time_limit:
         # st.warning(f"⚠ Se alcanzó el límite de tiempo ({time_limit} seg). Se detuvo la exploración en {parent_element_name}.")
@@ -583,16 +583,16 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     def process_type_recursively(type_name, parent_element_name, processed_types, service_url, capa_proyecto, 
                              operations, service_name, operation_actual, request_elements, response_elements):
         if type_name in processed_types:
-            print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
-            print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
+           #print_with_line_number(f"🔄 parent_element_name: {parent_element_name}")
+           #print_with_line_number(f"🔄 Se detectó recursión en {type_name}, evitando ciclo infinito.")
             
             for element in processed_types[type_name]:
                 evita = evitar_recursion(parent_element_name, element['name'])
                 
                 if not evita:
                     nuevo_full_name = f"{parent_element_name}.{element['name']}"
-                    print_with_line_number(f"🔄 nuevo_full_name: {nuevo_full_name}")
-                    print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
+                   #print_with_line_number(f"🔄 nuevo_full_name: {nuevo_full_name}")
+                   #print_with_line_number(f"📌 Nombre: {element['name']}, Tipo: {element['type']}, minOccurs: {element['minOccurs']}")
                     
                     # Si es un tipo primitivo (xsd:string, xsd:int, etc.)
                     if element['type'].startswith(("xsd:", "xs:")):
@@ -616,7 +616,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     else:
                         # Es un tipo complejo, llamar recursivamente
                         nuevo_type = element['type'].split(':')[-1]  # Quitar prefijo del namespace
-                        print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
+                       #print_with_line_number(f"🔄 Buscando nuevamente: {nuevo_type}")
                         process_type_recursively(nuevo_type, nuevo_full_name, processed_types, service_url, capa_proyecto,
                                              operations, service_name, operation_actual, request_elements, response_elements)
         
@@ -627,17 +627,17 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     def process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces,prefix):
         """Función recursiva para recorrer elementos complexType y sus hijos sin perder la referencia del padre."""
         
-        print_with_line_number(f"Namespaces detectados: {namespaces}")
+       #print_with_line_number(f"Namespaces detectados: {namespaces}")
         
         if prefix not in namespaces:
-            print_with_line_number(f"⚠️ El prefijo '{prefix}' no está en namespaces. Usando otro prefijo disponible.")
+           #print_with_line_number(f"⚠️ El prefijo '{prefix}' no está en namespaces. Usando otro prefijo disponible.")
             prefix = next(iter(namespaces.values()), '')  # Usa el primer prefijo disponible
 
         inner_complex_types = element.findall(f'{prefix}:complexType', namespaces)
-        print_with_line_number(f"🔍 Tipos complejos encontrados en {full_name}: {len(inner_complex_types)}")
+       #print_with_line_number(f"🔍 Tipos complejos encontrados en {full_name}: {len(inner_complex_types)}")
 
         if inner_complex_types:
-            print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
+           #print_with_line_number(f"📦 Elemento {full_name} tiene un complexType anidado, recorriendo sus hijos...")
             
             for inner_complex_type in inner_complex_types:
                 sequence = inner_complex_type.find(f"{prefix}:sequence", namespaces)
@@ -647,7 +647,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         sub_element_type = sub_element.get("type")  # Si no tiene tipo, es un complexType
                         sub_element_minOccurs = sub_element.get("minOccurs", 0)
                         
-                        print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOccurs: {sub_element_minOccurs}")
+                       #print_with_line_number(f"   ➡ Sub-elemento: {sub_element_name}, Tipo: {sub_element_type}, minOccurs: {sub_element_minOccurs}")
                         
                         if sub_element_type and sub_element_type.startswith(("xsd:", "xs:")):
                             new_full_name = f"{full_name}.{sub_element_name}"
@@ -669,9 +669,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                                 response_elements.append(element_details)
                         
                         elif not sub_element_type:
-                            print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
+                           #print_with_line_number(f"🔄 NO tiene elemento: {sub_element_type}, verificando si es complexType anidado...")
                             # Llamada recursiva si el sub-elemento es un complexType anidado
-                            print_with_line_number(f"🔄 sub_element: {sub_element}, full_name: {full_name} , sub_element_name: {sub_element_name} , parent_element_name: {parent_element_name}")
+                           #print_with_line_number(f"🔄 sub_element: {sub_element}, full_name: {full_name} , sub_element_name: {sub_element_name} , parent_element_name: {parent_element_name}")
                             process_complex_type(sub_element, f"{full_name}.{sub_element_name}", parent_element_name, 
                                                  service_url, capa_proyecto, operations, service_name, operation_actual, namespaces, prefix)
         
@@ -683,25 +683,25 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
     
     if 'Request' in parent_element_name:
         if type_name in processed_types and num_elementos_request > 6000:
-            print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
+           #print_with_line_number(f"⚠ num_elementos_request > 6000 {num_elementos_request}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
             
     if 'Response' in parent_element_name:
         if type_name in processed_types and num_elementos_response > 6000:
-            print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
+           #print_with_line_number(f"⚠ num_elementos_response > 6000 {num_elementos_response}, NO se procesara mas...")
             agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
             processed_types = {}
             return
     if evita:
-        print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
+       #print_with_line_number(f"⚠ Se evita {type_name}, error con el nombre recursivo.")
         
         agregar_lista_elementos(parent_element_name,type_name,type_name,service_url,capa_proyecto,0,operations,service_name,operation_actual,request_elements,response_elements)
 
         return
     if type_name in complex_types:
-        print_with_line_number(f"Explorando complexType: {type_name}")
+       #print_with_line_number(f"Explorando complexType: {type_name}")
 
         # 🔹 Buscar un prefijo válido
         prefix = next((p for p in ['xs', 'xsd'] if p in namespaces), None)
@@ -720,7 +720,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 if extension is not None and 'base' in extension.attrib:
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
-                    print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
+                   #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
                     explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
@@ -730,7 +730,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             #st.warning(f"⚠ No se encontró ni 'sequence' ni 'extension' en {type_name}")
             return  # Si no hay ni sequence ni extensión, no hay nada más que hacer
 
-        print_with_line_number(f"Usando prefijo: {prefix}")
+       #print_with_line_number(f"Usando prefijo: {prefix}")
 
         if prefix not in namespaces:
             st.error(f"⛔ Error: el prefijo '{prefix}' no está en namespaces: {namespaces}")
@@ -742,42 +742,42 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             element_type = element.attrib.get('type', '')
             element_minOccurs = element.attrib.get('minOccurs', '')
             
-            print_with_line_number(f"element_name: {element_name}")
-            print_with_line_number(f"element_type: {element_type}")
-            print_with_line_number(f"element_minOccurs: {element_minOccurs}")
-            print_with_line_number(f"🔄 prefix: {prefix}")
+           #print_with_line_number(f"element_name: {element_name}")
+           #print_with_line_number(f"element_type: {element_type}")
+           #print_with_line_number(f"element_minOccurs: {element_minOccurs}")
+           #print_with_line_number(f"🔄 prefix: {prefix}")
             if element_minOccurs is None:
                 element_minOccurs = 0
            
             if not element_type:
-                print_with_line_number(f"Namespaces detectados: {namespaces}")
+               #print_with_line_number(f"Namespaces detectados: {namespaces}")
                 tag_name = element.tag  # Obtiene el nombre completo del tag, incluyendo el prefijo
-                print_with_line_number(f"🔄 tag_name: {tag_name}")
+               #print_with_line_number(f"🔄 tag_name: {tag_name}")
                 namespace_uri = tag_name.split("}")[0].replace("{", "")  # Extrae la URL del namespace
-                print_with_line_number(f"🔄 namespace_uri: {namespace_uri}")
+               #print_with_line_number(f"🔄 namespace_uri: {namespace_uri}")
                 
                 prefix = namespace_map.get(namespace_uri, "")  # Busca el prefijo en el diccionario invertido
-                print_with_line_number(f"🔄 prefix: {prefix}")  # Debería imprimir 'xs' si es correcto
+               #print_with_line_number(f"🔄 prefix: {prefix}")  # Debería imprimir 'xs' si es correcto
 
-            print_with_line_number(f"prefix: {prefix}")
+           #print_with_line_number(f"prefix: {prefix}")
             full_name = f"{parent_element_name}.{element_name}" if parent_element_name else element_name
             #st.toast(f"Encontrado elemento: {full_name}")
             
-            print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
-            print_with_line_number(f"🔄 processed_types: {processed_types}")
+           #print_with_line_number(f"Encontrado elemento: {full_name} con tipo: {element_type} y minOcurs: {element_minOccurs}")
+           #print_with_line_number(f"🔄 processed_types: {processed_types}")
             padre = get_last_before_dot(type_name)
-            print_with_line_number(f"🔄 padre: {padre}")
-            print_with_line_number(f"🔄 element_name: {element_name}")
+           #print_with_line_number(f"🔄 padre: {padre}")
+           #print_with_line_number(f"🔄 element_name: {element_name}")
 
-            print_with_line_number(f"🔄 element_type: {element_type}")
-            print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
+           #print_with_line_number(f"🔄 element_type: {element_type}")
+           #print_with_line_number(f"🔄 element_minOccurs: {element_minOccurs}")
             #st.toast(f"🔄 padre: {padre}")
             add_child(processed_types, padre, element_name, element_type, element_minOccurs)
-            print_with_line_number(f"🔄 processed_types: {processed_types}")
+           #print_with_line_number(f"🔄 processed_types: {processed_types}")
             # 🔹 Buscar 'simpleType' con prefijo válido
-            print_with_line_number(f"🔄 prefix: {prefix}")
+           #print_with_line_number(f"🔄 prefix: {prefix}")
             simple_type = element.find(f'{prefix}:simpleType', namespaces)
-            print_with_line_number(f"🔄 simple_type: {simple_type}")
+           #print_with_line_number(f"🔄 simple_type: {simple_type}")
             if simple_type is not None:
                 restriction = simple_type.find(f'{prefix}:restriction', namespaces)
                 if restriction is not None and 'base' in restriction.attrib:
@@ -786,7 +786,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             
             if not element_type:
                 # 📌 Si el elemento no tiene tipo, verificar si contiene un 'xsd:complexType'
-                    print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
+                   #print_with_line_number(f"🔄 element: {element}, full_name: {full_name} , parent_element_name: {parent_element_name}")
                     process_complex_type(element, full_name, parent_element_name, service_url, capa_proyecto, operations, service_name, operation_actual, namespaces, prefix)
 
                                 
@@ -803,7 +803,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     'operation_actual': operation_actual,
                 }
                 #st.toast(f"Agregando elemento primitivo: {element_details}")
-                print_with_line_number(f"🔄 element_type.startswith: {element_type}")
+               #print_with_line_number(f"🔄 element_type.startswith: {element_type}")
                 
                 if 'Request' in parent_element_name:
                     request_elements.append(element_details)
@@ -811,7 +811,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     response_elements.append(element_details)
 
             elif element_type in complex_types:
-                print_with_line_number(f"Buscando {element_type} en el mismo XSD")
+               #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
                 explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                       operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
@@ -819,9 +819,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
             elif ':' in element_type:
                 prefix, nested_type = element_type.split(':')
                 
-                print_with_line_number(f"🔄 : {prefix} , {nested_type}")
+               #print_with_line_number(f"🔄 : {prefix} , {nested_type}")
                 if nested_type in complex_types:
-                    print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
+                   #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
                                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
@@ -831,9 +831,9 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                         schema_location = imports[namespace]
                         #st.warning(f"El tipo {nested_type} está en otro XSD: {schema_location}")
                         corrected_xsd_path = get_correct_xsd_path(xsd_file_path, schema_location)
-                        print_with_line_number(f"corrected_xsd_path: {corrected_xsd_path}")
+                       #print_with_line_number(f"corrected_xsd_path: {corrected_xsd_path}")
                         new_xsd_path = os.path.join(extraccion_dir, corrected_xsd_path)
-                        print_with_line_number(f"new_xsd_path: {new_xsd_path}")
+                       #print_with_line_number(f"new_xsd_path: {new_xsd_path}")
 
                         parse_xsd_file(project_path, new_xsd_path, operation_name, service_url, 
                                        capa_proyecto, operacion_business, operations, 
@@ -875,7 +875,7 @@ def agregar_lista_elementos(parent_element_name,type_name,element_type,service_u
     elif 'Response' in parent_element_name:
         response_elements.append(element_details)
     
-    print_with_line_number(f"⚠ element_details {element_details}, INTERNO.")
+   #print_with_line_number(f"⚠ element_details {element_details}, INTERNO.")
     
 
 def evitar_recursion(name, nuevo_valor):
@@ -891,13 +891,13 @@ def evitar_recursion(name, nuevo_valor):
         
         for i in range(len(name_parts) - len(nuevo_valor_parts) + 1):
             if name_parts[i:i + len(nuevo_valor_parts)] == nuevo_valor_parts:
-                print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
+               #print_with_line_number(f"❌ Evitando recursión: '{nuevo_valor}' ya está en '{name}'")
                 evita = True
                 return evita  # No concatenar si ya existe en cualquier parte
     
     # Si no está repetido, concatenar
     new_name = name + "." + nuevo_valor
-    print_with_line_number(f"✅ Nuevo valor concatenado: {new_name}")
+   #print_with_line_number(f"✅ Nuevo valor concatenado: {new_name}")
     return evita
 
 def get_last_before_dot(path):
@@ -1105,16 +1105,16 @@ def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None)
                                     operations = extract_wsdl_operations(wsdl_path)
                                     if operacion_a_documentar: 
                                         if operacion_a_documentar in operations:
-                                            print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+                                           #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                                             wsdl_operations_map[wsdl_path] = (
                                                 operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                             )
                                     else:
-                                        print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+                                       #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                                         wsdl_operations_map[wsdl_path] = (
                                             operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
                                         )
-    print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
+   #print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
     return wsdl_operations_map
 
 def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
@@ -1134,27 +1134,27 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         operation_to_xsd = {}
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
-        print_with_line_number(f"project_name: {project_name}")
-        print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number(f"osb_file_path: {osb_file_path}")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        print_with_line_number(f"service_url: {service_url}")
-        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+       #print_with_line_number(f"wsdl_path: {wsdl_path}")
+       #print_with_line_number(f"operations: {operations}")
+       #print_with_line_number(f"project_name: {project_name}")
+       #print_with_line_number(f"service_name: {service_name}")
+       #print_with_line_number(f"osb_file_path: {osb_file_path}")
+       #print_with_line_number(f"pipeline_path: {pipeline_path}")
+       #print_with_line_number(f"service_url: {service_url}")
+       #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
         imports = extract_xsd_import_paths(wsdl_path)
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"imports: {imports}")
+       #print_with_line_number(f"wsdl_path: {wsdl_path}")
+       #print_with_line_number(f"imports: {imports}")
         
-        print_with_line_number(f"project_path: {project_path}")
+       #print_with_line_number(f"project_path: {project_path}")
         # 🔹 Eliminar 'extraccion_jar/' para obtener la ruta relativa base
         wsdl_relative_base = os.path.relpath(wsdl_path, "extraccion_jar")
-        print_with_line_number(f"wsdl_relative_base: {wsdl_relative_base}")
+       #print_with_line_number(f"wsdl_relative_base: {wsdl_relative_base}")
         operacion_business = ""
         # 🔹 Obtener la carpeta donde está el WSDL
         wsdl_dir = os.path.dirname(wsdl_relative_base)
-        print_with_line_number(f"wsdl_dir: {wsdl_dir}")
+       #print_with_line_number(f"wsdl_dir: {wsdl_dir}")
         # 🔹 Procesar cada import y ajustar solo los que empiezan con "../Schemas"
         xsd_relative_paths = []
         # 🔹 Modificar `imports` en su lugar
@@ -1163,7 +1163,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
         
-        print_with_line_number(f"imports despues: {imports}")
+       #print_with_line_number(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             for operation in operations:
@@ -1185,7 +1185,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     else:
                         operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
-            print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
+           #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
 
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -1196,24 +1196,24 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 for operation_name, xsd in operation_to_xsd.items():
                     #
                     operation_actual = operation_name
-                    print_with_line_number(f"operation_actual: {operation_actual}")
-                    print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+                   #print_with_line_number(f"operation_actual: {operation_actual}")
+                   #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
                     if not operacion_a_documentar or operation_name == operacion_a_documentar:
-                        print_with_line_number(f"operation_actual: {operation_actual}")
-                        print_with_line_number(f"🔍 Analizando operacion: {operation_actual}")
-                        print_with_line_number(f"service_name: {service_name}")
-                        print_with_line_number(f"operation_name: {operation_name}")
-                        print_with_line_number(f"service_url: {service_url}")
-                        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
-                        print_with_line_number(f"operacion_business: {operacion_business}")
+                       #print_with_line_number(f"operation_actual: {operation_actual}")
+                       #print_with_line_number(f"🔍 Analizando operacion: {operation_actual}")
+                       #print_with_line_number(f"service_name: {service_name}")
+                       #print_with_line_number(f"operation_name: {operation_name}")
+                       #print_with_line_number(f"service_url: {service_url}")
+                       #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+                       #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                        print_with_line_number(f"xsd: {xsd}")
+                       #print_with_line_number(f"xsd: {xsd}")
                         #start_time = time.time()  # Guardamos el tiempo inicial
                         elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #current_time = time.time()
                         #elapsed_time = current_time - start_time
                         #st.toast(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg")
-                        print_with_line_number(f"elementos_xsd: {elementos_xsd}")
+                       #print_with_line_number(f"elementos_xsd: {elementos_xsd}")
 
                         #services_for_operations = recorrer_servicios_internos_osb(project_path,operacion_a_documentar,osb_file_path, pipeline_path, operations, visited_proxies)
 
@@ -1238,33 +1238,33 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
     combined_services = {}
     found = False  # Variable para rastrear si se encuentra la operación
     
-    print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+   #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar)
     
-    print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
+   #print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
-        print_with_line_number(f"project_name: {project_name}")
-        print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number(f"osb_file_path: {osb_file_path}")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        print_with_line_number(f"service_url: {service_url}")
-        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+       #print_with_line_number(f"wsdl_path: {wsdl_path}")
+       #print_with_line_number(f"operations: {operations}")
+       #print_with_line_number(f"project_name: {project_name}")
+       #print_with_line_number(f"service_name: {service_name}")
+       #print_with_line_number(f"osb_file_path: {osb_file_path}")
+       #print_with_line_number(f"pipeline_path: {pipeline_path}")
+       #print_with_line_number(f"service_url: {service_url}")
+       #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
         if operacion_a_documentar:
             if operacion_a_documentar in operations:
 
                 services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operacion_a_documentar)
                             
-                print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+               #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
                 
                 services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
                 
-                print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+               #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
                 for operation, proxy_list in services_for_operations_exp.items():
                     combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1280,11 +1280,11 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
 
                 services_for_operations_exp = extraer_operaciones_pipeline_exp(pipeline_path, operations)
                             
-                print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
+               #print_with_line_number(f"services_for_operations_exp: {services_for_operations_exp}")
                 
                 services_for_operations_ebs = extraer_operaciones_pipeline_ebs(project_path,services_for_operations_exp)
                 
-                print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
+               #print_with_line_number(f"services_for_operations_ebs: {services_for_operations_ebs}")
 
                 for operation, proxy_list in services_for_operations_exp.items():
                     combined_services[operation] = {'Proxy': proxy_list, 'Referencia': []}
@@ -1295,11 +1295,11 @@ def generar_operaciones_expuestas_http(project_path,operacion_a_documentar):
                     else:
                         combined_services[operation] = {'Proxy': [], 'Referencia': reference_list}
                 
-        print_with_line_number(f"combined_services: {combined_services}")
+       #print_with_line_number(f"combined_services: {combined_services}")
                 
         combined_services2 = separar_ebs_abc_business(project_path,combined_services)
                 
-        print_with_line_number(f"combined_services2: {combined_services2}")
+       #print_with_line_number(f"combined_services2: {combined_services2}")
                 
         #generar_diagramas_operaciones(project_name,combined_services2)
             
@@ -1311,9 +1311,9 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
 
     services_for_operations = defaultdict(list)
     
-    print_with_line_number(f"🔍 project_path: {project_path}")
-    print_with_line_number(f"🔍 proxy_path: {proxy_path}")
-    print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+   #print_with_line_number(f"🔍 project_path: {project_path}")
+   #print_with_line_number(f"🔍 proxy_path: {proxy_path}")
+   #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
 
     for operacion_padre in operations:
         operacion_actual = operacion_padre
@@ -1321,7 +1321,7 @@ def recorrer_servicios_internos_osb(project_path,operacion_a_documentar,proxy_pa
         #extract_service_for_operations_audibpel(project_path,pipeline_path,operations,services_for_operations,operacion_padre,operacion_actual)
         #procesar_pipeline(project_path, proxy_path,pipeline_path, operacion_padre)
     
-    print_with_line_number(f"Servicios internos encontrados: {services_for_operations}")
+   #print_with_line_number(f"Servicios internos encontrados: {services_for_operations}")
     return services_for_operations
 
 def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_actual=None, services_for_operations=None):
@@ -1338,9 +1338,9 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
 
-    print_with_line_number(f"🔍 project_path: {project_path}")
-    print_with_line_number(f"🔍 proxy_actual: {proxy_actual}")
-    print_with_line_number(f"🔍 pipeline_actual: {pipeline_actual}")
+   #print_with_line_number(f"🔍 project_path: {project_path}")
+   #print_with_line_number(f"🔍 proxy_actual: {proxy_actual}")
+   #print_with_line_number(f"🔍 pipeline_actual: {pipeline_actual}")
 
     if not os.path.exists(pipeline_actual):
         st.warning(f"Archivo no encontrado: {pipeline_actual}")
@@ -1361,7 +1361,7 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
         # Iterar sobre cada operación principal del pipeline
         for operacion_padre in operations:
-            print_with_line_number(f"🔍 operacion_padre: {operacion_padre}")
+           #print_with_line_number(f"🔍 operacion_padre: {operacion_padre}")
 
             # Diccionario para registrar servicios invocados en esta operación
             referencias = []
@@ -1372,12 +1372,12 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
             if branch is not None:
                 for service in branch.findall(".//con1:service[@xsi:type='ref:ProxyRef']", namespaces):
                     service_ref = service.get("ref")
-                    print_with_line_number(f"🔍1 service_ref: {service_ref}")
+                   #print_with_line_number(f"🔍1 service_ref: {service_ref}")
                     if service_ref:
                         initial_proxy_path = os.path.join(project_path, service_ref + ".ProxyService")
-                        print_with_line_number(f"🔍1 initial_proxy_path: {initial_proxy_path}")
+                       #print_with_line_number(f"🔍1 initial_proxy_path: {initial_proxy_path}")
                         new_pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, project_path)
-                        print_with_line_number(f"🔍1 new_pipeline_path: {new_pipeline_path}")
+                       #print_with_line_number(f"🔍1 new_pipeline_path: {new_pipeline_path}")
 
                         # Recursivamente procesar el pipeline hijo
                         sub_operations = procesar_pipeline(
@@ -1394,21 +1394,21 @@ def procesar_pipeline(project_path, proxy_actual, pipeline_actual, operacion_act
 
                 if business_service is not None and "ref" in business_service.attrib:
                     service_ref = business_service.attrib["ref"]
-                    print_with_line_number(f"🔍2 service_ref: {service_ref}")
+                   #print_with_line_number(f"🔍2 service_ref: {service_ref}")
                     operation_name = operation.text if operation is not None else ""
                     referencias.append((service_ref, operation_name))
-                    print_with_line_number(f"BusinessService detectado: {service_ref} con operación {operation_name}")
+                   #print_with_line_number(f"BusinessService detectado: {service_ref} con operación {operation_name}")
 
             # Almacenar las referencias de la operación padre en el diccionario principal
             if referencias:
                 services_for_operations[operacion_padre][pipeline_actual] = referencias
-                print_with_line_number(f"🔍 services_for_operations actualizado: {services_for_operations}")
+               #print_with_line_number(f"🔍 services_for_operations actualizado: {services_for_operations}")
 
     return services_for_operations
 
 def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a_documentar):
     if pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path):
-        print_with_line_number(f"📂 Analizando pipeline: {pipeline_path}")
+       #print_with_line_number(f"📂 Analizando pipeline: {pipeline_path}")
 
         # Leer el contenido del pipeline
         with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1436,28 +1436,28 @@ def buscar_branch_operacion(pipeline_path, project_path, operations, operacion_a
         branch_element = root.find(branch_xpath, namespaces)
         
         if branch_element is not None:
-            print_with_line_number(f"✅ Se encontró el branch: {operacion_a_documentar}")
+           #print_with_line_number(f"✅ Se encontró el branch: {operacion_a_documentar}")
             
             # Buscar el <con1:service> dentro del branch encontrado
             service_element = branch_element.find(".//con1:service", namespaces)
             
             if service_element is not None:
                 service_ref = service_element.attrib.get('ref', '')
-                print_with_line_number(f"🔗 Referencia al servicio: {service_ref}")
+               #print_with_line_number(f"🔗 Referencia al servicio: {service_ref}")
                 
                 # Construir la ruta al ProxyService
                 proxy_referencia = os.path.join(project_path, service_ref + ".ProxyService")
-                print_with_line_number(f"📄 Proxy referencia: {proxy_referencia}")
+               #print_with_line_number(f"📄 Proxy referencia: {proxy_referencia}")
                 
                 # Obtener el pipeline asociado al proxy
                 new_pipeline_path = extract_pipeline_path_from_proxy(proxy_referencia, project_path)
-                print_with_line_number(f"📂 Nuevo pipeline detectado: {new_pipeline_path}")
+               #print_with_line_number(f"📂 Nuevo pipeline detectado: {new_pipeline_path}")
 
                 return new_pipeline_path
             #else:
-                print_with_line_number("⚠️ No se encontró un <con1:service> dentro del branch.")
+               #print_with_line_number("⚠️ No se encontró un <con1:service> dentro del branch.")
         #else:
-            print_with_line_number(f"❌ No se encontró el branch con name='{operacion_a_documentar}' en el pipeline.")
+           #print_with_line_number(f"❌ No se encontró el branch con name='{operacion_a_documentar}' en el pipeline.")
         
     return None
 
@@ -1472,13 +1472,13 @@ def get_namespace_prefixes(root):
 def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
-    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+   #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
-        print_with_line_number("Archivo no válido o no encontrado.")
+       #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+   #print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -1502,7 +1502,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                   #print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
                 
                 else:
                     request_element = branch.find(".//con:request", namespaces)
@@ -1525,25 +1525,25 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
                         services_for_operations[operation_name].add(service_ref)
-                        print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
+                       #print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
 
     def process_route_elements():
         """Busca servicios en elementos <con:route-node>."""
         route_nodes = root.findall(".//con:route-node", namespaces)
         cantidad_route_nodes = len(route_nodes)
-        print_with_line_number(f"cantidad_route_nodes: {cantidad_route_nodes}")
+       #print_with_line_number(f"cantidad_route_nodes: {cantidad_route_nodes}")
         for route in root.findall(".//con:route-node", namespaces):
             operation_element = route.find(".//con1:operation", namespaces)
-            print_with_line_number(f"operation_element: {operation_element}")
+           #print_with_line_number(f"operation_element: {operation_element}")
             if operation_element is not None:
                 operation_name = operation_element.text.strip()
-                print_with_line_number(f"operation_name: {operation_name}")
+               #print_with_line_number(f"operation_name: {operation_name}")
                 if operation_name in operations:
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                       #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                 else:
                     if cantidad_route_nodes == 1:
                         service_element = route.find(".//con1:service", namespaces)
@@ -1551,12 +1551,12 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                             if isinstance(operations, list) and len(operations) ==1:
                                 operation_name = operations[0]
                                 services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                                print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                               #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                             else:
                                 operation_name = operations
-                                print_with_line_number(f"operation_name: {operation_name}")
+                               #print_with_line_number(f"operation_name: {operation_name}")
                                 services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                                print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                               #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                                 
         return services_for_operations
 
@@ -1569,7 +1569,7 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
+                   #print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
     
@@ -1581,23 +1581,23 @@ def extraer_operaciones_pipeline_exp(pipeline_path, operations):
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
     seguir = True
 
-    print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+   #print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
+   #print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
 
     return {op: list(set(services)) for op, services in services_for_operations.items()}
 
 def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_operations):
     osb_services = []
-    print_with_line_number("========= LLAMADA A extraer_operaciones_pipeline_ebs =========")
-    print_with_line_number(f"services_for_operations: {services_for_operations}")
+   #print_with_line_number("========= LLAMADA A extraer_operaciones_pipeline_ebs =========")
+   #print_with_line_number(f"services_for_operations: {services_for_operations}")
     
     for operacion, paths in services_for_operations.items():
-        print_with_line_number(f"operacion: {operacion}")
-        print_with_line_number(f"paths: {paths}")
+       #print_with_line_number(f"operacion: {operacion}")
+       #print_with_line_number(f"paths: {paths}")
         for path2 in paths:
-            print_with_line_number(f"path2: {path2}")
-            print_with_line_number("********** INICIO PROCESO **********")
-            print_with_line_number(f"Operacion: {operacion}, Path: {path2}")
+           #print_with_line_number(f"path2: {path2}")
+           #print_with_line_number("********** INICIO PROCESO **********")
+           #print_with_line_number(f"Operacion: {operacion}, Path: {path2}")
             
             if 'Proxies' in path2:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, path2 + ".ProxyService")
@@ -1606,31 +1606,31 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
             else:
                 continue
             
-            print_with_line_number(f"OSB File Path: {osb_file_path}")
+           #print_with_line_number(f"OSB File Path: {osb_file_path}")
             
             project_name = extract_project_name_from_proxy(osb_file_path)
             if project_name is None:
                 continue
             
             pipeline_path = osb_file_path if 'Pipeline' in path2 else extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+           #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             
             with open(osb_file_path, 'r', encoding="utf-8") as f:
                 content = f.read()
                 service_name = os.path.splitext(os.path.basename(osb_file_path))[0]
                 wsdl_relative_path = extract_wsdl_relative_path(content)
             
-            print_with_line_number(f"Service Name: {service_name}")
-            print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
+           #print_with_line_number(f"Service Name: {service_name}")
+           #print_with_line_number(f"WSDL Relative Path: {wsdl_relative_path}")
             
             if wsdl_relative_path:
                 wsdl_path = os.path.join(jdeveloper_projects_dir, wsdl_relative_path + ".WSDL")
                 operations = extract_wsdl_operations(wsdl_path)
-                print_with_line_number(f"Operations: {operations}")
+               #print_with_line_number(f"Operations: {operations}")
             
-            print_with_line_number(f"Pipeline Path: {pipeline_path}")
+           #print_with_line_number(f"Pipeline Path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-            print_with_line_number(f"Service for Operations: {service_for_operations}")
+           #print_with_line_number(f"Service for Operations: {service_for_operations}")
             
             if service_for_operations:
                 rutas_de_servicio = list(service_for_operations.values())
@@ -1640,15 +1640,15 @@ def extraer_operaciones_pipeline_ebs(jdeveloper_projects_dir, services_for_opera
                 #osb_services.append((operacion, path2))
                 #print_with_line_number(f"Service Refs: {service_refs}")
     
-    print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
-    print_with_line_number("********** FIN PROCESO **********")
+   #print_with_line_number("========= FIN DE extraer_operaciones_pipeline_ebs =========")
+   #print_with_line_number("********** FIN PROCESO **********")
     return osb_services
 
 def definir_operaciones_internas_pipeline(pipeline_path):
     service_refs = set()
     services_for_operations = {}
     
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+   #print_with_line_number(f"pipeline_path: {pipeline_path}")
     
     namespaces = {
         'transform': 'http://www.bea.com/wli/sb/stages/transform/config',
@@ -1689,13 +1689,13 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         
         # 🔍 Buscar servicios TUXEDO en <con4:service ref="...">
         service_tuxedo_elements = root.findall(".//routing:route//routing:service", namespaces)
-        print_with_line_number(f"service_tuxedo_elements: {service_tuxedo_elements}")
+       #print_with_line_number(f"service_tuxedo_elements: {service_tuxedo_elements}")
         for service_element in service_tuxedo_elements:
             service_ref = service_element.attrib.get('ref', '')
-            print_with_line_number(f"service_ref: {service_ref}")
+           #print_with_line_number(f"service_ref: {service_ref}")
             if "TUXEDO" in service_ref.upper():
                 operation_name = service_ref.split("/")[-1]
-                print_with_line_number(f"operation_name: {operation_name}")
+               #print_with_line_number(f"operation_name: {operation_name}")
                 services_for_operations[operation_name] = service_ref
                 
         
@@ -1706,7 +1706,7 @@ def definir_operaciones_internas_pipeline(pipeline_path):
         })
         for service_element in template_service_elements:
             service_ref = service_element.attrib.get('ref', '')
-            print_with_line_number(f"service_ref: {service_ref}")
+           #print_with_line_number(f"service_ref: {service_ref}")
             if "TUXEDO" in service_ref.upper():
                 # Buscar el assign relacionado al nombre de operación dentro de la misma sección
                 assign_node = root.find(".//con:template-overrides//con1:assign", {
@@ -1747,29 +1747,29 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
     def buscar_recursivamente_operaciones(referencia):
         referencia_base = os.path.basename(referencia)  # Extrae solo el nombre del archivo
         referencia_base = referencia_base.replace(".ProxyService", "").replace(".BusinessService", "")  # Normaliza nombres
-        print_with_line_number(f"🔍 referencia_base: {referencia_base}")
+       #print_with_line_number(f"🔍 referencia_base: {referencia_base}")
         if "Proxies" in referencia:
             osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
             if os.path.exists(osb_file_path):
-                print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
+               #print_with_line_number(f"🔍 osb_file_path: {osb_file_path}")
                 project_name = extract_project_name_from_proxy(osb_file_path)
-                print_with_line_number(f"🔍 project_name: {project_name}")
+               #print_with_line_number(f"🔍 project_name: {project_name}")
                 pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+               #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
                 service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-                print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
+               #print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
                 if service_for_operations:
                     referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
                     for valor in service_for_operations.values():
                         valor_buscado = valor
-                        print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
+                       #print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
 
                         if "BusinessServices" in valor_buscado:
                             referencia_business_service = valor_buscado
-                            print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                           #print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
                             biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
-                            print_with_line_number(f"🔍 biz_path: {biz_path}")
+                           #print_with_line_number(f"🔍 biz_path: {biz_path}")
                             if os.path.exists(biz_path):
                                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                                 if service_refs:
@@ -1778,12 +1778,12 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                     
                         elif "Proxies" in valor_buscado:
                             referencia_proxy = valor_buscado
-                            print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                           #print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
                             buscar_recursivamente_operaciones(referencia_proxy)
 
         elif "BusinessServices" in referencia:
             biz_path = os.path.join(jdeveloper_projects_dir, referencia + ".BusinessService")
-            print_with_line_number(f"🔍 biz_path: {biz_path}")
+           #print_with_line_number(f"🔍 biz_path: {biz_path}")
             if os.path.exists(biz_path):
                 service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                 if service_refs:
@@ -1793,21 +1793,21 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         
         elif "Pipeline" in referencia:
             pipeline_path = os.path.join(jdeveloper_projects_dir, referencia + ".Pipeline")
-            print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
+           #print_with_line_number(f"🔍 pipeline_path: {pipeline_path}")
             service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-            print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
+           #print_with_line_number(f"🔍 service_for_operations: {service_for_operations}")
 
             if service_for_operations:
                 referencias[f"REFERENCIA_{referencia_base}"] = service_for_operations
                 for valor in service_for_operations.values():
                     valor_buscado = valor
-                    print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
+                   #print_with_line_number(f"🔍 valor_buscado: {valor_buscado}")
 
                     if "BusinessServices" in valor_buscado:
                         referencia_business_service = valor_buscado
-                        print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
+                       #print_with_line_number(f"🔍 referencia_business_service: {referencia_business_service}")
                         biz_path = os.path.join(jdeveloper_projects_dir, referencia_business_service + ".BusinessService")
-                        print_with_line_number(f"🔍 biz_path: {biz_path}")
+                       #print_with_line_number(f"🔍 biz_path: {biz_path}")
                         if os.path.exists(biz_path):
                             service_refs = extract_uri_and_provider_id_from_bix(biz_path)
                             if service_refs:
@@ -1816,12 +1816,12 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
                 
                     elif "Proxies" in valor_buscado:
                         referencia_proxy = valor_buscado
-                        print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
+                       #print_with_line_number(f"🔍 referencia_proxy: {referencia_proxy}")
                         buscar_recursivamente_operaciones(referencia_proxy)
     
     
     for service_name, service_data in combined_services.items():
-        print_with_line_number(f"🔍 servicio: {service_name}")
+       #print_with_line_number(f"🔍 servicio: {service_name}")
         for proxy in service_data.get("Proxy", []):
             for referencia in service_data.get("Referencia", []):
                 if proxy not in referencia:
@@ -1830,7 +1830,7 @@ def separar_ebs_abc_business(jdeveloper_projects_dir, combined_services):
         # Actualizar el servicio actual en combined_services con la nueva información
         combined_services[service_name].update(referencias)
         combined_services[service_name].update(informacion_business)
-        print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
+       #print_with_line_number(f"🔍 combined_services[service_name]: {combined_services[service_name]}")
         informacion_business = {}
         referencias = {}
         referencia_proxy ={}
@@ -1843,25 +1843,25 @@ def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
     for service_name, service_data in combined_services.items():
         informacion_business = {}
         referencias = {}
-        print_with_line_number(f"service_name: {service_name}")
+       #print_with_line_number(f"service_name: {service_name}")
         
         #for proxy in service_data.get("Proxy", []):
             #print_with_line_number(f"proxy: {proxy}")
 
         # Recorrer las Referencias
         for referencia in service_data.get("Referencia", []):
-            print_with_line_number(f"referencia: {referencia}")
+           #print_with_line_number(f"referencia: {referencia}")
             
             if "Proxies" in referencia:
                 osb_file_path = os.path.join(jdeveloper_projects_dir, referencia + ".ProxyService")
                 if os.path.exists(osb_file_path):
-                    print_with_line_number(f"🔍osb_file_path: {osb_file_path}")
+                   #print_with_line_number(f"🔍osb_file_path: {osb_file_path}")
                     project_name = extract_project_name_from_proxy(osb_file_path)
-                    print_with_line_number(f"🔍project_name: {project_name}")
+                   #print_with_line_number(f"🔍project_name: {project_name}")
                     pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, jdeveloper_projects_dir)
-                    print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
+                   #print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
                     service_for_operations = definir_operaciones_internas_pipeline(pipeline_path)
-                    print_with_line_number(f"🔍service_for_operations: {service_for_operations}")
+                   #print_with_line_number(f"🔍service_for_operations: {service_for_operations}")
                 
                     if service_for_operations:
                         rutas_de_servicio = list(service_for_operations.values())
@@ -1878,8 +1878,8 @@ def separar_ebs_abc_business2(jdeveloper_projects_dir,combined_services):
         
         service_data.update(referencias)
         service_data.update(informacion_business)
-        print_with_line_number(f"service_data: {service_data}")
-    print_with_line_number(f"combined_services: {combined_services}")
+       #print_with_line_number(f"service_data: {service_data}")
+   #print_with_line_number(f"combined_services: {combined_services}")
     
 def extract_uri_and_provider_id_from_bix(bix_path):
     lista_uri_provider = []
@@ -1888,22 +1888,22 @@ def extract_uri_and_provider_id_from_bix(bix_path):
         # Buscar el valor dentro de las etiquetas <env:value>
         uri_match = re.search(r'<env:value>(.*?)</env:value>', content, re.DOTALL)
         
-        print_with_line_number(f"MATCH: {uri_match}")
+       #print_with_line_number(f"MATCH: {uri_match}")
         if uri_match:
             uri_value = uri_match.group(1)
         else:
             uri_value = None
 
-        print_with_line_number(f"URI VALUE: {uri_value}")
+       #print_with_line_number(f"URI VALUE: {uri_value}")
         # Buscar el valor dentro de las etiquetas <tran:provider-id>
         provider_id_match = re.search(r'<tran:provider-id>(.*?)</tran:provider-id>', content, re.DOTALL)
-        print_with_line_number(f"PROVIDER_ID: {provider_id_match}")
+       #print_with_line_number(f"PROVIDER_ID: {provider_id_match}")
         if provider_id_match:
             provider_id_value = provider_id_match.group(1)
         else:
             provider_id_value = None
         
-        print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
+       #print_with_line_number(f"PROVIDER_ID_VALUE: {provider_id_value}")
         lista_uri_provider.append((uri_value, provider_id_value))
         return lista_uri_provider
 
@@ -1978,7 +1978,7 @@ def obtener_operaciones(project_path):
 
 def plantuml_to_hex(plantuml_code):
     hex_encoded = plantuml_code.encode("utf-8").hex()
-    print_with_line_number(f"hex_encoded: {hex_encoded}")
+   #print_with_line_number(f"hex_encoded: {hex_encoded}")
     return f"~h{hex_encoded}"  # Se agrega "~h" como indica la documentación
 
 def encode_plantuml(text):
@@ -2037,13 +2037,13 @@ def descargar_diagrama(uml_url, ruta_destino):
 def extraer_operaciones_business(pipeline_path, operations):
     services_for_operations = defaultdict(set)
     
-    print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
+   #print_with_line_number("***************************** INICIO EXTRACT SERVICE OPERATIONS*********************************************")
 
     if not (pipeline_path.endswith('.Pipeline') and os.path.isfile(pipeline_path)):
-        print_with_line_number("Archivo no válido o no encontrado.")
+       #print_with_line_number("Archivo no válido o no encontrado.")
         return services_for_operations
 
-    print_with_line_number(f"pipeline_path: {pipeline_path}")
+   #print_with_line_number(f"pipeline_path: {pipeline_path}")
 
     # Cargar el archivo XML
     with open(pipeline_path, 'r', encoding="utf-8") as f:
@@ -2067,7 +2067,7 @@ def extraer_operaciones_business(pipeline_path, operations):
                 service_element = branch.find(".//con1:service", namespaces)
                 if service_element is not None:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
+                   #print_with_line_number(f"services_for_operations process_branch_elements: {services_for_operations}")
                 
                 else:
                     request_element = branch.find(".//con:request", namespaces)
@@ -2090,44 +2090,44 @@ def extraer_operaciones_business(pipeline_path, operations):
                     operation_name = operation_element.text.strip()
                     if operation_name in operations:
                         services_for_operations[operation_name].add(service_ref)
-                        print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
+                       #print_with_line_number(f"services_for_operations process_flow_elements: {services_for_operations}")
         return services_for_operations
 
     def process_route_elements():
         """Busca servicios en elementos <con:route-node>."""
         route_nodes = root.findall(".//con:route-node", namespaces)
         cantidad_route_nodes = len(route_nodes)
-        print_with_line_number(f"cantidad_route_nodes: {cantidad_route_nodes}")
+       #print_with_line_number(f"cantidad_route_nodes: {cantidad_route_nodes}")
         for route in root.findall(".//con:route-node", namespaces):
             operation_element = route.find(".//con1:operation", namespaces)
-            print_with_line_number(f"operation_element: {operation_element}")
+           #print_with_line_number(f"operation_element: {operation_element}")
             if operation_element is not None:
                 operation_name = operation_element.text.strip()
-                print_with_line_number(f"operation_name: {operation_name}")
+               #print_with_line_number(f"operation_name: {operation_name}")
                 if operation_name in operations:
                     service_element = route.find(".//con1:service", namespaces)
                     if service_element is not None:
                         services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                        print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                       #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                 else:
                     if cantidad_route_nodes == 1:
                         service_element = route.find(".//con1:service", namespaces)
                         if service_element is not None:
                             services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                            print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
+                           #print_with_line_number(f"services_for_operations process_route_elements: {services_for_operations}")
                             
             else:
                 service_element = route.find(".//con1:service", namespaces)
-                print_with_line_number(f"service_element: {service_element}")
+               #print_with_line_number(f"service_element: {service_element}")
                 service_ref = service_element.attrib.get('ref', '')
-                print_with_line_number(f"service_ref: {service_ref}")
+               #print_with_line_number(f"service_ref: {service_ref}")
                 if "TUXEDO" in service_ref.upper():
                     assign_node = root.findall(".//con1:assign[@varName='NOMBRE_SERVICIO_TUXEDO']",namespaces={"con1": "http://www.bea.com/wli/sb/stages/transform/config"})
                     if assign_node:
                         xquery_text = assign_node[0].find(".//con2:xqueryText", namespaces={"con2": "http://www.bea.com/wli/sb/stages/config"})
                         if xquery_text is not None and xquery_text.text:
                             operation_name = xquery_text.text.strip().replace(" ", "").replace("'", "").replace('"','')
-                            print_with_line_number(f"✔️ Nombre operación TUXEDO desde assign: {operation_name}")
+                           #print_with_line_number(f"✔️ Nombre operación TUXEDO desde assign: {operation_name}")
                 if operation_name:
                     services_for_operations[operation_name].add(service_ref)
                     
@@ -2175,7 +2175,7 @@ def extraer_operaciones_business(pipeline_path, operations):
                 operation_name = operation_element.text.strip()
                 if operation_name in operations:
                     services_for_operations[operation_name].add(service_element.attrib.get('ref', ''))
-                    print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
+                   #print_with_line_number(f"services_for_operations process_callout_elements: {services_for_operations}")
         return services_for_operations
 
     def process_template_overrides():
@@ -2189,16 +2189,16 @@ def extraer_operaciones_business(pipeline_path, operations):
         
         for route in template_service_elements:
             service_el = route.find("con1:service", namespaces)
-            print_with_line_number(f"service_el: {service_el}")
+           #print_with_line_number(f"service_el: {service_el}")
             op_el = route.find("con1:operation", namespaces)
-            print_with_line_number(f"op_el: {op_el}")
+           #print_with_line_number(f"op_el: {op_el}")
 
             if service_el is not None and op_el is not None:
                 service_ref = service_el.attrib.get('ref', '')
-                print_with_line_number(f"service_ref: {service_ref}")
+               #print_with_line_number(f"service_ref: {service_ref}")
                 
                 operation_name = op_el.text.strip()
-                print_with_line_number(f"operation_name: {operation_name}")
+               #print_with_line_number(f"operation_name: {operation_name}")
 
                 services_for_operations[operation_name].add(service_ref)
 
@@ -2216,8 +2216,8 @@ def extraer_operaciones_business(pipeline_path, operations):
     # Ejecutar los procesamientos en orden hasta encontrar un servicio
     seguir = True
 
-    print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
-    print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
+   #print_with_line_number(f"SERVICES FOR: {dict(services_for_operations)}")
+   #print_with_line_number("***************************** FIN EXTRACT SERVICE OPERATIONS*********************************************")
 
     return {op: list(set(services)) for op, services in services_for_operations.items()}
 
@@ -2226,23 +2226,23 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
     
     business_services = defaultdict(list)
     
-    print_with_line_number(f"combined_services: {combined_services}, jdeveloper_projects_dir: {jdeveloper_projects_dir}, operacion_a_documentar: {operacion_a_documentar} ")
+   #print_with_line_number(f"combined_services: {combined_services}, jdeveloper_projects_dir: {jdeveloper_projects_dir}, operacion_a_documentar: {operacion_a_documentar} ")
 
     for operacion, detalles in combined_services.items():
         if operacion_a_documentar == operacion:
             for key, value in detalles.items():
                 # CASO 1: Estructura tipo REFERENCIA_...
                 if key.startswith("REFERENCIA_") and isinstance(value, dict):
-                    print_with_line_number(f"value: {value}")
+                   #print_with_line_number(f"value: {value}")
                     for inner_key, inner_value in value.items():
                         if isinstance(inner_value, str) and "BusinessServices" in inner_value:
-                            print_with_line_number(f"inner_value: {inner_value}")
+                           #print_with_line_number(f"inner_value: {inner_value}")
                             partes = inner_value.split('/')
                             if len(partes) >= 3:
                                 proyecto = partes[0]
                                 nombre_servicio = partes[-1]
                                 business_services[proyecto].append(f"{nombre_servicio}:{inner_key}")
-                                print_with_line_number(f"business_services: {business_services}")
+                               #print_with_line_number(f"business_services: {business_services}")
 
             # CASO 2: Cuando no hay REFERENCIA_ pero sí hay Referencia con BusinessServices
             referencias = detalles.get("Referencia", [])
@@ -2260,16 +2260,16 @@ def obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operac
                                 if isinstance(proxy, str):
                                     nombre_proxy = proxy.split('/')[-1]
                                     initial_proxy_path = os.path.join(jdeveloper_projects_dir, proxy + ".ProxyService")
-                                    print_with_line_number(f"🔍initial_proxy_path: {initial_proxy_path}")
+                                   #print_with_line_number(f"🔍initial_proxy_path: {initial_proxy_path}")
                                     pipeline_path = extract_pipeline_path_from_proxy(initial_proxy_path, jdeveloper_projects_dir)
-                                    print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
+                                   #print_with_line_number(f"🔍pipeline_path: {pipeline_path}")
                                     ex = extraer_operaciones_business(pipeline_path, operacion_a_documentar)
-                                    print_with_line_number(f"🔍ex: {ex}")
+                                   #print_with_line_number(f"🔍ex: {ex}")
                                     for clave, lista in ex.items():
                                         for valor in lista:
                                             nombre_servicio = valor.split('/')[-1]
                                             business_services[proyecto].append(f"{nombre_servicio}:{clave}")
-                                    print_with_line_number(f"business_services (referencia): {business_services}")
+                                   #print_with_line_number(f"business_services (referencia): {business_services}")
 
     return business_services
 
@@ -2294,7 +2294,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
         
         if operacion_a_documentar == operacion:
         
-            print_with_line_number(f"\n🔹 Operacion: {operacion}")
+           #print_with_line_number(f"\n🔹 Operacion: {operacion}")
             
             uml = ["@startuml"]
             data = combined_services2[operacion]
@@ -2312,18 +2312,18 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             def procesar_referencias(referencia_padre,referencia_nueva,proxy, proxy_name, data, uml, profundidad=0):
                 
-                print_with_line_number(f"♪EMPIEZA FLUJO -> Referencia padre♪: {referencia_padre}")
+               #print_with_line_number(f"♪EMPIEZA FLUJO -> Referencia padre♪: {referencia_padre}")
                 proyecto_padre = referencia_padre.split("/")[0]
-                print_with_line_number(f"proyecto_padre: {proyecto_padre}")
+               #print_with_line_number(f"proyecto_padre: {proyecto_padre}")
                 partes = referencia_nueva.split("/")
                 if len(partes) >= 3:
-                    print_with_line_number(f"referencia_nueva: {referencia_nueva}")
+                   #print_with_line_number(f"referencia_nueva: {referencia_nueva}")
                     proyecto = partes[0]
-                    print_with_line_number(f"proyecto: {proyecto}")
+                   #print_with_line_number(f"proyecto: {proyecto}")
                     business = partes[1]
-                    print_with_line_number(f"business: {business}")
+                   #print_with_line_number(f"business: {business}")
                     proxy = partes[-1]
-                    print_with_line_number(f"proxy: {proxy}")
+                   #print_with_line_number(f"proxy: {proxy}")
                 
                 referencia_key = f"REFERENCIA_{proxy}"
                 
@@ -2333,136 +2333,136 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                 referencias_procesadas.add(referencia_key)
                 
                 if referencia_key in data:
-                    print_with_line_number(f"{referencia_key} encontrado:")
+                   #print_with_line_number(f"{referencia_key} encontrado:")
                     
                     # 🔹 Obtener claves ordenadas (para saber cuál es la última)
                     claves = list(data[referencia_key].keys())
                     ultima_clave = claves[-1]  # Última clave en el diccionario
-                    print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
+                   #print_with_line_number(f"🔽 Último elemento: {ultima_clave}")
                     
                     for key in claves:
                         value = data[referencia_key][key]  # Valor de la clave
-                        print_with_line_number(f"value: {value}")
+                       #print_with_line_number(f"value: {value}")
                         division = value.split("/")
                         project = division[0]
-                        print_with_line_number(f"project: {project}")
+                       #print_with_line_number(f"project: {project}")
                         proyecto_business = division[1]
-                        print_with_line_number(f"proyecto_business: {proyecto_business}")
+                       #print_with_line_number(f"proyecto_business: {proyecto_business}")
                         business_name = division[-1]
 
-                        print_with_line_number(f"key - value {key}: {value}")
+                       #print_with_line_number(f"key - value {key}: {value}")
                         
                         if "ComponentesComunes" != project and "UtilitariosEBS" != project:
 
                             if "ReglasNegocio" in value:
                                 regla_negocio = division[2]
                                 uml.append(f"{project} -> {regla_negocio}: Llamada a {business_name}")
-                                print_with_line_number(f"{project} -> {regla_negocio}: Llamada a {business_name}")
+                               #print_with_line_number(f"{project} -> {regla_negocio}: Llamada a {business_name}")
                                 uml.append(f"{regla_negocio} -> {project}: Retorna respuesta")
-                                print_with_line_number(f"{regla_negocio} -> {project}: Retorna respuesta")
+                               #print_with_line_number(f"{regla_negocio} -> {project}: Retorna respuesta")
 
                             else:
                                 if "Proxies" in value:
                                     nueva_referencia_key = f"REFERENCIA_{business_name}"
-                                    print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
+                                   #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_key}")
                                     
                                     if not nueva_referencia_key in data:
                                         uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                        print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                       #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
                                         uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                        print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                       #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                         if key == ultima_clave:
                                             proxy_project = proxy_name.split("/")[0]
                                             if proyecto != proxy_project:
                                                 uml.append(f"{proyecto} -> {proxy_project}: Retorna respuesta")
-                                                print_with_line_number(f"{proyecto} -> {proxy_project}: Retorna respuesta")
+                                               #print_with_line_number(f"{proyecto} -> {proxy_project}: Retorna respuesta")
                                     else:
                                         if proyecto != project:
                                             uml.append(f"{proyecto} -> {project}: Llamada a {business_name}")
-                                            print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
+                                           #print_with_line_number(f"{proyecto} -> {project}: Llamada a {business_name}")
 
-                                        print_with_line_number(f"value: {value}")
-                                        print_with_line_number(f"business_name: {business_name}")
-                                        print_with_line_number(f"project: {project}")
-                                        # print_with_line_number(f"data: {data}")
+                                       #print_with_line_number(f"value: {value}")
+                                       #print_with_line_number(f"business_name: {business_name}")
+                                       #print_with_line_number(f"project: {project}")
+                                        ##print_with_line_number(f"data: {data}")
                                         
                                         referencia_nueva_key = f"REFERENCIA_{business_name}"
-                                        print_with_line_number(f"nueva_referencia_key: {referencia_nueva_key}")
+                                       #print_with_line_number(f"nueva_referencia_key: {referencia_nueva_key}")
                                     
                                         if referencia_nueva_key in data:
-                                            print_with_line_number(f"{referencia_nueva_key} encontrado:")
+                                           #print_with_line_number(f"{referencia_nueva_key} encontrado:")
                                             claves_nuevas = list(data[referencia_nueva_key].keys())
                                             ultima_clave_nueva = claves_nuevas[-1]  # Última clave en el diccionario
                                             for key_nueva in claves_nuevas:
                                                 value_nuevo = data[referencia_nueva_key][key_nueva]  # Valor de la clave
-                                                print_with_line_number(f"value_nuevo: {value_nuevo}")
+                                               #print_with_line_number(f"value_nuevo: {value_nuevo}")
                                                 partes_nuevas = value_nuevo.split("/")
                                                 project_nuevo = partes_nuevas[0]
-                                                print_with_line_number(f"project_nuevo: {project_nuevo}")
+                                               #print_with_line_number(f"project_nuevo: {project_nuevo}")
                                                 proyecto_business_nuevo = partes_nuevas[1]
-                                                print_with_line_number(f"proyecto_business_nuevo: {proyecto_business_nuevo}")
+                                               #print_with_line_number(f"proyecto_business_nuevo: {proyecto_business_nuevo}")
                                                 business_name_nuevo = partes_nuevas[-1]
-                                                print_with_line_number(f"business_name_nuevo: {business_name_nuevo}")
+                                               #print_with_line_number(f"business_name_nuevo: {business_name_nuevo}")
                                                 
                                                 nueva_referencia_business_key = f"REFERENCIA_{business_name_nuevo}"
-                                                print_with_line_number(f"nueva_referencia_key: {nueva_referencia_business_key}")
+                                               #print_with_line_number(f"nueva_referencia_key: {nueva_referencia_business_key}")
                                                 project_business = value_nuevo.split("/")[1]
                                                 
                                                 if "ComponentesComunes" != project_nuevo and "UtilitariosEBS" != project_nuevo:
                                                 
                                                     if nueva_referencia_business_key in data:
-                                                        print_with_line_number(f"{nueva_referencia_business_key} encontrado:")
+                                                       #print_with_line_number(f"{nueva_referencia_business_key} encontrado:")
                                                         claves_nuevas = list(data[nueva_referencia_business_key].keys())
                                                         ultima_clave_nueva = claves_nuevas[-1] 
                                                         
                                                         uml.append(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
-                                                        print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
+                                                       #print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
                                                         
                                                         procesar_referencias(referencia_padre,value_nuevo,business_name_nuevo, project_nuevo, data, uml, profundidad + 1)
                                                     else:
                                                         if "Proxies" in value_nuevo:
                                                             uml.append(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
-                                                            print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
+                                                           #print_with_line_number(f"{project} -> {project_nuevo}: Llamada a {business_name_nuevo}")
                                                             uml.append(f"{project_nuevo} -> {project}: Retorna respuesta")
-                                                            print_with_line_number(f"{project_nuevo} -> {project}: Retorna respuesta")
+                                                           #print_with_line_number(f"{project_nuevo} -> {project}: Retorna respuesta")
                                                             
                                                             if key_nueva == ultima_clave_nueva:
                                                                 uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                                                print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                                               #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                                         else:
                                                             uml.append(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
-                                                            print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
+                                                           #print_with_line_number(f"{project} -> {project_business}: Llamada a {business_name_nuevo}")
                                                             uml.append(f"{project_business} -> {project}: Retorna respuesta")
-                                                            print_with_line_number(f"{project_business} -> {project}: Retorna respuesta")
+                                                           #print_with_line_number(f"{project_business} -> {project}: Retorna respuesta")
                                                             if proyecto != project:
                                                                 uml.append(f"{project} -> {proyecto}: Retorna respuesta")
-                                                                print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
+                                                               #print_with_line_number(f"{project} -> {proyecto}: Retorna respuesta")
                                                    
                                         # if key == ultima_clave:
                                             # uml.append(f"{project} -> {proxy_name[0]}: Retorna respuesta")
-                                            # print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
+                                            ##print_with_line_number(f"{project} -> {proxy_name}: Retorna respuesta")
                                         # # 🔄 **Llamada recursiva**: buscamos si `business_name` también tiene una referencia
                                         # #procesar_referencias(referencia_padre,value,business_name, project, data, uml, profundidad + 1)
 
                                 else:
                                     uml.append(f"{project} -> {proyecto_business}: Llamada a {business_name}")
-                                    print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
+                                   #print_with_line_number(f"{project} -> {proyecto_business}: Llamada a {business_name}")
                                     uml.append(f"{proyecto_business} -> {project}: Retorna respuesta")
-                                    print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
+                                   #print_with_line_number(f"{proyecto_business} -> {project}: Retorna respuesta")
 
                 else:
                     
                     if "BusinessServices" in referencia_nueva:
                         uml.append(f"{proxy_name} -> {business}: Llamada a {proxy}")
-                        print_with_line_number(f"{proxy_name} -> {business}: Llamada a {proxy}")
+                       #print_with_line_number(f"{proxy_name} -> {business}: Llamada a {proxy}")
                         uml.append(f"{business} -> {proxy_name}: Retorna respuesta")
-                        print_with_line_number(f"{business} -> {proxy_name}: Retorna respuesta")
+                       #print_with_line_number(f"{business} -> {proxy_name}: Retorna respuesta")
                         if profundidad > 0:
                             uml.append(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
-                            print_with_line_number(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
+                           #print_with_line_number(f"{proxy_name} -> {proyecto_padre}: Retorna respuesta")
                         else:
                             uml.append(f"{proxy_name} -> {proyecto}: Retorna respuesta")
-                            print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
+                           #print_with_line_number(f"{proxy_name} -> {proyecto}: Retorna respuesta")
                         profundidad = 0
             
             
@@ -2477,18 +2477,18 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     proyecto_ebs = proxy.split("/")[0]
                     add_participant(proyecto_ebs, proyecto_ebs)
             
-            print_with_line_number(f"proyecto_ebs: {proyecto_ebs}")
-            print_with_line_number(f"participantes: {participantes}")
+           #print_with_line_number(f"proyecto_ebs: {proyecto_ebs}")
+           #print_with_line_number(f"participantes: {participantes}")
         
             if contiene_valor("ReglasNegocio",data):
-                print_with_line_number(f"Existe ReglasNegocio")
+               #print_with_line_number(f"Existe ReglasNegocio")
                 add_participant("ReglasNegocio", "ReglasNegocio")
             if contiene_valor("BPEL",data):
-                print_with_line_number(f"Existe BPEL")
+               #print_with_line_number(f"Existe BPEL")
                 add_participant("BPEL", "BPEL")
-                print_with_line_number(f"Existe BPEL")
+               #print_with_line_number(f"Existe BPEL")
             
-            print_with_line_number(f"participantes: {participantes}")
+           #print_with_line_number(f"participantes: {participantes}")
         
             if "Referencia" in data:
                 for referencia in data["Referencia"]:
@@ -2498,30 +2498,30 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         business = partes[1]
                         proxy = partes[-1]
                         if "ComponentesComunes" != proyecto and "UtilitariosEBS" != proyecto:
-                            print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
+                           #print_with_line_number(f"Proyecto: {proyecto}, Business: {business}, Proxy: {proxy}")
                             add_participant(proyecto, proyecto)
                         if "BusinessServices" in business:
                             add_participant(business, business)
             
-            print_with_line_number(f"participantes: {participantes}")
+           #print_with_line_number(f"participantes: {participantes}")
             
             if any(key.startswith("REFERENCIA_") for key in data):
                 for key in data:
-                    print_with_line_number(f"key: {key}")
+                   #print_with_line_number(f"key: {key}")
                     if key.startswith("REFERENCIA_"):
                         for sub_ref in data[key]:
-                            print_with_line_number(f"sub_ref: {sub_ref}")
+                           #print_with_line_number(f"sub_ref: {sub_ref}")
                             clave = data[key][sub_ref]
-                            print_with_line_number(f"clave: {clave}")
+                           #print_with_line_number(f"clave: {clave}")
                             if "BusinessServices" in clave:
                                 business = clave.split("/")[1]
                                 add_participant(business, business)
                             ref_name = data[key][sub_ref].split("/")[0]
                             if "ComponentesComunes" != ref_name and "UtilitariosEBS" != ref_name:
-                                print_with_line_number(f"ref_name: {ref_name}")
+                               #print_with_line_number(f"ref_name: {ref_name}")
                                 add_participant(ref_name, ref_name)
             
-            print_with_line_number(f"participantes: {participantes}")
+           #print_with_line_number(f"participantes: {participantes}")
             
             # Agregar los participantes al diagrama
             for alias, nombre in participantes:
@@ -2535,7 +2535,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             if business_services in uml:
                 uml.remove(business_services)  # Elimina si existe
                 uml.append(business_services)  # Lo agrega al final
-            print_with_line_number(f"uml: {uml}")
+           #print_with_line_number(f"uml: {uml}")
             
             uml.append(f"Usuario -[#red]> EXP: Llamada a {operacion} en {service_name}")
             if "Proxy" in data:
@@ -2543,52 +2543,52 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                     proxy_ebs = proxy
                     proyecto_ebs = proxy.split("/")[0]
                     uml.append(f"EXP -> {proyecto_ebs}: Llamada a {proxy.split('/')[-1]}")
-            print_with_line_number(f"uml: {uml}")
+           #print_with_line_number(f"uml: {uml}")
             
             proyecto_referencia_abc =""
             if "Referencia" in data:
                 referencias_ordenadas = sorted(data["Referencia"])  # Ordenar las referencias alfabéticamente
-                print_with_line_number(f"referencias_ordenadas : {referencias_ordenadas}")
-                print_with_line_number(f" data[Referencia] : {data["Referencia"]}")
+               #print_with_line_number(f"referencias_ordenadas : {referencias_ordenadas}")
+               #print_with_line_number(f" data[Referencia] : {data["Referencia"]}")
                 for i,referencia in enumerate(data["Referencia"]):
                     partes = referencia.split("/")
                     if len(partes) >= 3:
-                        print_with_line_number(f"referencia: {referencia}")
+                       #print_with_line_number(f"referencia: {referencia}")
                         proyecto_referencia_abc = partes[0]
-                        print_with_line_number(f"proyecto_referencia_abc: {proyecto_referencia_abc}")
+                       #print_with_line_number(f"proyecto_referencia_abc: {proyecto_referencia_abc}")
                         business = partes[1]
-                        print_with_line_number(f"business: {business}")
+                       #print_with_line_number(f"business: {business}")
                         proxy = partes[-1]
-                        print_with_line_number(f"proxy : {proxy}")
+                       #print_with_line_number(f"proxy : {proxy}")
                         existen_mas_referencias_proyecto = any(proyecto_referencia_abc in ref for ref in referencias_ordenadas[i+1:])
                         
                         if "ComponentesComunes" != proyecto_referencia_abc and "UtilitariosEBS" != proyecto_referencia_abc:
                             
                             if proyecto_ebs != proyecto_referencia_abc:
                                 uml.append(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
-                                print_with_line_number(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
+                               #print_with_line_number(f"{proyecto_ebs} -> {proyecto_referencia_abc}: Llamada a {proxy}")
                             if "BusinessServices" in business:
                                 uml.append(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
-                                print_with_line_number(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
+                               #print_with_line_number(f"{proyecto_referencia_abc} -> {business}: Llamada a {proxy}")
                                 uml.append(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
-                                print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
+                               #print_with_line_number(f"{business} -> {proyecto_referencia_abc}: Retorna respuesta")
                             else:
                                 procesar_referencias(proxy_ebs,referencia,proxy, proxy_ebs, data, uml)
                                 #if not existen_mas_referencias_proyecto:
                                     # uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                                    # print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                                    ##print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                                 if proyecto_referencia_abc != proyecto_ebs:
                                     uml.append(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
-                                    print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
+                                   #print_with_line_number(f"{proyecto_referencia_abc} -> {proyecto_ebs}: Retorna respuesta")
                             
                 uml.append(f"{proyecto_ebs} -> EXP: Retorna respuesta")
-                print_with_line_number(f"{proyecto_ebs} -> EXP: Retorna respuesta")
-            print_with_line_number(f"uml: {uml}")
+               #print_with_line_number(f"{proyecto_ebs} -> EXP: Retorna respuesta")
+           #print_with_line_number(f"uml: {uml}")
             
             uml.append("EXP -> Usuario : Respuesta final")
             uml.append("@enduml")
         
-            print_with_line_number("\n".join(uml))
+           #print_with_line_number("\n".join(uml))
         
             encoded_code = plantuml_to_hex("\n".join(uml))
             img_url = f"{PLANTUML_SERVER}{encoded_code}"    
@@ -2598,7 +2598,7 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             
             # Generar URL
             uml_url = generate_plantuml_url("\n".join(uml))
-            print_with_line_number(f"URL del diagrama: {uml_url}")
+           #print_with_line_number(f"URL del diagrama: {uml_url}")
             
             # URL final
             plantuml_url_png = {uml_url}
@@ -2610,18 +2610,18 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
             output_dir = "diagramas"
             os.makedirs(output_dir, exist_ok=True)
             diagrama_path = os.path.join(output_dir, f"{project_name}_{operacion}.png")
-            print_with_line_number(f"diagrama_path: {diagrama_path}")
+           #print_with_line_number(f"diagrama_path: {diagrama_path}")
             
             try:
                 response = requests.get(plantuml_url_png)
                 if response.status_code == 200:
                     with open(diagrama_path, "wb") as file:
                         file.write(response.content)
-                        print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
+                       #print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
                 else:
-                    print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
+                   #print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
             except Exception as e:
-                print_with_line_number(f"Error en la solicitud de la imagen: {e}")
+               #print_with_line_number(f"Error en la solicitud de la imagen: {e}")
     
     return diagrama_path
 
@@ -2712,7 +2712,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Extraer ruta del proyecto desde el .jar
     jdeveloper_projects_dir = jar_path
     
-    print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
+   #print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
     
     if not jdeveloper_projects_dir:
         st.error("No se pudo determinar la ruta del proyecto desde el .jar.")
@@ -2735,7 +2735,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
         # 📌 Crear nuevamente la carpeta temporal limpia
         os.makedirs(temp_dir, exist_ok=True)
-        print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
+       #print_with_line_number(f"📂 Carpeta temporal creada: {temp_dir}")
     
     if "progress_bar_general" not in st.session_state:
         st.session_state["progress_bar_general"] = st.progress(0)
@@ -2744,7 +2744,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
 
-    print_with_line_number(f"✅ services_with_data {services_with_data}")
+   #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -2766,7 +2766,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 if 'operations' in element:
                     operation_names.update(element['operations'])  # Agrega todas las operaciones a operation_names
 
-        print_with_line_number(f"service_name: {service_name}")
+       #print_with_line_number(f"service_name: {service_name}")
         # Convert the set to a sorted list to get the operation names in alphabetical order
         unique_operations = sorted(operation_names)
 
@@ -2775,9 +2775,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
             
         
-        print_with_line_number(f"unique_operations: {unique_operations}")
+       #print_with_line_number(f"unique_operations: {unique_operations}")
         
-        print_with_line_number(f"✅ unique_operations {unique_operations}")
+       #print_with_line_number(f"✅ unique_operations {unique_operations}")
         
         operation_elements = {}
         
@@ -2845,8 +2845,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'service_name': service_name,
                 'lista_operaciones': lista_operaciones_proyecto
             }
-        print_with_line_number(f"operation_elements: {operation_elements}")
-        print_with_line_number(f"service_name: {service_name}")
+       #print_with_line_number(f"operation_elements: {operation_elements}")
+       #print_with_line_number(f"service_name: {service_name}")
         # Print the result
         # 📂 Crear un solo ZIP para todas las operaciones
         zip_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
@@ -2855,15 +2855,15 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
                 
-                print_with_line_number(f"elements: {elements}")
+               #print_with_line_number(f"elements: {elements}")
                 lista_operaciones = elements['lista_operaciones']
-                print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
+               #print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
                 lista_operaciones = sorted(obtener_valor_por_operacion(services_with_data, operation, 'operations'))
-                print_with_line_number(f"lista_operaciones: {lista_operaciones}")
+               #print_with_line_number(f"lista_operaciones: {lista_operaciones}")
                 operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
-                print_with_line_number(f"elements['request']: {elements['request']}")
+               #print_with_line_number(f"elements['request']: {elements['request']}")
                 service_name = obtener_valor_por_operacion(services_with_data, operation, 'service_name')
-                print_with_line_number(f"service_name: {service_name}")
+               #print_with_line_number(f"service_name: {service_name}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
                     continue  # Si no hay request, no genera el documento
@@ -2908,14 +2908,14 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     # Contar el número de tablas en el documento
                     num_tables = len(doc.tables)
                     
-                    print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
+                   #print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
 
                     # Mostrar cada tabla
                     # for i, table in enumerate(doc.tables):
-                        # print_with_line_number(f"\nTabla {i+1}:")
+                        ##print_with_line_number(f"\nTabla {i+1}:")
                         # for row in table.rows:
                             # row_data = [cell.text for cell in row.cells]
-                            # print_with_line_number('\t'.join(row_data))
+                            ##print_with_line_number('\t'.join(row_data))
                     
                     url = ""
                     ruta = elements['ruta'][0]['ruta'].lstrip('/')
@@ -2944,20 +2944,20 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operation)
                     
-                    print_with_line_number(f"combined_services: {combined_services}")
+                   #print_with_line_number(f"combined_services: {combined_services}")
                     
-                    print_with_line_number(f"operation: {operation}")
+                   #print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operation)
                     
-                    print_with_line_number(f"business_services_legados: {business_services_legados}")
+                   #print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
                     
-                    print_with_line_number(f"texto_legados: {texto_legados}")
+                   #print_with_line_number(f"texto_legados: {texto_legados}")
                     
                     target_table = None
                     for table in doc.tables:
                         if any("Información legados" in cell.text for row in table.rows for cell in row.cells):
-                            print_with_line_number(f"Información legados: {business_services_legados}")
+                           #print_with_line_number(f"Información legados: {business_services_legados}")
                             target_table = table
                             break
 
@@ -2982,22 +2982,22 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         marcador = "{Imagen_diagrama}"
                         # Obtener el ancho de la página disponible
                         section = doc.sections[0]  # Suponemos que la plantilla tiene una sola sección horizontal
-                        print_with_line_number(f"section: {section}")
+                       #print_with_line_number(f"section: {section}")
                         page_width = section.page_width
                         left_margin = section.left_margin
                         right_margin = section.right_margin
                         
-                        print_with_line_number(f"page_width: {page_width}")
-                        print_with_line_number(f"left_margin: {left_margin}")
-                        print_with_line_number(f"right_margin: {right_margin}")
+                       #print_with_line_number(f"page_width: {page_width}")
+                       #print_with_line_number(f"left_margin: {left_margin}")
+                       #print_with_line_number(f"right_margin: {right_margin}")
 
                         # Calcular el ancho disponible para la imagen
                         max_width = page_width - left_margin - right_margin
-                        print_with_line_number(f"max_width: {max_width}")
+                       #print_with_line_number(f"max_width: {max_width}")
 
                         for para in doc.paragraphs:
                             if marcador in para.text:
-                                print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
+                               #print_with_line_number(f"Insertando imagen en el marcador: {marcador}")
                                 para.text = para.text.replace(marcador, "")  # Borrar el texto del marcador
                                 run = para.add_run()
                                 run.add_picture(diagrama_path, width=max_width)  # Ajustar la imagen al ancho máximo
