@@ -2775,7 +2775,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
             
         
-        print_with_line_number(f"unique_operations: {unique_operations}")
+        #print_with_line_number(f"unique_operations: {unique_operations}")
         
         print_with_line_number(f"✅ unique_operations {unique_operations}")
         
@@ -2800,7 +2800,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             else:
                 log_area.write(f"⏳ Actualizando operación {idx}/{total_operaciones}: {operation}")
             
-            
+            print_with_line_number(f"✅ operation {operation}")
             if es_type:
                 request_key = f"{operation}RequestType"
                 response_key = f"{operation}ResponseType"
