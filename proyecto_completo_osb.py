@@ -2702,12 +2702,14 @@ def main():
                     log_notificacion1 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_notificacion2 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_notificacion3 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
-                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3)
+                    log_request = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    log_response = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3,log_request,log_response)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
 
-def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3):
+def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3,log_request,log_response):
     """Función que ejecuta la generación de documentación."""
     log_area.write("🚀 Iniciando generación de documentación...")
     zip_files = []
@@ -2888,8 +2890,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     log_notificacion2.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
                     log_area.write(f"🔗 Servicio: {service_name}")
                     
-                    log_notificacion3.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
-                    log_notificacion3.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
+                    log_request.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
+                    log_response.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
                     
                     
                     #if total_operaciones == 1:
