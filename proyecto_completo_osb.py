@@ -3246,19 +3246,19 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     generoArchivo = True
                     
-                    st.markdown(
-                        """
-                        <script>
-                        setTimeout(() => {
-                            var element = window.parent.document.querySelector('section.main');
-                            if (element) {
-                                element.scrollTo({ top: element.scrollHeight, behavior: "smooth" });
-                            }
-                        }, 300); // Espera un poco a que se renderice todo
-                        </script>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    # st.markdown(
+                    #     """
+                    #     <script>
+                    #     setTimeout(() => {
+                    #         var element = window.parent.document.querySelector('section.main');
+                    #         if (element) {
+                    #             element.scrollTo({ top: element.scrollHeight, behavior: "smooth" });
+                    #         }
+                    #     }, 300); // Espera un poco a que se renderice todo
+                    #     </script>
+                    #     """,
+                    #     unsafe_allow_html=True
+                    # )
                         
         # 📥 Permitir la descarga del ZIP final
         with open(zip_path, "rb") as file:
