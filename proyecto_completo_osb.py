@@ -2697,14 +2697,17 @@ def main():
         if generar_doc:
             if jar_file and plantilla_file and nombre_autor:
                 #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
-                log_area = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                 with st.spinner("Generando documentación..."):
-                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area)
+                    log_area = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    log_notificacion1 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    log_notificacion2 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    log_notificacion3 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
 
-def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area):
+def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3):
     """Función que ejecuta la generación de documentación."""
     log_area.write("🚀 Iniciando generación de documentación...")
     zip_files = []
@@ -2797,9 +2800,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             if total_operaciones > 1:
                 progreso_actual = int((idx / total_operaciones) * 100)
                 st.session_state["progress_bar_general"].progress(progreso_actual)  # 🔄 Actualizar barra general
-                log_area.write(f"⏳ Actualizando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
+                log_notificacion1.write(f"⏳ Actualizando operación {idx}/{total_operaciones}: {operation} ({progreso_actual}%)")
             else:
-                log_area.write(f"⏳ Actualizando operación {idx}/{total_operaciones}: {operation}")
+                log_notificacion1.write(f"⏳ Actualizando operación {idx}/{total_operaciones}: {operation}")
             
             
             if es_type:
@@ -2879,14 +2882,14 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                 if elements['request']:
                     
-                    log_area.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
+                    log_notificacion1.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
                     log_area.write(f"{operation} ⬇️ Operacion {idx} de {total_operaciones} ⬆️")
-                    log_area.write(f"⏳ Creando documentacion operacion: {operation}")
-                    log_area.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    log_notificacion2.write(f"⏳ Creando documentacion operacion: {operation}")
+                    log_notificacion2.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
                     log_area.write(f"🔗 Servicio: {service_name}")
                     
-                    log_area.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
-                    log_area.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
+                    log_notificacion3.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
+                    log_notificacion3.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
                     
                     
                     #if total_operaciones == 1:
@@ -2976,7 +2979,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
                     
                     if diagrama_path:
-                        log_area.write(f"💾 diagrama_path: {diagrama_path}")
+                        log_notificacion2.write(f"💾 diagrama_path: {diagrama_path}")
                     
                     if os.path.exists(diagrama_path):
                         #doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
@@ -3223,7 +3226,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     doc_nuevo = replace_text_in_doc(doc, variables)
                     doc_nuevo.save(ruta_guardado)  # Guardar en la carpeta temporal
-                    st.success(f"📄 Documento generado: ✅ {nombre_documento}")
+                    log_notificacion3.write(f"📄 Documento generado: ✅ {nombre_documento}")
 
                     if total_operaciones == 1:
                         st.session_state["progress_bar_general"].progress(100)
