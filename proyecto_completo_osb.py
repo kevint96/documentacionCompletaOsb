@@ -2699,17 +2699,20 @@ def main():
                 #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
                 with st.spinner("Generando documentación..."):
                     log_area = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    log_operation = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_notificacion1 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_notificacion2 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_notificacion3 = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    log_proyecto = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_request = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_response = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
-                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3,log_request,log_response)
+                    log_doc_generado = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
 
-def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area,log_notificacion1,log_notificacion2,log_notificacion3,log_request,log_response):
+def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado):
     """Función que ejecuta la generación de documentación."""
     log_area.write("🚀 Iniciando generación de documentación...")
     zip_files = []
@@ -2886,8 +2889,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     log_notificacion1.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
                     log_area.write(f"{operation} ⬇️ Operacion {idx} de {total_operaciones} ⬆️")
-                    log_notificacion2.write(f"⏳ Creando documentacion operacion: {operation}")
-                    log_notificacion2.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    log_operation.write(f"⏳ Creando documentacion operacion: {operation}")
+                    log_proyecto.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
                     log_area.write(f"🔗 Servicio: {service_name}")
                     
                     log_request.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
@@ -3228,7 +3231,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     doc_nuevo = replace_text_in_doc(doc, variables)
                     doc_nuevo.save(ruta_guardado)  # Guardar en la carpeta temporal
-                    log_notificacion3.write(f"📄 Documento generado: ✅ {nombre_documento}")
+                    log_doc_generado.write(f"📄 Documento generado: ✅ {nombre_documento}")
 
                     if total_operaciones == 1:
                         st.session_state["progress_bar_general"].progress(100)
