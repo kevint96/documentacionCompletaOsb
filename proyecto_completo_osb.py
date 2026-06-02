@@ -14,6 +14,7 @@ from docx.oxml import OxmlElement
 from docx.shared import Inches
 from docx.enum.section import WD_ORIENT
 from docx.shared import Cm
+from copy import deepcopy
 import inspect
 import os
 import xml.etree.ElementTree as ET
@@ -2695,7 +2696,7 @@ def main():
     with st.container():
         if generar_doc:
             if jar_file and plantilla_file and nombre_autor:
-                #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
+                st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
                 log_area = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                 with st.spinner("Generando documentación..."):
                     generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area)
@@ -2808,8 +2809,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 request_key = f"{operation}Request"
                 response_key = f"{operation}Response"
                 
-            if not operacion_a_documentar:
-                operacion_a_documentar = operation
+            # if not operacion_a_documentar:
+            #     operacion_a_documentar = operation
             
             # Initialize lists to store request and response elements for the current operation
             request_elements = []
@@ -2903,7 +2904,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         contiene_cabecera_salida = True
                         
                     # Cargar el documento de la plantilla
-                    doc = plantilla_path
+                    doc = Document(plantilla_path)
                     
                     # Contar el número de tablas en el documento
                     num_tables = len(doc.tables)
