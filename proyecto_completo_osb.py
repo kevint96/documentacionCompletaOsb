@@ -2905,7 +2905,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         contiene_cabecera_salida = True
                         
                     # Cargar el documento de la plantilla
-                    doc = Document(plantilla_path)
+                    doc = deepcopy(plantilla_path)
                     
                     # Contar el número de tablas en el documento
                     num_tables = len(doc.tables)
