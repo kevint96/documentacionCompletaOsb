@@ -2696,7 +2696,7 @@ def main():
     with st.container():
         if generar_doc:
             if jar_file and plantilla_file and nombre_autor:
-                st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
+                #st.success(f"✅ operacion_a_documentar: {operacion_a_documentar}")
                 log_area = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                 with st.spinner("Generando documentación..."):
                     generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area)
