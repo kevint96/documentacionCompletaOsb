@@ -2706,6 +2706,7 @@ def main():
 
 def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area):
     """Función que ejecuta la generación de documentación."""
+    st.write(type(plantilla_path))
     log_area.write("🚀 Iniciando generación de documentación...")
     zip_files = []
     generoArchivo = False
