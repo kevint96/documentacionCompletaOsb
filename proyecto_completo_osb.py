@@ -2879,14 +2879,14 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
                 if elements['request']:
                     
-                    st.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
+                    log_area.write(f"⬇️ Operacion {idx} de {total_operaciones} ⬆️")
                     log_area.write(f"{operation} ⬇️ Operacion {idx} de {total_operaciones} ⬆️")
-                    st.write(f"⏳ Creando documentacion operacion: {operation}")
-                    st.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
-                    st.write(f"🔗 Servicio: {service_name}")
+                    log_area.write(f"⏳ Creando documentacion operacion: {operation}")
+                    log_area.write(f"🔹 Proyecto: {elements['ruta'][0]['ruta'].lstrip('/')}")
+                    log_area.write(f"🔗 Servicio: {service_name}")
                     
-                    st.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
-                    st.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
+                    log_area.write(f"📌 Cantidad de elementos request: {len(elements['request'])}")
+                    log_area.write(f"📌 Cantidad de elementos response: {len(elements['response'])}")
                     
                     
                     #if total_operaciones == 1:
@@ -2976,7 +2976,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
                     
                     if diagrama_path:
-                        st.write(f"💾 diagrama_path: {diagrama_path}")
+                        log_area.write(f"💾 diagrama_path: {diagrama_path}")
                     
                     if os.path.exists(diagrama_path):
                         #doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
