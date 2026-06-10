@@ -2646,7 +2646,7 @@ def main():
     
     # 📌 Agregar elementos al menú lateral
     with st.sidebar:
-        jar_file = st.file_uploader("Sube el archivo .jar con dependencias", type=["jar"])
+        jar_file = st.file_uploader("Sube el archivo .jar del proxy exp con dependencias", type=["jar"])
         # Ruta relativa a las plantillas
         RUTA_BASE = os.path.join("plantillas", "Plantilla2.docx")
         
