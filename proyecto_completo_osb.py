@@ -2756,10 +2756,18 @@ def main():
                 proxy_seleccionado = ""
                 
                 if proxies_exp:
+                    st.markdown(
+                            f"""
+                            <div style="font-size:12px; font-weight:bold;">Seleccione el servicio expuesto</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
                     proxy_seleccionado = st.selectbox(
                         "Seleccione el servicio expuesto",
                         proxies_exp,
-                        format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0]
+                        format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],
+                        label_visibility="collapsed"
                     )
                     
                     if proxy_seleccionado:
@@ -2818,12 +2826,12 @@ def main():
                         
                         st.session_state["nombre_capa_exp"] = st.session_state["ubicacion_proxy_exp"].split("/")[0]
 
-                        st.session_state["service_name"] = st.text_input(
-                            "Nombre del servicio (interno)",
-                            value=servicio,
-                            disabled=True,
-                            label_visibility="collapsed"
-                        )
+                        # st.session_state["service_name"] = st.text_input(
+                        #     "Nombre del servicio (interno)",
+                        #     value=servicio,
+                        #     disabled=True,
+                        #     label_visibility="collapsed"
+                        # )
                         
                         st.markdown(
                             f"""
