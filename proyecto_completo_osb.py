@@ -1117,6 +1117,8 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
         if namespace and schema_location:
             namespace_to_xsd[namespace] = schema_location
+            print_with_line_number(f"schema_location: {schema_location}")
+            print_with_line_number(f"namespace_to_xsd[namespace]: {namespace_to_xsd[namespace]}")
 
     #
     # 2. message -> element
@@ -1127,7 +1129,11 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
         message_name = msg.attrib.get("name")
 
+        print_with_line_number(f"message_name: {message_name}")
+
         part = msg.find("wsdl:part", ns)
+
+        print_with_line_number(f"part: {part}")
 
         if part is not None:
 
@@ -1135,6 +1141,8 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
             if message_name and element:
                 message_to_element[message_name] = element
+                print_with_line_number(f"element: {element}")
+                print_with_line_number(f"message_to_element[message_name]: {message_to_element[message_name]}")
 
     #
     # 3. prefijo -> namespace
@@ -1146,9 +1154,11 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
         if "}" in attr_name:
 
             local_name = attr_name.split("}")[-1]
+            print_with_line_number(f"local_name: {local_name}")
 
             if local_name.startswith("srv"):
                 prefix_to_namespace[local_name] = attr_value
+                print_with_line_number(f"prefix_to_namespace[local_name]: {prefix_to_namespace[local_name]}")
 
     #
     # 4. operation -> xsd
@@ -1156,6 +1166,7 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
     for operation in root.findall(".//wsdl:portType/wsdl:operation", ns):
 
         operation_name = operation.attrib.get("name")
+        print_with_line_number(f"operation_name: {operation_name}")
 
         input_tag = operation.find("wsdl:input", ns)
 
@@ -1373,7 +1384,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
         imports = extract_xsd_import_paths(wsdl_path)
-        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        print_with_line_number(f"wsdl_path: {wsdl_path}")
         #print_with_line_number(f"imports: {imports}")
         
         #print_with_line_number(f"project_path: {project_path}")
