@@ -471,7 +471,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
                    operacion_business, operations, service_name, operation_actual, 
                    target_complex_type=None, root_element_name=None,
                    request_elements=None, response_elements=None,processed_types=None,
-                   start_time=None, time_limit=0.60,wsdl_path=None):
+                   start_time=None, time_limit=0.60):
     """
     Parsea un XSD y extrae los elementos request/response de forma recursiva.
     """
@@ -494,24 +494,6 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
     ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
-    # Si no existe, intentar resolverlo relativo al WSDL
-    if not os.path.isfile(ruta_corregida) and wsdl_path:
-
-        wsdl_dir = os.path.dirname(wsdl_path)
-
-        ruta_wsdl_relativa = os.path.normpath(
-            os.path.join(
-                wsdl_dir,
-                xsd_file_path
-            )
-        )
-
-        print_with_line_number(
-            f"Intentando ruta relativa al WSDL: {ruta_wsdl_relativa}"
-        )
-
-        if os.path.isfile(ruta_wsdl_relativa):
-            ruta_corregida = ruta_wsdl_relativa
     #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
     #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
     #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
@@ -1514,7 +1496,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         operation_to_xsd = {}
-        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        print_with_line_number(f"wsdl_path: {wsdl_path}")
         #print_with_line_number(f"operations: {operations}")
         #print_with_line_number(f"project_name: {project_name}")
         #print_with_line_number(f"service_name: {service_name}")
@@ -1570,8 +1552,17 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
                         print_with_line_number(f"xsd: {xsd}")
+                        if xsd.startswith("../"):
+                            wsdl_dir = os.path.dirname(wsdl_path)
+                            xsd = os.path.normpath(
+                                os.path.join(wsdl_dir, xsd)
+                            )
+
+                            print_with_line_number(
+                                f"xsd resuelto desde wsdl: {xsd}"
+                            )
                         #start_time = time.time()  # Guardamos el tiempo inicial
-                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual,wsdl_path)
+                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #current_time = time.time()
                         #elapsed_time = current_time - start_time
                         #st.toast(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg")
