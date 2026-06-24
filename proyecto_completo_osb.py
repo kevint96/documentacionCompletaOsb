@@ -2637,7 +2637,7 @@ def obtener_valor_por_operacion(services_with_data, operation, parametro):
     
 def main():
     st.markdown(
-    "<h1 style='text-align: center;'>📄 Generador de Documentación OSB</h1>",
+    "<h2 style='text-align: center;'>📄 Generador de Documentación OSB</h2>",
     unsafe_allow_html=True)
     
     # Ruta donde se extraerán los archivos
