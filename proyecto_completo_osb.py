@@ -2917,7 +2917,11 @@ def main():
                             operacion_a_documentar = None  # Para evitar errores si está vacío     
                         
 
-        nombre_autor = st.text_input("Nombre del autor", value="Kevin Torres")  # Valor por defecto
+        st.markdown(
+            f"""
+            <div style="font-size:14px; font-weight:bold;">Nombre del autor</div>""",unsafe_allow_html=True
+        )
+        nombre_autor = st.text_input("Nombre del autor", value="Kevin Torres",label_visibility="collapsed")  # Valor por defecto
         generar_doc = st.button("Generar Documentación")
          
     with st.container():
