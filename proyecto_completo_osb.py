@@ -1095,7 +1095,9 @@ def extract_wsdl_operations(wsdl_path):
 
 def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
-    print_with_line_number(f"ENTRO AQUI obtener_xsd_por_operacion_desde_wsdl: {wsdl_path}")
+    print_with_line_number(f"=== INICIO obtener_xsd_por_operacion_desde_wsdl ===")
+    print_with_line_number(f"wsdl_path: {wsdl_path}")
+
     tree = ET.parse(wsdl_path)
     root = tree.getroot()
 
@@ -1106,96 +1108,173 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
     resultado = {}
 
-    #
+    # ====================================================
     # 1. namespace -> schemaLocation
-    #
+    # ====================================================
     namespace_to_xsd = {}
 
-    for imp in root.findall(".//xsd:import", ns):
+    print_with_line_number("----- IMPORTS -----")
 
-        namespace = imp.attrib.get("namespace")
-        schema_location = imp.attrib.get("schemaLocation")
+    for imp in root.xpath(".//xsd:import", namespaces=ns):
+
+        namespace = imp.get("namespace")
+        schema_location = imp.get("schemaLocation")
+
+        print_with_line_number(
+            f"IMPORT namespace={namespace} schemaLocation={schema_location}"
+        )
 
         if namespace and schema_location:
             namespace_to_xsd[namespace] = schema_location
-            print_with_line_number(f"schema_location: {schema_location}")
-            print_with_line_number(f"namespace_to_xsd[namespace]: {namespace_to_xsd[namespace]}")
 
-    #
+    print_with_line_number(
+        f"namespace_to_xsd={namespace_to_xsd}"
+    )
+
+    # ====================================================
     # 2. message -> element
-    #
+    # ====================================================
     message_to_element = {}
 
-    for msg in root.findall("wsdl:message", ns):
+    print_with_line_number("----- MESSAGES -----")
 
-        message_name = msg.attrib.get("name")
+    for msg in root.xpath("./wsdl:message", namespaces=ns):
 
-        print_with_line_number(f"message_name: {message_name}")
+        message_name = msg.get("name")
 
-        part = msg.find("wsdl:part", ns)
+        part = msg.find("{http://schemas.xmlsoap.org/wsdl/}part")
 
-        print_with_line_number(f"part: {part}")
+        print_with_line_number(
+            f"message_name={message_name}"
+        )
 
         if part is not None:
 
-            element = part.attrib.get("element")
+            element = part.get("element")
+
+            print_with_line_number(
+                f"element={element}"
+            )
 
             if message_name and element:
                 message_to_element[message_name] = element
-                print_with_line_number(f"element: {element}")
-                print_with_line_number(f"message_to_element[message_name]: {message_to_element[message_name]}")
 
-    #
+    print_with_line_number(
+        f"message_to_element={message_to_element}"
+    )
+
+    # ====================================================
     # 3. prefijo -> namespace
-    #
+    # ====================================================
     prefix_to_namespace = {}
 
-    for attr_name, attr_value in root.attrib.items():
+    print_with_line_number("----- NAMESPACES -----")
 
-        if "}" in attr_name:
+    print_with_line_number(
+        f"root.nsmap={root.nsmap}"
+    )
 
-            local_name = attr_name.split("}")[-1]
-            print_with_line_number(f"local_name: {local_name}")
+    for prefix, namespace in root.nsmap.items():
 
-            if local_name.startswith("srv"):
-                prefix_to_namespace[local_name] = attr_value
-                print_with_line_number(f"prefix_to_namespace[local_name]: {prefix_to_namespace[local_name]}")
+        print_with_line_number(
+            f"prefix={prefix} namespace={namespace}"
+        )
 
-    #
-    # 4. operation -> xsd
-    #
-    for operation in root.findall(".//wsdl:portType/wsdl:operation", ns):
+        if prefix:
+            prefix_to_namespace[prefix] = namespace
 
-        operation_name = operation.attrib.get("name")
-        print_with_line_number(f"operation_name: {operation_name}")
+    print_with_line_number(
+        f"prefix_to_namespace={prefix_to_namespace}"
+    )
 
-        input_tag = operation.find("wsdl:input", ns)
+    # ====================================================
+    # 4. operation -> schemaLocation
+    # ====================================================
+    print_with_line_number("----- OPERATIONS -----")
 
-        if input_tag is None:
+    operations = root.xpath(
+        ".//wsdl:portType/wsdl:operation",
+        namespaces=ns
+    )
+
+    print_with_line_number(
+        f"Cantidad operaciones encontradas={len(operations)}"
+    )
+
+    for operation in operations:
+
+        operation_name = operation.get("name")
+
+        print_with_line_number(
+            f"operation_name={operation_name}"
+        )
+
+        input_node = operation.find(
+            "{http://schemas.xmlsoap.org/wsdl/}input"
+        )
+
+        print_with_line_number(
+            f"input_node={input_node}"
+        )
+
+        if input_node is None:
             continue
 
-        message = input_tag.attrib.get("message")
+        message_ref = input_node.get("message")
 
-        if not message:
+        print_with_line_number(
+            f"message_ref={message_ref}"
+        )
+
+        if not message_ref:
             continue
 
-        message_name = message.split(":")[-1]
+        message_name = message_ref.split(":")[-1]
 
-        element = message_to_element.get(message_name)
+        print_with_line_number(
+            f"message_name={message_name}"
+        )
 
-        if not element:
+        element_ref = message_to_element.get(message_name)
+
+        print_with_line_number(
+            f"element_ref={element_ref}"
+        )
+
+        if not element_ref:
             continue
 
-        prefix = element.split(":")[0]
+        prefix = element_ref.split(":")[0]
+
+        print_with_line_number(
+            f"prefix={prefix}"
+        )
 
         namespace = prefix_to_namespace.get(prefix)
+
+        print_with_line_number(
+            f"namespace={namespace}"
+        )
 
         if not namespace:
             continue
 
         schema_location = namespace_to_xsd.get(namespace)
 
-        resultado[operation_name] = schema_location
+        print_with_line_number(
+            f"schema_location={schema_location}"
+        )
+
+        if schema_location:
+            resultado[operation_name] = schema_location
+
+    print_with_line_number(
+        f"RESULTADO FINAL={resultado}"
+    )
+
+    print_with_line_number(
+        "=== FIN obtener_xsd_por_operacion_desde_wsdl ==="
+    )
 
     return resultado
 
