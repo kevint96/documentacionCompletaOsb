@@ -2685,44 +2685,6 @@ def main():
         plantilla_file = Document(RUTA_BASE)
         st.session_state["jar_file"] = jar_file
         if jar_file:
-            jar_path = "temp.jar"
-
-            # 🔥 Borrar contenido previo de la carpeta `extraccion_jar` solo si existe
-            if os.path.exists(carpeta_destino):
-                try:
-                    shutil.rmtree(carpeta_destino)  # Elimina la carpeta y su contenido
-                except Exception as e:
-                    st.success(f"⚠️ No se pudo limpiar la carpeta temporal: {e}")
-
-            # 📌 Crear nuevamente la carpeta vacía
-            os.makedirs(carpeta_destino, exist_ok=True)
-
-            # Guardar el nuevo archivo .jar
-            with open(jar_path, "wb") as f:
-                f.write(jar_file.getbuffer())
-
-            # 📂 Extraer los archivos del nuevo .jar
-            try:
-                with zipfile.ZipFile(jar_path, "r") as jar:
-                    jar.extractall(carpeta_destino)
-                    archivos_extraidos = jar.namelist()
-
-                st.success(f"✅ Archivos extraídos en: {carpeta_destino}")
-            except zipfile.BadZipFile:
-                st.error("❌ Error: El archivo no es un JAR válido o está dañado.")
-            
-            operaciones = obtener_operaciones(carpeta_destino)
-            # Agregar una opción vacía al inicio de la lista
-            operaciones = sorted(operaciones, key=str.lower)
-            operaciones.insert(0, "TODAS")
-            if operaciones:  # Solo mostrar si hay operaciones disponibles
-                operacion_a_documentar = st.selectbox("Selecciona una operación", operaciones)
-                if operacion_a_documentar == "TODAS":
-                    operacion_a_documentar = None
-            else:
-                st.warning("⚠️ No se encontraron operaciones disponibles.")
-                operacion_a_documentar = None  # Para evitar errores si está vacío           
-        
             # Diccionario de capas con tipos de archivo dentro
             capas = ["EXP", "EBS", "ABC"]
             artefactos = ["Pipeline", "Proxy", "WSDL", "BusinessService"]
@@ -2798,18 +2760,17 @@ def main():
                     
                     ubicacion_proxy_ebs = "/".join(proxies_ebs[0].split("/")[:-1]) + "/"   # Carpeta (ubicación ebs)
 
-                    st.markdown(
-                        """
-                        <div style="font-size:18px; font-weight:bold;">Proxy EXP</div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    # st.markdown(
+                    #     """
+                    #     <div style="font-size:18px; font-weight:bold;">Proxy EXP</div>
+                    #     """,
+                    #     unsafe_allow_html=True
+                    # )
 
                     proxy_seleccionado = st.selectbox(
-                        "Proxy EXP",
+                        "Seleccione el servicio",
                         proxies_exp,
-                        format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
-                        label_visibility="collapsed"
+                        format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0]
                     )
                     
                     if proxy_seleccionado:
@@ -2850,7 +2811,7 @@ def main():
                                 if pipeline_ref:
                                     ubicacion_pipeline_exp = pipeline_ref
                                     st.session_state["ubicacion_pipeline_exp"] = "/".join(ubicacion_pipeline_exp.split("/")[:-1]) + "/"
-                                    st.markdown(f"📌 **Pipeline detectado:** `{pipeline_ref}`")
+                                    #st.markdown(f"📌 **Pipeline detectado:** `{pipeline_ref}`")
                                     st.session_state["ruta_pipeline_exp"] = pipeline_ref
                                 else:
                                     st.warning("⚠️ No se encontró referencia a un Pipeline en este Proxy.")
@@ -2913,6 +2874,43 @@ def main():
                             disabled=True,
                             label_visibility="collapsed"
                         )
+
+                        jar_path = "temp.jar"
+                        # 🔥 Borrar contenido previo de la carpeta `extraccion_jar` solo si existe
+                        if os.path.exists(carpeta_destino):
+                            try:
+                                shutil.rmtree(carpeta_destino)  # Elimina la carpeta y su contenido
+                            except Exception as e:
+                                st.success(f"⚠️ No se pudo limpiar la carpeta temporal: {e}")
+
+                        # 📌 Crear nuevamente la carpeta vacía
+                        os.makedirs(carpeta_destino, exist_ok=True)
+
+                        # Guardar el nuevo archivo .jar
+                        with open(jar_path, "wb") as f:
+                            f.write(jar_file.getbuffer())
+
+                        # 📂 Extraer los archivos del nuevo .jar
+                        try:
+                            with zipfile.ZipFile(jar_path, "r") as jar:
+                                jar.extractall(carpeta_destino)
+                                archivos_extraidos = jar.namelist()
+
+                            st.success(f"✅ Archivos extraídos en: {carpeta_destino}")
+                        except zipfile.BadZipFile:
+                            st.error("❌ Error: El archivo no es un JAR válido o está dañado.")
+                        
+                        operaciones = obtener_operaciones(carpeta_destino)
+                        # Agregar una opción vacía al inicio de la lista
+                        operaciones = sorted(operaciones, key=str.lower)
+                        operaciones.insert(0, "TODAS")
+                        if operaciones:  # Solo mostrar si hay operaciones disponibles
+                            operacion_a_documentar = st.selectbox("Selecciona una operación", operaciones)
+                            if operacion_a_documentar == "TODAS":
+                                operacion_a_documentar = None
+                        else:
+                            st.warning("⚠️ No se encontraron operaciones disponibles.")
+                            operacion_a_documentar = None  # Para evitar errores si está vacío     
                         
 
         nombre_autor = st.text_input("Nombre del autor", value="Kevin Torres")  # Valor por defecto
