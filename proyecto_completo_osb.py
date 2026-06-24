@@ -2715,6 +2715,8 @@ def main():
                     log_request = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_response = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_doc_generado = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
+                    print_with_line_number(f"✅ jar_file {jar_file}")
+                    print_with_line_number(f"✅ plantilla_file {plantilla_file}")
                     generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
@@ -2729,8 +2731,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Extraer ruta del proyecto desde el .jar
     jdeveloper_projects_dir = jar_path
     
-    print_with_line_number(f"✅ jar_path {jar_path}")
-    print_with_line_number(f"✅ plantilla_path {plantilla_path}")
+    # print_with_line_number(f"✅ jar_path {jar_path}")
+    # print_with_line_number(f"✅ plantilla_path {plantilla_path}")
     #print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
     
     if not jdeveloper_projects_dir:
