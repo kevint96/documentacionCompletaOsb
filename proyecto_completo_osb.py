@@ -1093,6 +1093,100 @@ def extract_wsdl_operations(wsdl_path):
                 operations.add(operation_name)  # Agregamos el nombre de la operación al conjunto
     return list(operations)  # Convertimos el conjunto de vuelta a lista antes de devolverlo
 
+def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
+
+    tree = ET.parse(wsdl_path)
+    root = tree.getroot()
+
+    ns = {
+        "wsdl": "http://schemas.xmlsoap.org/wsdl/",
+        "xsd": "http://www.w3.org/2001/XMLSchema"
+    }
+
+    resultado = {}
+
+    #
+    # 1. namespace -> schemaLocation
+    #
+    namespace_to_xsd = {}
+
+    for imp in root.findall(".//xsd:import", ns):
+
+        namespace = imp.attrib.get("namespace")
+        schema_location = imp.attrib.get("schemaLocation")
+
+        if namespace and schema_location:
+            namespace_to_xsd[namespace] = schema_location
+
+    #
+    # 2. message -> element
+    #
+    message_to_element = {}
+
+    for msg in root.findall("wsdl:message", ns):
+
+        message_name = msg.attrib.get("name")
+
+        part = msg.find("wsdl:part", ns)
+
+        if part is not None:
+
+            element = part.attrib.get("element")
+
+            if message_name and element:
+                message_to_element[message_name] = element
+
+    #
+    # 3. prefijo -> namespace
+    #
+    prefix_to_namespace = {}
+
+    for attr_name, attr_value in root.attrib.items():
+
+        if "}" in attr_name:
+
+            local_name = attr_name.split("}")[-1]
+
+            if local_name.startswith("srv"):
+                prefix_to_namespace[local_name] = attr_value
+
+    #
+    # 4. operation -> xsd
+    #
+    for operation in root.findall(".//wsdl:portType/wsdl:operation", ns):
+
+        operation_name = operation.attrib.get("name")
+
+        input_tag = operation.find("wsdl:input", ns)
+
+        if input_tag is None:
+            continue
+
+        message = input_tag.attrib.get("message")
+
+        if not message:
+            continue
+
+        message_name = message.split(":")[-1]
+
+        element = message_to_element.get(message_name)
+
+        if not element:
+            continue
+
+        prefix = element.split(":")[0]
+
+        namespace = prefix_to_namespace.get(prefix)
+
+        if not namespace:
+            continue
+
+        schema_location = namespace_to_xsd.get(namespace)
+
+        resultado[operation_name] = schema_location
+
+    return resultado
+
 def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None,ruta_proxy_exp=None):
     wsdl_operations_map = {}
     # =====================================================
@@ -1301,25 +1395,26 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         print_with_line_number(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
-            for operation in operations:
-                for xsd in imports:
-                    xsd_filename = os.path.basename(xsd).lower()  # Obtener solo el nombre del archivo XSD
+            # for operation in operations:
+            #     for xsd in imports:
+            #         xsd_filename = os.path.basename(xsd).lower()  # Obtener solo el nombre del archivo XSD
 
-                    # 🔹 Buscar coincidencia exacta con el nombre del XSD
-                    if xsd_filename == operation.lower() + ".xsd":
-                        operation_to_xsd[operation] = xsd
-                        break  # Detener la búsqueda cuando encuentra la coincidencia exacta
+            #         # 🔹 Buscar coincidencia exacta con el nombre del XSD
+            #         if xsd_filename == operation.lower() + ".xsd":
+            #             operation_to_xsd[operation] = xsd
+            #             break  # Detener la búsqueda cuando encuentra la coincidencia exacta
 
-                else:  # Solo ejecuta este bloque si el `for xsd in imports` no encontró nada
-                    xsd_names = [os.path.basename(x).lower() for x in imports]  # Lista de nombres de archivos XSD
-                    closest_match = difflib.get_close_matches(operation.lower() + ".xsd", xsd_names, n=1, cutoff=0.9)
+            #     else:  # Solo ejecuta este bloque si el `for xsd in imports` no encontró nada
+            #         xsd_names = [os.path.basename(x).lower() for x in imports]  # Lista de nombres de archivos XSD
+            #         closest_match = difflib.get_close_matches(operation.lower() + ".xsd", xsd_names, n=1, cutoff=0.9)
 
-                    if closest_match:
-                        matched_xsd = next(x for x in imports if os.path.basename(x).lower() == closest_match[0])
-                        operation_to_xsd[operation] = matched_xsd
-                    else:
-                        operation_to_xsd[operation] = None  # No se encontró una coincidencia
+            #         if closest_match:
+            #             matched_xsd = next(x for x in imports if os.path.basename(x).lower() == closest_match[0])
+            #             operation_to_xsd[operation] = matched_xsd
+            #         else:
+            #             operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
+            operation_to_xsd = obtener_xsd_por_operacion_desde_wsdl(wsdl_path)
             print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
 
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
