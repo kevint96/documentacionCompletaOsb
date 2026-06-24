@@ -2753,7 +2753,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Llamar a la función principal de tu script
     services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
 
-    print_with_line_number(f"✅ services_with_data {services_with_data}")
+    #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
     es_type = False
     
@@ -2775,7 +2775,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 if 'operations' in element:
                     operation_names.update(element['operations'])  # Agrega todas las operaciones a operation_names
 
-       #print_with_line_number(f"service_name: {service_name}")
+        print_with_line_number(f"service_name: {service_name}")
         # Convert the set to a sorted list to get the operation names in alphabetical order
         unique_operations = sorted(operation_names)
 
@@ -2784,9 +2784,9 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
             unique_operations = [operacion_a_documentar] if operacion_a_documentar in unique_operations else []
             
         
-       #print_with_line_number(f"unique_operations: {unique_operations}")
+        print_with_line_number(f"unique_operations: {unique_operations}")
         
-       #print_with_line_number(f"✅ unique_operations {unique_operations}")
+        print_with_line_number(f"✅ unique_operations {unique_operations}")
         
         operation_elements = {}
         
@@ -2854,8 +2854,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                 'service_name': service_name,
                 'lista_operaciones': lista_operaciones_proyecto
             }
-       #print_with_line_number(f"operation_elements: {operation_elements}")
-       #print_with_line_number(f"service_name: {service_name}")
+        print_with_line_number(f"operation_elements: {operation_elements}")
+        print_with_line_number(f"service_name: {service_name}")
         # Print the result
         # 📂 Crear un solo ZIP para todas las operaciones
         zip_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
@@ -2864,15 +2864,15 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for idx, (operation, elements) in enumerate(operation_elements.items(), start=1):
                 
-               #print_with_line_number(f"elements: {elements}")
+                print_with_line_number(f"elements: {elements}")
                 lista_operaciones = elements['lista_operaciones']
-               #print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
+                print_with_line_number(f"elements lista_operaciones: {lista_operaciones}")
                 lista_operaciones = sorted(obtener_valor_por_operacion(services_with_data, operation, 'operations'))
-               #print_with_line_number(f"lista_operaciones: {lista_operaciones}")
+                print_with_line_number(f"lista_operaciones: {lista_operaciones}")
                 operaciones_formateadas = "\n".join(f"* {op}" for op in lista_operaciones)
-               #print_with_line_number(f"elements['request']: {elements['request']}")
+                print_with_line_number(f"elements['request']: {elements['request']}")
                 service_name = obtener_valor_por_operacion(services_with_data, operation, 'service_name')
-               #print_with_line_number(f"service_name: {service_name}")
+                print_with_line_number(f"service_name: {service_name}")
                 if not elements['request']:
                     st.warning(f"⚠️ La operación {operation} no tiene elementos de entrada, saltando...")
                     continue  # Si no hay request, no genera el documento
@@ -2917,7 +2917,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     # Contar el número de tablas en el documento
                     num_tables = len(doc.tables)
                     
-                   #print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
+                    print_with_line_number(f"El documento contiene {num_tables} tabla(s).")
 
                     # Mostrar cada tabla
                     # for i, table in enumerate(doc.tables):
@@ -2953,20 +2953,20 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     
                     combined_services = generar_operaciones_expuestas_http(jdeveloper_projects_dir,operation)
                     
-                   #print_with_line_number(f"combined_services: {combined_services}")
+                    print_with_line_number(f"combined_services: {combined_services}")
                     
-                   #print_with_line_number(f"operation: {operation}")
+                    print_with_line_number(f"operation: {operation}")
                     business_services_legados = obtener_informacion_legados(combined_services,jdeveloper_projects_dir,operation)
                     
-                   #print_with_line_number(f"business_services_legados: {business_services_legados}")
+                    print_with_line_number(f"business_services_legados: {business_services_legados}")
                     texto_legados = formatear_legados_para_doc(business_services_legados)
                     
-                   #print_with_line_number(f"texto_legados: {texto_legados}")
+                    print_with_line_number(f"texto_legados: {texto_legados}")
                     
                     target_table = None
                     for table in doc.tables:
                         if any("Información legados" in cell.text for row in table.rows for cell in row.cells):
-                           #print_with_line_number(f"Información legados: {business_services_legados}")
+                            print_with_line_number(f"Información legados: {business_services_legados}")
                             target_table = table
                             break
 
@@ -2991,7 +2991,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         marcador = "{Imagen_diagrama}"
                         # Obtener el ancho de la página disponible
                         section = doc.sections[0]  # Suponemos que la plantilla tiene una sola sección horizontal
-                       #print_with_line_number(f"section: {section}")
+                        print_with_line_number(f"section: {section}")
                         page_width = section.page_width
                         left_margin = section.left_margin
                         right_margin = section.right_margin
