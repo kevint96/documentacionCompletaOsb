@@ -402,6 +402,29 @@ def extract_namespaces(xsd_content):
         namespaces[prefix] = uri
     return namespaces
 
+def obtener_wsdl_asociados(jar_file, proxy_path):
+    """
+    Busca referencias a WSDL dentro de un archivo .proxy del JAR.
+    Retorna una lista de rutas WSDL encontradas en etiquetas <con:wsdl ref="...">.
+    """
+    wsdl_refs = ""
+
+    try:
+        with zipfile.ZipFile(jar_file, "r") as jar:
+            contenido_proxy = jar.read(proxy_path).decode("utf-8")
+            root = ET.fromstring(contenido_proxy)
+
+            # Buscar específicamente las etiquetas <con:wsdl ref="...">
+            for elem in root.iter():
+                # Verifica si es una etiqueta con nombre que termina en 'wsdl'
+                if elem.tag.endswith("wsdl") and "ref" in elem.attrib:
+                    ref = elem.attrib["ref"]
+                    wsdl_refs = ref
+
+    except Exception as e:
+        print(f"❌ Error al procesar proxy: {e}")
+
+    return wsdl_refs
 
 def extract_imports(root):
     """Extrae los imports y los mapea con sus schemaLocation."""
@@ -2660,6 +2683,7 @@ def main():
         
         #plantilla_file = st.file_uploader("Sube la plantilla de Word", type=["docx"])
         plantilla_file = Document(RUTA_BASE)
+        st.session_state["jar_file"] = jar_file
         if jar_file:
             jar_path = "temp.jar"
 
@@ -2698,6 +2722,199 @@ def main():
             else:
                 st.warning("⚠️ No se encontraron operaciones disponibles.")
                 operacion_a_documentar = None  # Para evitar errores si está vacío           
+        
+            # Diccionario de capas con tipos de archivo dentro
+            capas = ["EXP", "EBS", "ABC"]
+            artefactos = ["Pipeline", "Proxy", "WSDL", "BusinessService"]
+
+            # Inicializar estructura
+            capas_detectadas = {capa: {tipo: [] for tipo in artefactos} for capa in capas}
+
+            st.session_state["jar_file"] = jar_file
+            if jar_file:
+                with zipfile.ZipFile(jar_file, "r") as jar:
+                    rutas = jar.namelist()
+
+                    for ruta in rutas:
+                        ruta_norm = ruta.replace("\\", "/")
+                        ruta_low = ruta_norm.lower()
+
+                        if ruta_norm.endswith("/"):
+                            continue  # saltar carpetas
+
+                        # Detectar capa según segmentos de la ruta
+                        capa_actual = None
+                        for capa in capas:
+                            if any(capa.lower() in segment for segment in ruta_low.split("/")):
+                                capa_actual = capa
+                                break
+
+                        if not capa_actual:
+                            continue  # si no pertenece a ninguna capa, saltar
+
+                        # Detectar tipo de artefacto
+                        if ruta_low.endswith(".pipeline"):
+                            capas_detectadas[capa_actual]["Pipeline"].append(ruta)
+                        elif ruta_low.endswith(".proxy") or ruta_low.endswith(".proxyservice") or "proxyservice" in ruta_low:
+                            capas_detectadas[capa_actual]["Proxy"].append(ruta)
+                        elif ruta_low.endswith(".wsdl"):
+                            capas_detectadas[capa_actual]["WSDL"].append(ruta)
+                        elif ruta_low.endswith(".businessservice"):
+                            capas_detectadas[capa_actual]["BusinessService"].append(ruta)
+                            
+                proxies_exp = capas_detectadas["EXP"]["Proxy"]
+                proxies_ebs = capas_detectadas["EBS"]["Proxy"]
+                proxies_abc = capas_detectadas["ABC"]["Proxy"]
+                
+                wsdls_ebs = capas_detectadas["EBS"]["WSDL"]
+                
+                # Carpeta raíz detectada
+                carpetas_raiz = set()
+
+                for ruta in rutas:
+                    # Normalizar
+                    ruta_norm = ruta.replace("\\", "/")
+                    
+                    # Tomar solo el primer segmento
+                    carpeta = ruta_norm.split("/")[0]
+                    
+                    # Evitar agregar archivos sueltos o vacíos
+                    if carpeta.strip():
+                        carpetas_raiz.add(carpeta)
+                
+                carpetas_raiz = sorted(list(carpetas_raiz))
+
+                excluir = {"ExportInfo", "UtilitariosEBS"}
+                carpetas_raiz = [c for c in carpetas_raiz if c not in excluir]
+
+                
+                rutas_proxies_ebs = list({
+                    "/".join(proxy.split("/")[:-1]) + "/" for proxy in proxies_ebs
+                })
+                proxy_seleccionado = ""
+                
+                if proxies_exp:
+                    ubicacion_proxy = "/".join(proxies_exp[0].split("/")[:-1]) + "/"   # Carpeta (ubicación)
+                    
+                    ubicacion_proxy_ebs = "/".join(proxies_ebs[0].split("/")[:-1]) + "/"   # Carpeta (ubicación ebs)
+
+                    st.markdown(
+                        """
+                        <div style="font-size:18px; font-weight:bold;">Proxy EXP</div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
+                    proxy_seleccionado = st.selectbox(
+                        "Proxy EXP",
+                        proxies_exp,
+                        format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
+                        label_visibility="collapsed"
+                    )
+                    
+                    if proxy_seleccionado:
+                        # Obtener el nombre de servicio del proxy
+                        servicio = proxy_seleccionado.split("/")[-1].rsplit(".", 1)[0]
+                        
+                        pipeline_ref=""
+                        ruta = proxy_seleccionado
+                        st.session_state["ubicacion_proxy_exp"] = "/".join(ruta.split("/")[:-1]) + "/"   # Carpeta (ubicación)
+                        servicio = ruta.split("/")[-1].rsplit(".", 1)[0] # Nombre del servicio (sin extensión)
+                        
+                        # Leer internamente el contenido del proxy dentro del JAR
+                        with zipfile.ZipFile(jar_file, "r") as jar:
+                            with jar.open(proxy_seleccionado) as proxy_file:
+                                proxy_xml = proxy_file.read().decode("utf-8")
+
+                                # Parsear XML
+                                root = ET.fromstring(proxy_xml)
+
+                                # Buscar el invoke con ref al pipeline
+                                ns = {
+                                    "ser": "http://www.bea.com/wli/sb/services",
+                                    "con": "http://www.bea.com/wli/sb/pipeline/config"
+                                }
+                                st.session_state["ubicacion_pipeline_exp"] = None
+                                invoke_elem = None
+
+                                for elem in root.findall(".//ser:invoke", {
+                                    "ser": "http://www.bea.com/wli/sb/services"
+                                }):
+                                    xsi_type = elem.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type")
+                                    if xsi_type and xsi_type.endswith("PipelineRef"):
+                                        invoke_elem = elem
+                                        break
+                                if invoke_elem is not None:
+                                    pipeline_ref = invoke_elem.attrib.get("ref")
+
+                                if pipeline_ref:
+                                    ubicacion_pipeline_exp = pipeline_ref
+                                    st.session_state["ubicacion_pipeline_exp"] = "/".join(ubicacion_pipeline_exp.split("/")[:-1]) + "/"
+                                    st.markdown(f"📌 **Pipeline detectado:** `{pipeline_ref}`")
+                                    st.session_state["ruta_pipeline_exp"] = pipeline_ref
+                                else:
+                                    st.warning("⚠️ No se encontró referencia a un Pipeline en este Proxy.")
+                        
+                        # Mostrar con subtítulo pequeño
+                        pipeline_exp = pipeline_ref.split("/")[-1]
+                        
+                        st.markdown(
+                            f"""
+                            <div style="font-size:18px; font-weight:bold;">Nombre del servicio</div>
+                            <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_exp"]}</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        
+                        st.session_state["nombre_capa_exp"] = st.session_state["ubicacion_proxy_exp"].split("/")[0]
+
+                        st.session_state["service_name"] = st.text_input(
+                            "Nombre del servicio (interno)",
+                            value=servicio,
+                            disabled=True,
+                            label_visibility="collapsed"
+                        )
+                        
+                        st.markdown(
+                            f"""
+                            <div style="font-size:18px; font-weight:bold;">Nombre del pipeline</div>
+                            <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_pipeline_exp"]}</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+                        st.session_state["pipeline_exp"] = st.text_input(
+                            "Nombre del pipeline (interno)",
+                            value=pipeline_exp,
+                            disabled=True,
+                            label_visibility="collapsed"
+                        )
+                        
+                        # Obtener los WSDL asociados
+                        wsdl_refs = obtener_wsdl_asociados(jar_file, proxy_seleccionado)
+                        
+                        st.session_state["ruta_wsdl"] = wsdl_refs
+                        st.session_state["ubicacion_wsdl_exp"] = "/".join(st.session_state["ruta_wsdl"].split("/")[:-1]) + "/"   # Carpeta (ubicación)
+                        st.session_state["wsdl_exp"] = st.session_state["ruta_wsdl"].split("/")[-1] # Nombre del servicio (sin extensión)
+                        
+                        
+                        # Mostrar con subtítulo pequeño
+                        st.markdown(
+                            f"""
+                            <div style="font-size:18px; font-weight:bold;">Nombre del wsdl</div>
+                            <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_wsdl_exp"]}</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+                        st.session_state["wsdl_exp"] = st.text_input(
+                            label="Nombre del wsdl",
+                            value=st.session_state["wsdl_exp"],
+                            disabled=True,
+                            label_visibility="collapsed"
+                        )
+                        
+
         nombre_autor = st.text_input("Nombre del autor", value="Kevin Torres")  # Valor por defecto
         generar_doc = st.button("Generar Documentación")
          
