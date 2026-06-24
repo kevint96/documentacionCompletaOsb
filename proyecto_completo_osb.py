@@ -1101,7 +1101,7 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
     tree = etree.parse(wsdl_path)
     root = tree.getroot()
 
-    print(type(root))
+    print_with_line_number(f"root.tag={root.tag}")
 
     ns = {
         "wsdl": "http://schemas.xmlsoap.org/wsdl/",
