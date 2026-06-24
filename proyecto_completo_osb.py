@@ -2979,15 +2979,29 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                             break
 
                     if target_table:
-                        # Insertar los datos en la tabla
+                        registros_insertados = set()
+
                         for legado, servicios in business_services_legados.items():
                             if legado != "UtilitariosEBS":
                                 for servicio in servicios:
                                     business, op = servicio.split(":")
+
+                                    clave = (
+                                        legado.replace("_ABC", ""),
+                                        business,
+                                        op
+                                    )
+
+                                    # Si ya existe, lo omite
+                                    if clave in registros_insertados:
+                                        continue
+
+                                    registros_insertados.add(clave)
+
                                     row = target_table.add_row().cells
-                                    row[0].text = legado.replace("_ABC","")  # PROYECTO
-                                    row[1].text = business  # BUSINESS
-                                    row[2].text = op  # OPERACIÓN
+                                    row[0].text = clave[0]  # PROYECTO
+                                    row[1].text = clave[1]  # BUSINESS
+                                    row[2].text = clave[2]  # OPERACIÓN
                     
                     diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
                     
