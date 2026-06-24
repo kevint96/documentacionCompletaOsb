@@ -1095,7 +1095,7 @@ def extract_wsdl_operations(wsdl_path):
 
 def obtener_xml_wsdl_real(wsdl_path):
 
-    print_with_line_number(f"Abriendo WSDL: {wsdl_path}")
+    #print_with_line_number(f"Abriendo WSDL: {wsdl_path}")
 
     tree = ET.parse(wsdl_path)
     root = tree.getroot()
@@ -1107,25 +1107,25 @@ def obtener_xml_wsdl_real(wsdl_path):
     wsdl_node = root.find(".//con:wsdl", ns_osb)
 
     if wsdl_node is None:
-        print_with_line_number("❌ No existe nodo con:wsdl")
+        #print_with_line_number("❌ No existe nodo con:wsdl")
         return None
 
     wsdl_text = wsdl_node.text
 
     if not wsdl_text:
-        print_with_line_number("❌ con:wsdl vacío")
+        #print_with_line_number("❌ con:wsdl vacío")
         return None
 
-    print_with_line_number(
-        f"Primeros 200 caracteres:\n{wsdl_text[:200]}"
-    )
+    # #print_with_line_number(
+    #     f"Primeros 200 caracteres:\n{wsdl_text[:200]}"
+    # )
 
     return etree.fromstring(wsdl_text.encode("utf-8"))
 
 def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
-    print_with_line_number(f"=== INICIO obtener_xsd_por_operacion_desde_wsdl ===")
-    print_with_line_number(f"wsdl_path: {wsdl_path}")
+    #print_with_line_number(f"=== INICIO obtener_xsd_por_operacion_desde_wsdl ===")
+    #print_with_line_number(f"wsdl_path: {wsdl_path}")
 
     root = obtener_xml_wsdl_real(wsdl_path)
 
@@ -1133,14 +1133,14 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
         return {}
 
     
-    print_with_line_number(f"root.tag={root.tag}")
+    #print_with_line_number(f"root.tag={root.tag}")
 
-    print_with_line_number("=== VALIDANDO DEFINITIONS ===")
+    #print_with_line_number("=== VALIDANDO DEFINITIONS ===")
 
-    for child in root:
-        print_with_line_number(
-            f"child.tag = {child.tag}"
-        )
+    # for child in root:
+    #     #print_with_line_number(
+    #         f"child.tag = {child.tag}"
+    #     )
 
     ns = {
         "wsdl": "http://schemas.xmlsoap.org/wsdl/",
@@ -1154,30 +1154,30 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
     # ====================================================
     namespace_to_xsd = {}
 
-    print_with_line_number("----- IMPORTS -----")
+    #print_with_line_number("----- IMPORTS -----")
 
     for imp in root.xpath(".//xsd:import", namespaces=ns):
 
         namespace = imp.get("namespace")
         schema_location = imp.get("schemaLocation")
 
-        print_with_line_number(
-            f"IMPORT namespace={namespace} schemaLocation={schema_location}"
-        )
+        # #print_with_line_number(
+        #     f"IMPORT namespace={namespace} schemaLocation={schema_location}"
+        # )
 
         if namespace and schema_location:
             namespace_to_xsd[namespace] = schema_location
 
-    print_with_line_number(
-        f"namespace_to_xsd={namespace_to_xsd}"
-    )
+    # #print_with_line_number(
+    #     f"namespace_to_xsd={namespace_to_xsd}"
+    # )
 
     # ====================================================
     # 2. message -> element
     # ====================================================
     message_to_element = {}
 
-    print_with_line_number("----- MESSAGES -----")
+    #print_with_line_number("----- MESSAGES -----")
 
     for msg in root.xpath("./wsdl:message", namespaces=ns):
 
@@ -1185,137 +1185,137 @@ def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
         part = msg.find("{http://schemas.xmlsoap.org/wsdl/}part")
 
-        print_with_line_number(
-            f"message_name={message_name}"
-        )
+        # #print_with_line_number(
+        #     f"message_name={message_name}"
+        # )
 
         if part is not None:
 
             element = part.get("element")
 
-            print_with_line_number(
-                f"element={element}"
-            )
+            # #print_with_line_number(
+            #     f"element={element}"
+            # )
 
             if message_name and element:
                 message_to_element[message_name] = element
 
-    print_with_line_number(
-        f"message_to_element={message_to_element}"
-    )
+    # #print_with_line_number(
+    #     f"message_to_element={message_to_element}"
+    # )
 
     # ====================================================
     # 3. prefijo -> namespace
     # ====================================================
     prefix_to_namespace = {}
 
-    print_with_line_number("----- NAMESPACES -----")
+    #print_with_line_number("----- NAMESPACES -----")
 
-    print_with_line_number(
-        f"root.nsmap={root.nsmap}"
-    )
+    # #print_with_line_number(
+    #     f"root.nsmap={root.nsmap}"
+    # )
 
     for prefix, namespace in root.nsmap.items():
 
-        print_with_line_number(
-            f"prefix={prefix} namespace={namespace}"
-        )
+        # #print_with_line_number(
+        #     f"prefix={prefix} namespace={namespace}"
+        # )
 
         if prefix:
             prefix_to_namespace[prefix] = namespace
 
-    print_with_line_number(
-        f"prefix_to_namespace={prefix_to_namespace}"
-    )
+    # #print_with_line_number(
+    #     f"prefix_to_namespace={prefix_to_namespace}"
+    # )
 
     # ====================================================
     # 4. operation -> schemaLocation
     # ====================================================
-    print_with_line_number("----- OPERATIONS -----")
+    #print_with_line_number("----- OPERATIONS -----")
 
     operations = root.xpath(
         ".//wsdl:portType/wsdl:operation",
         namespaces=ns
     )
 
-    print_with_line_number(
-        f"Cantidad operaciones encontradas={len(operations)}"
-    )
+    # #print_with_line_number(
+    #     f"Cantidad operaciones encontradas={len(operations)}"
+    # )
 
     for operation in operations:
 
         operation_name = operation.get("name")
 
-        print_with_line_number(
-            f"operation_name={operation_name}"
-        )
+        # #print_with_line_number(
+        #     f"operation_name={operation_name}"
+        # )
 
         input_node = operation.find(
             "{http://schemas.xmlsoap.org/wsdl/}input"
         )
 
-        print_with_line_number(
-            f"input_node={input_node}"
-        )
+        # #print_with_line_number(
+        #     f"input_node={input_node}"
+        # )
 
         if input_node is None:
             continue
 
         message_ref = input_node.get("message")
 
-        print_with_line_number(
-            f"message_ref={message_ref}"
-        )
+        # #print_with_line_number(
+        #     f"message_ref={message_ref}"
+        # )
 
         if not message_ref:
             continue
 
         message_name = message_ref.split(":")[-1]
 
-        print_with_line_number(
-            f"message_name={message_name}"
-        )
+        # #print_with_line_number(
+        #     f"message_name={message_name}"
+        # )
 
         element_ref = message_to_element.get(message_name)
 
-        print_with_line_number(
-            f"element_ref={element_ref}"
-        )
+        # #print_with_line_number(
+        #     f"element_ref={element_ref}"
+        # )
 
         if not element_ref:
             continue
 
         prefix = element_ref.split(":")[0]
 
-        print_with_line_number(
-            f"prefix={prefix}"
-        )
+        # #print_with_line_number(
+        #     f"prefix={prefix}"
+        # )
 
         namespace = prefix_to_namespace.get(prefix)
 
-        print_with_line_number(
-            f"namespace={namespace}"
-        )
+        # #print_with_line_number(
+        #     f"namespace={namespace}"
+        # )
 
         if not namespace:
             continue
 
         schema_location = namespace_to_xsd.get(namespace)
 
-        print_with_line_number(
-            f"schema_location={schema_location}"
-        )
+        # #print_with_line_number(
+        #     f"schema_location={schema_location}"
+        # )
 
         if schema_location:
             resultado[operation_name] = schema_location
 
-    print_with_line_number(
-        f"RESULTADO FINAL={resultado}"
-    )
+    # #print_with_line_number(
+    #     f"RESULTADO FINAL={resultado}"
+    # )
 
-    print_with_line_number(
-        "=== FIN obtener_xsd_por_operacion_desde_wsdl ==="
-    )
+    # #print_with_line_number(
+    #     "=== FIN obtener_xsd_por_operacion_desde_wsdl ==="
+    # )
 
     return resultado
 
@@ -1331,7 +1331,7 @@ def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None,
         #print_with_line_number(f"Proxy seleccionado: {osb_file_path}")
 
         if not os.path.exists(osb_file_path):
-            print_with_line_number(f"No existe: {osb_file_path}")
+            #print_with_line_number(f"No existe: {osb_file_path}")
             return wsdl_operations_map
 
         project_name = extract_project_name_from_proxy(osb_file_path)
@@ -1495,17 +1495,17 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         operation_to_xsd = {}
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
-        print_with_line_number(f"operations: {operations}")
-        print_with_line_number(f"project_name: {project_name}")
-        print_with_line_number(f"service_name: {service_name}")
-        print_with_line_number(f"osb_file_path: {osb_file_path}")
-        print_with_line_number(f"pipeline_path: {pipeline_path}")
-        print_with_line_number(f"service_url: {service_url}")
-        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"operations: {operations}")
+        #print_with_line_number(f"project_name: {project_name}")
+        #print_with_line_number(f"service_name: {service_name}")
+        #print_with_line_number(f"osb_file_path: {osb_file_path}")
+        #print_with_line_number(f"pipeline_path: {pipeline_path}")
+        #print_with_line_number(f"service_url: {service_url}")
+        #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
         imports = extract_xsd_import_paths(wsdl_path)
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
         #print_with_line_number(f"imports: {imports}")
         
         #print_with_line_number(f"project_path: {project_path}")
@@ -1524,30 +1524,11 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
         
-        print_with_line_number(f"imports despues: {imports}")
+        #print_with_line_number(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
-            # for operation in operations:
-            #     for xsd in imports:
-            #         xsd_filename = os.path.basename(xsd).lower()  # Obtener solo el nombre del archivo XSD
-
-            #         # 🔹 Buscar coincidencia exacta con el nombre del XSD
-            #         if xsd_filename == operation.lower() + ".xsd":
-            #             operation_to_xsd[operation] = xsd
-            #             break  # Detener la búsqueda cuando encuentra la coincidencia exacta
-
-            #     else:  # Solo ejecuta este bloque si el `for xsd in imports` no encontró nada
-            #         xsd_names = [os.path.basename(x).lower() for x in imports]  # Lista de nombres de archivos XSD
-            #         closest_match = difflib.get_close_matches(operation.lower() + ".xsd", xsd_names, n=1, cutoff=0.9)
-
-            #         if closest_match:
-            #             matched_xsd = next(x for x in imports if os.path.basename(x).lower() == closest_match[0])
-            #             operation_to_xsd[operation] = matched_xsd
-            #         else:
-            #             operation_to_xsd[operation] = None  # No se encontró una coincidencia
-            
             operation_to_xsd = obtener_xsd_por_operacion_desde_wsdl(wsdl_path)
-            print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
+            #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
 
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -2357,7 +2338,7 @@ def obtener_operaciones_proxy(project_path, wsdl_relative_path):
     )
 
     if not os.path.exists(wsdl_path):
-        print_with_line_number(f"No existe: {wsdl_path}")
+        #print_with_line_number(f"No existe: {wsdl_path}")
         return []
 
     return extract_wsdl_operations(wsdl_path)
@@ -3005,9 +2986,9 @@ def generar_diagramas_operaciones(project_name, service_name, combined_services2
                         file.write(response.content)
                         #print_with_line_number(f"Se guardo imagen en: {diagrama_path}")
                 else:
-                   print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
+                   #print_with_line_number(f"Error al generar el diagrama: {response.status_code}")
             except Exception as e:
-               print_with_line_number(f"Error en la solicitud de la imagen: {e}")
+               #print_with_line_number(f"Error en la solicitud de la imagen: {e}")
     
     return diagrama_path
 
@@ -3316,8 +3297,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Extraer ruta del proyecto desde el .jar
     jdeveloper_projects_dir = jar_path
     
-    # print_with_line_number(f"✅ jar_path {jar_path}")
-    # print_with_line_number(f"✅ plantilla_path {plantilla_path}")
+    # #print_with_line_number(f"✅ jar_path {jar_path}")
+    # #print_with_line_number(f"✅ plantilla_path {plantilla_path}")
     #print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
     
     if not jdeveloper_projects_dir:
