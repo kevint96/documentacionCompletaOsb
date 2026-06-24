@@ -471,7 +471,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
                    operacion_business, operations, service_name, operation_actual, 
                    target_complex_type=None, root_element_name=None,
                    request_elements=None, response_elements=None,processed_types=None,
-                   start_time=None, time_limit=0.60):
+                   start_time=None, time_limit=0.60,wsdl_path=None):
     """
     Parsea un XSD y extrae los elementos request/response de forma recursiva.
     """
@@ -494,6 +494,24 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
 
     ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
+    # Si no existe, intentar resolverlo relativo al WSDL
+    if not os.path.isfile(ruta_corregida) and wsdl_path:
+
+        wsdl_dir = os.path.dirname(wsdl_path)
+
+        ruta_wsdl_relativa = os.path.normpath(
+            os.path.join(
+                wsdl_dir,
+                xsd_file_path
+            )
+        )
+
+        print_with_line_number(
+            f"Intentando ruta relativa al WSDL: {ruta_wsdl_relativa}"
+        )
+
+        if os.path.isfile(ruta_wsdl_relativa):
+            ruta_corregida = ruta_wsdl_relativa
     #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
     #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
     #print_with_line_number(f"subcarpeta_xsd: {subcarpeta_xsd}")
@@ -1528,7 +1546,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             operation_to_xsd = obtener_xsd_por_operacion_desde_wsdl(wsdl_path)
-            #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
+            print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
 
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -1550,9 +1568,9 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
                         #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                        #print_with_line_number(f"xsd: {xsd}")
+                        print_with_line_number(f"xsd: {xsd}")
                         #start_time = time.time()  # Guardamos el tiempo inicial
-                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
+                        elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual,wsdl_path)
                         #current_time = time.time()
                         #elapsed_time = current_time - start_time
                         #st.toast(f"⏳ Tiempo transcurrido: {elapsed_time:.2f} seg")
