@@ -3656,7 +3656,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
 
         # 🔹 Descargar automáticamente el ZIP sin necesidad de clic
         st.download_button(
-            label="📥 Descargar TODOS los documentos en ZIP",
+            label="📥 Descargar documentacion",
             data=zip_bytes,
             file_name="Documentos_Completos.zip",
             mime="application/zip",
