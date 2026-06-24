@@ -1095,6 +1095,7 @@ def extract_wsdl_operations(wsdl_path):
 
 def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
+    print_with_line_number(f"ENTRO AQUI obtener_xsd_por_operacion_desde_wsdl: {wsdl_path}")
     tree = ET.parse(wsdl_path)
     root = tree.getroot()
 
