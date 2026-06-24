@@ -2756,19 +2756,8 @@ def main():
                 proxy_seleccionado = ""
                 
                 if proxies_exp:
-                    ubicacion_proxy = "/".join(proxies_exp[0].split("/")[:-1]) + "/"   # Carpeta (ubicación)
-                    
-                    ubicacion_proxy_ebs = "/".join(proxies_ebs[0].split("/")[:-1]) + "/"   # Carpeta (ubicación ebs)
-
-                    # st.markdown(
-                    #     """
-                    #     <div style="font-size:18px; font-weight:bold;">Proxy EXP</div>
-                    #     """,
-                    #     unsafe_allow_html=True
-                    # )
-
                     proxy_seleccionado = st.selectbox(
-                        "Seleccione el servicio",
+                        "Seleccione el servicio expuesto",
                         proxies_exp,
                         format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0]
                     )
@@ -2896,7 +2885,7 @@ def main():
                                 jar.extractall(carpeta_destino)
                                 archivos_extraidos = jar.namelist()
 
-                            st.success(f"✅ Archivos extraídos en: {carpeta_destino}")
+                            #st.success(f"✅ Archivos extraídos en: {carpeta_destino}")
                         except zipfile.BadZipFile:
                             st.error("❌ Error: El archivo no es un JAR válido o está dañado.")
                         
