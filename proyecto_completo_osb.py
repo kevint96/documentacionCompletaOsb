@@ -1493,7 +1493,7 @@ def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None,
 
     return wsdl_operations_map
 
-def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar,ruta_proxy_exp):
+def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar,ruta_proxy_exp,ubicacion_wsdl_exp):
     
     proxy_seleccionado_abs = os.path.normpath(
     os.path.join(project_path, ruta_proxy_exp)
@@ -1506,7 +1506,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     found = False  # Variable para rastrear si se encuentra la operación
 
     #print_with_line_number(f"URL generada: {url}")
-    print_with_line_number(f"ruta_proxy_exp: {ruta_proxy_exp}")
+    print_with_line_number(f"ubicacion_wsdl_exp: {ubicacion_wsdl_exp}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar,ruta_proxy_exp)
     
     # Recorriendo el diccionario
@@ -3302,12 +3302,12 @@ def main():
                     log_doc_generado = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     #print_with_line_number(f"✅ jar_file {jar_file}")
                     #print_with_line_number(f"✅ plantilla_file {plantilla_file}")
-                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,proxy_seleccionado,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
+                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,proxy_seleccionado,st.session_state["ubicacion_wsdl_exp"],log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
 
-def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,ruta_proxy_exp,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado):
+def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,ruta_proxy_exp,ubicacion_wsdl_exp,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado):
     """Función que ejecuta la generación de documentación."""
     log_area.write("🚀 Iniciando generación de documentación...")
     zip_files = []
@@ -3348,7 +3348,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     #progress_bar_general = st.progress(0)
     log_area.write("📂 Leyendo archivos del JAR...")
     # Llamar a la función principal de tu script
-    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar,ruta_proxy_exp)
+    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar,ruta_proxy_exp,ubicacion_wsdl_exp)
 
      #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
