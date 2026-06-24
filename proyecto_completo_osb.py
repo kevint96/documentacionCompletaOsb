@@ -1093,15 +1093,51 @@ def extract_wsdl_operations(wsdl_path):
                 operations.add(operation_name)  # Agregamos el nombre de la operación al conjunto
     return list(operations)  # Convertimos el conjunto de vuelta a lista antes de devolverlo
 
+def obtener_xml_wsdl_real(wsdl_path):
+
+    print_with_line_number(f"Abriendo WSDL: {wsdl_path}")
+
+    tree = ET.parse(wsdl_path)
+    root = tree.getroot()
+
+    ns_osb = {
+        "con": "http://www.bea.com/wli/sb/resources/config"
+    }
+
+    wsdl_node = root.find(".//con:wsdl", ns_osb)
+
+    if wsdl_node is None:
+        print_with_line_number("❌ No existe nodo con:wsdl")
+        return None
+
+    wsdl_text = wsdl_node.text
+
+    if not wsdl_text:
+        print_with_line_number("❌ con:wsdl vacío")
+        return None
+
+    print_with_line_number(
+        f"Primeros 200 caracteres:\n{wsdl_text[:200]}"
+    )
+
+    return etree.fromstring(wsdl_text.encode("utf-8"))
+
 def obtener_xsd_por_operacion_desde_wsdl(wsdl_path):
 
     print_with_line_number(f"=== INICIO obtener_xsd_por_operacion_desde_wsdl ===")
     print_with_line_number(f"wsdl_path: {wsdl_path}")
 
+    root = obtener_xml_wsdl_real(wsdl_path)
+
+    if root is None:
+        return {}
+
+    
+    print_with_line_number(f"root.tag={root.tag}")
+    
     tree = etree.parse(wsdl_path)
     root = tree.getroot()
 
-    print_with_line_number(f"root.tag={root.tag}")
 
     ns = {
         "wsdl": "http://schemas.xmlsoap.org/wsdl/",
