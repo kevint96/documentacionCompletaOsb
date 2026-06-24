@@ -2683,7 +2683,7 @@ def main():
                     jar.extractall(carpeta_destino)
                     archivos_extraidos = jar.namelist()
 
-                #st.success(f"✅ Archivos extraídos en: {carpeta_destino}")
+                st.success(f"✅ Archivos extraídos en: {carpeta_destino}")
             except zipfile.BadZipFile:
                 st.error("❌ Error: El archivo no es un JAR válido o está dañado.")
             
@@ -2729,6 +2729,8 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     # Extraer ruta del proyecto desde el .jar
     jdeveloper_projects_dir = jar_path
     
+    print_with_line_number(f"✅ jar_path {jar_path}")
+    print_with_line_number(f"✅ plantilla_path {plantilla_path}")
     #print_with_line_number(f"✅ jdeveloper_projects_dir {jdeveloper_projects_dir}")
     
     if not jdeveloper_projects_dir:
