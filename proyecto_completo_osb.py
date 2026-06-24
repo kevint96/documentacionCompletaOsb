@@ -2808,13 +2808,13 @@ def main():
                         # Mostrar con subtítulo pequeño
                         pipeline_exp = pipeline_ref.split("/")[-1]
                         
-                        st.markdown(
-                            f"""
-                            <div style="font-size:18px; font-weight:bold;">Nombre del servicio</div>
-                            <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_exp"]}</div>
-                            """,
-                            unsafe_allow_html=True
-                        )
+                        # st.markdown(
+                        #     f"""
+                        #     <div style="font-size:18px; font-weight:bold;">Nombre del servicio</div>
+                        #     <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_exp"]}</div>
+                        #     """,
+                        #     unsafe_allow_html=True
+                        # )
                         
                         st.session_state["nombre_capa_exp"] = st.session_state["ubicacion_proxy_exp"].split("/")[0]
 
@@ -2827,7 +2827,7 @@ def main():
                         
                         st.markdown(
                             f"""
-                            <div style="font-size:18px; font-weight:bold;">Nombre del pipeline</div>
+                            <div style="font-size:12px; font-weight:bold;">Nombre del pipeline</div>
                             <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_pipeline_exp"]}</div>
                             """,
                             unsafe_allow_html=True
@@ -2851,7 +2851,7 @@ def main():
                         # Mostrar con subtítulo pequeño
                         st.markdown(
                             f"""
-                            <div style="font-size:18px; font-weight:bold;">Nombre del wsdl</div>
+                            <div style="font-size:12px; font-weight:bold;">Nombre del wsdl</div>
                             <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_wsdl_exp"]}</div>
                             """,
                             unsafe_allow_html=True
