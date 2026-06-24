@@ -1102,7 +1102,7 @@ def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None,
 
         osb_file_path = os.path.join(project_path, ruta_proxy_exp)
 
-        print_with_line_number(f"Proxy seleccionado: {osb_file_path}")
+        #print_with_line_number(f"Proxy seleccionado: {osb_file_path}")
 
         if not os.path.exists(osb_file_path):
             print_with_line_number(f"No existe: {osb_file_path}")
@@ -3073,8 +3073,8 @@ def main():
                     log_request = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_response = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     log_doc_generado = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
-                    print_with_line_number(f"✅ jar_file {jar_file}")
-                    print_with_line_number(f"✅ plantilla_file {plantilla_file}")
+                    #print_with_line_number(f"✅ jar_file {jar_file}")
+                    #print_with_line_number(f"✅ plantilla_file {plantilla_file}")
                     generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,proxy_seleccionado,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
