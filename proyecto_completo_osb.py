@@ -1093,56 +1093,167 @@ def extract_wsdl_operations(wsdl_path):
                 operations.add(operation_name)  # Agregamos el nombre de la operación al conjunto
     return list(operations)  # Convertimos el conjunto de vuelta a lista antes de devolverlo
 
-def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None):
+def extraer_operaciones_expuestas_http(project_path,operacion_a_documentar=None,ruta_proxy_exp=None):
     wsdl_operations_map = {}
+    # =====================================================
+    # NUEVO MODO: Procesar únicamente el proxy seleccionado
+    # =====================================================
+    if ruta_proxy_exp:
+
+        osb_file_path = os.path.join(project_path, ruta_proxy_exp)
+
+        print_with_line_number(f"Proxy seleccionado: {osb_file_path}")
+
+        if not os.path.exists(osb_file_path):
+            print_with_line_number(f"No existe: {osb_file_path}")
+            return wsdl_operations_map
+
+        project_name = extract_project_name_from_proxy(osb_file_path)
+
+        if project_name is None:
+            return wsdl_operations_map
+
+        pipeline_path = extract_pipeline_path_from_proxy(
+            osb_file_path,
+            project_path
+        )
+
+        with open(osb_file_path, 'r', encoding="utf-8") as f:
+
+            content = f.read()
+
+            if has_http_provider_id(content):
+
+                service_name = os.path.splitext(
+                    os.path.basename(osb_file_path)
+                )[0]
+
+                service_url = extract_service_url(content)
+
+                wsdl_relative_path = extract_wsdl_relative_path(content)
+
+                if wsdl_relative_path:
+
+                    wsdl_path = os.path.join(
+                        project_path,
+                        wsdl_relative_path + ".WSDL"
+                    )
+
+                    capa_proyecto = "/" + wsdl_relative_path.split('/')[0]
+
+                    operations = extract_wsdl_operations(wsdl_path)
+
+                    if operacion_a_documentar:
+
+                        if operacion_a_documentar in operations:
+
+                            wsdl_operations_map[wsdl_path] = (
+                                operations,
+                                project_name,
+                                service_name,
+                                osb_file_path,
+                                pipeline_path,
+                                service_url,
+                                capa_proyecto
+                            )
+
+                    else:
+
+                        wsdl_operations_map[wsdl_path] = (
+                            operations,
+                            project_name,
+                            service_name,
+                            osb_file_path,
+                            pipeline_path,
+                            service_url,
+                            capa_proyecto
+                        )
+
+        return wsdl_operations_map
+
+    # =====================================================
+    # MODO ANTIGUO (compatibilidad)
+    # =====================================================
     for root, dirs, files in os.walk(project_path):
+
         if os.path.basename(root) == "Proxies":
-             #st.success(f"✅ Proxies {elementos_xsd}")
+
             for file in files:
+
                 if file.endswith('.ProxyService'):
+
                     osb_file_path = os.path.join(root, file)
-                    #st.success(f"✅ file {file}")
-                    #st.success(f"✅ osb_file_path {osb_file_path}")
-                    project_name = extract_project_name_from_proxy(osb_file_path)
-                    
+
+                    project_name = extract_project_name_from_proxy(
+                        osb_file_path
+                    )
+
                     if project_name is None:
-                        continue 
-                    pipeline_path = extract_pipeline_path_from_proxy(osb_file_path, project_path)
-                     #st.success(f"✅ pipeline_path {pipeline_path}")
+                        continue
+
+                    pipeline_path = extract_pipeline_path_from_proxy(
+                        osb_file_path,
+                        project_path
+                    )
+
                     with open(osb_file_path, 'r', encoding="utf-8") as f:
+
                         content = f.read()
+
                         if "EBS" not in project_name and "ABC" not in project_name:
+
                             if has_http_provider_id(content):
+
                                 service_name = os.path.splitext(file)[0]
-                                #st.success(f"✅ project_name {project_name}")
-                                #st.success(f"✅ service_name {service_name}")
+
                                 service_url = extract_service_url(content)
-                                #st.success(f"✅ service_url {service_url}")
+
                                 wsdl_relative_path = extract_wsdl_relative_path(content)
+
                                 if wsdl_relative_path:
-                                    wsdl_path = os.path.join(project_path, wsdl_relative_path + ".WSDL")
-                                    capa_proyecto = '/'+ wsdl_relative_path.split('/')[0]
-                                    
-                                    #st.success(f"capa_proyecto: {capa_proyecto}")
-                                    
-                                    #st.success(f"wsdl_path: {wsdl_path}")
+
+                                    wsdl_path = os.path.join(
+                                        project_path,
+                                        wsdl_relative_path + ".WSDL"
+                                    )
+
+                                    capa_proyecto = "/" + wsdl_relative_path.split('/')[0]
+
                                     operations = extract_wsdl_operations(wsdl_path)
-                                    if operacion_a_documentar: 
+
+                                    if operacion_a_documentar:
+
                                         if operacion_a_documentar in operations:
-                                            #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+
                                             wsdl_operations_map[wsdl_path] = (
-                                                operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
+                                                operations,
+                                                project_name,
+                                                service_name,
+                                                osb_file_path,
+                                                pipeline_path,
+                                                service_url,
+                                                capa_proyecto
                                             )
+
                                     else:
-                                        #print_with_line_number(f"operacion_a_documentar: {operacion_a_documentar}")
+
                                         wsdl_operations_map[wsdl_path] = (
-                                            operations, project_name, service_name, osb_file_path,pipeline_path, service_url, capa_proyecto
+                                            operations,
+                                            project_name,
+                                            service_name,
+                                            osb_file_path,
+                                            pipeline_path,
+                                            service_url,
+                                            capa_proyecto
                                         )
-    #print_with_line_number(f"wsdl_operations_map: {wsdl_operations_map}")
+
     return wsdl_operations_map
 
-def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar):
+def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_documentar,ruta_proxy_exp):
     
+    proxy_seleccionado_abs = os.path.normpath(
+    os.path.join(project_path, ruta_proxy_exp)
+    )
     osb_services = []
     elementos_xsd = []
     operations =[]
@@ -1151,7 +1262,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     found = False  # Variable para rastrear si se encuentra la operación
 
      #print_with_line_number(f"URL generada: {url}")
-    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path)
+    wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar,ruta_proxy_exp)
     
     # Recorriendo el diccionario
     for wsdl_path, data in wsdl_operations_map.items():
@@ -2964,12 +3075,12 @@ def main():
                     log_doc_generado = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     print_with_line_number(f"✅ jar_file {jar_file}")
                     print_with_line_number(f"✅ plantilla_file {plantilla_file}")
-                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
+                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,proxy_seleccionado,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
 
-def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado):
+def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre_autor,ruta_proxy_exp,log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado):
     """Función que ejecuta la generación de documentación."""
     log_area.write("🚀 Iniciando generación de documentación...")
     zip_files = []
@@ -3010,7 +3121,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
     #progress_bar_general = st.progress(0)
     log_area.write("📂 Leyendo archivos del JAR...")
     # Llamar a la función principal de tu script
-    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar)
+    services_with_data = extraer_schemas_operaciones_expuestas_http(jdeveloper_projects_dir,operacion_a_documentar,ruta_proxy_exp)
 
      #print_with_line_number(f"✅ services_with_data {services_with_data}")
     
