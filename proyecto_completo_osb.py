@@ -2008,6 +2008,22 @@ def obtener_operaciones(project_path):
                                     operations.append(operation)
     return operations
 
+def obtener_operaciones_proxy(project_path, wsdl_relative_path):
+
+    if not wsdl_relative_path:
+        return []
+
+    wsdl_path = os.path.join(
+        project_path,
+        wsdl_relative_path + ".WSDL"
+    )
+
+    if not os.path.exists(wsdl_path):
+        print_with_line_number(f"No existe: {wsdl_path}")
+        return []
+
+    return extract_wsdl_operations(wsdl_path)
+
 def plantuml_to_hex(plantuml_code):
     hex_encoded = plantuml_code.encode("utf-8").hex()
     #print_with_line_number(f"hex_encoded: {hex_encoded}")
@@ -2897,6 +2913,14 @@ def main():
                         except zipfile.BadZipFile:
                             st.error("❌ Error: El archivo no es un JAR válido o está dañado.")
                         
+                        ruta_wsdl_sin_extension = st.session_state["ruta_wsdl"]
+                        if ruta_wsdl_sin_extension.endswith(".WSDL"):
+                            ruta_wsdl_sin_extension = os.path.splitext(st.session_state["ruta_wsdl"])[0]
+
+                        operaciones = obtener_operaciones_proxy(
+                            carpeta_destino,
+                            ruta_wsdl_sin_extension
+                        )
                         operaciones = obtener_operaciones(carpeta_destino)
                         # Agregar una opción vacía al inicio de la lista
                         operaciones = sorted(operaciones, key=str.lower)
