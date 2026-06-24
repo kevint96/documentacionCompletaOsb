@@ -1269,14 +1269,14 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         operation_to_xsd = {}
-        #print_with_line_number(f"wsdl_path: {wsdl_path}")
-        #print_with_line_number(f"operations: {operations}")
-        #print_with_line_number(f"project_name: {project_name}")
-        #print_with_line_number(f"service_name: {service_name}")
-        #print_with_line_number(f"osb_file_path: {osb_file_path}")
-        #print_with_line_number(f"pipeline_path: {pipeline_path}")
-        #print_with_line_number(f"service_url: {service_url}")
-        #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
+        print_with_line_number(f"wsdl_path: {wsdl_path}")
+        print_with_line_number(f"operations: {operations}")
+        print_with_line_number(f"project_name: {project_name}")
+        print_with_line_number(f"service_name: {service_name}")
+        print_with_line_number(f"osb_file_path: {osb_file_path}")
+        print_with_line_number(f"pipeline_path: {pipeline_path}")
+        print_with_line_number(f"service_url: {service_url}")
+        print_with_line_number(f"capa_proyecto: {capa_proyecto}")
 
         imports = extract_xsd_import_paths(wsdl_path)
         #print_with_line_number(f"wsdl_path: {wsdl_path}")
@@ -1298,7 +1298,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                 imports[i] = os.path.normpath(os.path.join(wsdl_dir, imp))  # Reemplazar en la misma lista
                                             
         
-        #print_with_line_number(f"imports despues: {imports}")
+        print_with_line_number(f"imports despues: {imports}")
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             for operation in operations:
@@ -1320,7 +1320,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                     else:
                         operation_to_xsd[operation] = None  # No se encontró una coincidencia
             
-            #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
+            print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
 
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -3368,7 +3368,7 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                     diagrama_path = generar_diagramas_operaciones(ruta_proyecto,service_name, combined_services, operation)
                     
                     if diagrama_path:
-                        log_notificacion2.write(f"💾 diagrama_path: {diagrama_path}")
+                        log_notificacion2.write(f"💾 Diagrama creado: {diagrama_path}")
                     
                     if os.path.exists(diagrama_path):
                         #doc = reemplazar_marcador_con_imagen(doc, "{Imagen_diagrama}", diagrama_path)
