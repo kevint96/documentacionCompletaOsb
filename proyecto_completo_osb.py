@@ -2758,7 +2758,7 @@ def main():
                 if proxies_exp:
                     st.markdown(
                             f"""
-                            <div style="font-size:12px; font-weight:bold;">Seleccione el servicio expuesto</div>
+                            <div style="font-size:14px; font-weight:bold;">Seleccione el servicio expuesto</div>
                             """,
                             unsafe_allow_html=True
                         )
@@ -2819,7 +2819,7 @@ def main():
                         # st.markdown(
                         #     f"""
                         #     <div style="font-size:18px; font-weight:bold;">Nombre del servicio</div>
-                        #     <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_exp"]}</div>
+                        #     <div style="font-size:14px; color:gray;">📂 {st.session_state["ubicacion_proxy_exp"]}</div>
                         #     """,
                         #     unsafe_allow_html=True
                         # )
@@ -2835,7 +2835,7 @@ def main():
                         
                         st.markdown(
                             f"""
-                            <div style="font-size:12px; font-weight:bold;">Nombre del pipeline</div>
+                            <div style="font-size:14px; font-weight:bold;">Nombre del pipeline</div>
                             <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_pipeline_exp"]}</div>
                             """,
                             unsafe_allow_html=True
@@ -2859,7 +2859,7 @@ def main():
                         # Mostrar con subtítulo pequeño
                         st.markdown(
                             f"""
-                            <div style="font-size:12px; font-weight:bold;">Nombre del wsdl</div>
+                            <div style="font-size:14px; font-weight:bold;">Nombre del wsdl</div>
                             <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_wsdl_exp"]}</div>
                             """,
                             unsafe_allow_html=True
@@ -2902,7 +2902,14 @@ def main():
                         operaciones = sorted(operaciones, key=str.lower)
                         operaciones.insert(0, "TODAS")
                         if operaciones:  # Solo mostrar si hay operaciones disponibles
-                            operacion_a_documentar = st.selectbox("Selecciona una operación", operaciones)
+                            st.markdown(
+                            f"""
+                            <div style="font-size:14px; font-weight:bold;">Selecciona una operación</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                            operacion_a_documentar = st.selectbox("Selecciona una operación", operaciones,
+                            label_visibility="collapsed")
                             if operacion_a_documentar == "TODAS":
                                 operacion_a_documentar = None
                         else:
