@@ -2921,7 +2921,7 @@ def main():
                             carpeta_destino,
                             ruta_wsdl_sin_extension
                         )
-                        operaciones = obtener_operaciones(carpeta_destino)
+                        #operaciones = obtener_operaciones(carpeta_destino)
                         # Agregar una opción vacía al inicio de la lista
                         operaciones = sorted(operaciones, key=str.lower)
                         operaciones.insert(0, "TODAS")
