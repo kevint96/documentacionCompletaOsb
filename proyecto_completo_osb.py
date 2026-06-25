@@ -478,6 +478,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     if start_time is None:
         start_time = time.time()  # Guardamos el tiempo inicial
     
+    xsd_file_path = os.path.normpath(xsd_file_path)
     #print_with_line_number(f"start_timee: {start_time}")
     # 🔹 Asegurar que las listas no se reinicien
     if request_elements is None:
@@ -486,13 +487,16 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         response_elements = []
     if processed_types is None:
         processed_types = {}
+    
+    if os.path.isfile(xsd_file_path):
+        ruta_corregida = xsd_file_path
+    else:
+        extraccion_dir = os.path.abspath(project_path)
+        xsd_file_path = os.path.normpath(xsd_file_path.strip("/\\"))  
+        subcarpeta_xsd = os.path.dirname(xsd_file_path)
+        subcarpeta_xsd = os.path.normpath(subcarpeta_xsd).replace("../", "")
 
-    extraccion_dir = os.path.abspath(project_path)
-    xsd_file_path = os.path.normpath(xsd_file_path.strip("/\\"))  
-    subcarpeta_xsd = os.path.dirname(xsd_file_path)
-    subcarpeta_xsd = os.path.normpath(subcarpeta_xsd).replace("../", "")
-
-    ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
+        ruta_corregida = os.path.join(extraccion_dir, subcarpeta_xsd, os.path.basename(xsd_file_path))
     
     #print_with_line_number(f"extraccion_dir: {extraccion_dir}")
     #print_with_line_number(f"xsd_file_path: {xsd_file_path}")
