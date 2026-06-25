@@ -528,8 +528,8 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     namespaces = extract_namespaces(xsd_content)
     imports = extract_imports(root)
 
-    print_with_line_number(f"Namespaces detectados: {namespaces}")
-    print_with_line_number(f"Imports encontrados: {imports}")
+    # print_with_line_number(f"Namespaces detectados: {namespaces}")
+    # print_with_line_number(f"Imports encontrados: {imports}")
     
     # 🔹 Verificar qué prefijos están en el namespaces
     valid_prefixes = [p for p in ['xs', 'xsd'] if p in namespaces]
@@ -854,8 +854,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types,simple_t
                 prefix, nested_type = element_type.split(':')
                 
                 #print_with_line_number(f"🔄 : {prefix} , {nested_type}")
-                print_with_line_number(f"nested_type={nested_type}")
-                print_with_line_number(f"complex_types keys={list(complex_types.keys())[:20]}")
+                # print_with_line_number(f"nested_type={nested_type}")
+                # print_with_line_number(f"complex_types keys={list(complex_types.keys())[:20]}")
                 
                 # =====================================================
                 # 1. Buscar complexType local
@@ -1555,7 +1555,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
     found = False  # Variable para rastrear si se encuentra la operación
 
     #print_with_line_number(f"URL generada: {url}")
-    print_with_line_number(f"ubicacion_wsdl_exp: {ubicacion_wsdl_exp}")
+    #print_with_line_number(f"ubicacion_wsdl_exp: {ubicacion_wsdl_exp}")
     wsdl_operations_map = extraer_operaciones_expuestas_http(project_path,operacion_a_documentar,ruta_proxy_exp)
     
     # Recorriendo el diccionario
@@ -1563,7 +1563,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         # Desempaquetar la tupla
         operations, project_name, service_name, osb_file_path, pipeline_path, service_url, capa_proyecto = data
         operation_to_xsd = {}
-        print_with_line_number(f"wsdl_path: {wsdl_path}")
+        #print_with_line_number(f"wsdl_path: {wsdl_path}")
         #print_with_line_number(f"operations: {operations}")
         #print_with_line_number(f"project_name: {project_name}")
         #print_with_line_number(f"service_name: {service_name}")
@@ -1596,7 +1596,7 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
         
         if operacion_a_documentar in operations or not operacion_a_documentar:
             operation_to_xsd = obtener_xsd_por_operacion_desde_wsdl(wsdl_path)
-            print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
+            #print_with_line_number(f"operation_to_xsd: {operation_to_xsd}")
 
             # ✅ Si el usuario especificó una operación, verificar si existe en operation_to_xsd
             if operacion_a_documentar and operacion_a_documentar not in operation_to_xsd:
@@ -1618,16 +1618,16 @@ def extraer_schemas_operaciones_expuestas_http(project_path,operacion_a_document
                         #print_with_line_number(f"capa_proyecto: {capa_proyecto}")
                         #print_with_line_number(f"operacion_business: {operacion_business}")
                         xsd = os.path.splitext(xsd)[0] + ".XMLSchema"
-                        print_with_line_number(f"xsd: {xsd}")
+                        #print_with_line_number(f"xsd: {xsd}")
                         if xsd.startswith("../"):
                             wsdl_dir = os.path.dirname(wsdl_path)
                             xsd = os.path.normpath(
                                 os.path.join(wsdl_dir, xsd)
                             )
 
-                            print_with_line_number(
-                                f"xsd resuelto desde wsdl: {xsd}"
-                            )
+                            # print_with_line_number(
+                            #     f"xsd resuelto desde wsdl: {xsd}"
+                            # )
                         #start_time = time.time()  # Guardamos el tiempo inicial
                         elementos_xsd = parse_xsd_file(project_path,xsd, operation_name,service_url,capa_proyecto,operacion_business,operations, service_name, operation_actual)
                         #current_time = time.time()
