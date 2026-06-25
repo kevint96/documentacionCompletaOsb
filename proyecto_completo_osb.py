@@ -3333,8 +3333,17 @@ def main():
                         #operaciones = obtener_operaciones(carpeta_destino)
                         # Agregar una opción vacía al inicio de la lista
                         operaciones = sorted(operaciones, key=str.lower)
+                        # Mostrar total antes de agregar TODAS
+                        total_operaciones = len(operaciones)
                         operaciones.insert(0, "TODAS")
                         if operaciones:  # Solo mostrar si hay operaciones disponibles
+                            st.markdown(
+                            f"""
+                            <div style="font-size:12px; color:gray;">📊{total_operaciones} encontradas</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                            
                             st.markdown(
                             f"""
                             <div style="font-size:14px; font-weight:bold;">Selecciona una operación</div>
