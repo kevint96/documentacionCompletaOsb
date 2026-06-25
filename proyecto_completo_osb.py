@@ -548,6 +548,12 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         for elem in root.findall(f".//{prefix}:complexType", namespaces)
         if 'name' in elem.attrib
     }
+    # 🔹 NUEVO: Buscar simpleTypes
+    simple_types = {
+        elem.attrib.get('name', None): elem
+        for elem in root.findall(f".//{prefix}:simpleType", namespaces)
+        if 'name' in elem.attrib
+    }
 
     # 🔹 Buscar todos los elementos principales con el prefijo detectado
     root_elements = {
@@ -558,7 +564,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     # 🚀 **Si `target_complex_type` está definido, buscar SOLO ese complexType.**
     if target_complex_type:
         #print_with_line_number(f"🔍 Buscando SOLO el complexType: {target_complex_type}")
-        explorar_complex_type(target_complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+        explorar_complex_type(target_complex_type, root_element_name, complex_types,simple_types, namespaces, imports, extraccion_dir, 
                               xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                               operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
         return request_elements, response_elements
@@ -571,7 +577,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
         #print_with_line_number(f"Imports encontrados: {imports}")
 
         if complex_type in complex_types:
-            explorar_complex_type(complex_type, root_element_name, complex_types, namespaces, imports, extraccion_dir, 
+            explorar_complex_type(complex_type, root_element_name, complex_types,simple_types, namespaces, imports, extraccion_dir, 
                                   xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                   operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types,start_time, time_limit)
     
@@ -580,7 +586,7 @@ def parse_xsd_file(project_path, xsd_file_path, operation_name, service_url, cap
     return request_elements, response_elements
 
 
-def explorar_complex_type(type_name, parent_element_name, complex_types, namespaces, imports, extraccion_dir, 
+def explorar_complex_type(type_name, parent_element_name, complex_types,simple_types, namespaces, imports, extraccion_dir, 
                           xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                           operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types=None,
                           start_time=None, time_limit=0.60):
@@ -749,7 +755,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                     base_type = extension.attrib['base'].split(":")[-1]  # Obtener el nombre sin prefijo
                     
                     #print_with_line_number(f"🔄 {type_name} extiende {base_type}, explorando {base_type}...")
-                    explorar_complex_type(base_type, parent_element_name, complex_types, namespaces, imports, 
+                    explorar_complex_type(base_type, parent_element_name, complex_types,simple_types, namespaces, imports, 
                                           extraccion_dir, xsd_file_path, project_path, service_url, capa_proyecto, 
                                           operacion_business, operations, service_name, operation_actual, 
                                           request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
@@ -840,7 +846,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
 
             elif element_type in complex_types:
                 #print_with_line_number(f"Buscando {element_type} en el mismo XSD")
-                explorar_complex_type(element_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
+                explorar_complex_type(element_type, full_name, complex_types,simple_types, namespaces, imports, extraccion_dir, 
                                       xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
                                       operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
 
@@ -850,11 +856,66 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 #print_with_line_number(f"🔄 : {prefix} , {nested_type}")
                 print_with_line_number(f"nested_type={nested_type}")
                 print_with_line_number(f"complex_types keys={list(complex_types.keys())[:20]}")
+                
+                # =====================================================
+                # 1. Buscar complexType local
+                # =====================================================
+
                 if nested_type in complex_types:
-                    #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
-                    explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
-                                          xsd_file_path, project_path, service_url, capa_proyecto, operacion_business, 
-                                          operations, service_name, operation_actual, request_elements, response_elements, operation_name,processed_types, start_time, time_limit)
+
+                    explorar_complex_type(
+                        nested_type,
+                        full_name,
+                        complex_types,
+                        simple_types,
+                        namespaces,
+                        imports,
+                        extraccion_dir,
+                        xsd_file_path,
+                        project_path,
+                        service_url,
+                        capa_proyecto,
+                        operacion_business,
+                        operations,
+                        service_name,
+                        operation_actual,
+                        request_elements,
+                        response_elements,
+                        operation_name,
+                        processed_types,
+                        start_time,
+                        time_limit
+                    )
+
+                # =====================================================
+                # 2. Buscar simpleType local
+                # =====================================================
+
+                elif nested_type in simple_types:
+
+                    element_details = {
+                        'elemento': parent_element_name.split('.')[0],
+                        'name': full_name,
+                        'type': f"simpleType:{nested_type}",
+                        'url': service_url,
+                        'ruta': capa_proyecto,
+                        'minOccurs': element_minOccurs,
+                        'operations': operations,
+                        'service_name': service_name,
+                        'operation_actual': operation_actual,
+                    }
+
+                    if 'Request' in parent_element_name:
+                        request_elements.append(element_details)
+
+                    elif 'Response' in parent_element_name:
+                        response_elements.append(element_details)
+
+                # =====================================================
+                # 3. Buscar en imports
+                # =====================================================
+
+
                 elif prefix in namespaces:
                     namespace = namespaces[prefix]
                     if namespace in imports:
