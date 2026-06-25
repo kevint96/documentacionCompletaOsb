@@ -896,7 +896,7 @@ def explorar_complex_type(type_name, parent_element_name, complex_types,simple_t
                     element_details = {
                         'elemento': parent_element_name.split('.')[0],
                         'name': full_name,
-                        'type': f"simpleType:{nested_type}",
+                        'type': 'xs:string',
                         'url': service_url,
                         'ruta': capa_proyecto,
                         'minOccurs': element_minOccurs,
