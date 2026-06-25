@@ -3339,14 +3339,8 @@ def main():
                         if operaciones:  # Solo mostrar si hay operaciones disponibles
                             st.markdown(
                             f"""
-                            <div style="font-size:12px; color:gray;">📊{total_operaciones} encontradas</div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                            
-                            st.markdown(
-                            f"""
                             <div style="font-size:14px; font-weight:bold;">Selecciona una operación</div>
+                            <div style="font-size:12px; color:gray;">📊{total_operaciones} encontradas</div>
                             """,
                             unsafe_allow_html=True
                         )
