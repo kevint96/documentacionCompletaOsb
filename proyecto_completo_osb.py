@@ -76,7 +76,7 @@ def replace_text_in_paragraph(paragraph, replacements):
             if key in '{nombre_operacion_inicial}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Arial',10,True,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',18,True,0)  # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
                 
             if key in '{nombre_servicio_secundario}':
@@ -136,8 +136,9 @@ def replace_text_in_paragraph(paragraph, replacements):
             
             if key in '{autor_inicial}':
                 paragraph.clear()  # Limpiar el párrafo
+                full_text = full_text.replace(key, str(value).upper()) 
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Arial MT',10,True,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',9,True,0)  # Aplicar formato al texto del párrafo
             
             if key in '{autor}':
                 paragraph.clear()  # Limpiar el párrafo
@@ -3360,7 +3361,7 @@ def main():
                     log_doc_generado = st.empty()  # ⬅️ Aquí se crea el contenedor compartido
                     #print_with_line_number(f"✅ jar_file {jar_file}")
                     #print_with_line_number(f"✅ plantilla_file {plantilla_file}")
-                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor.upper(),proxy_seleccionado,st.session_state["ubicacion_wsdl_exp"],log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
+                    generar_documentacion(carpeta_destino, plantilla_file,operacion_a_documentar,nombre_autor,proxy_seleccionado,st.session_state["ubicacion_wsdl_exp"],log_area,log_operation,log_notificacion1,log_notificacion2,log_notificacion3,log_proyecto,log_request,log_response,log_doc_generado)
             else:
                 st.error("Por favor, sube todos los archivos, escribe el autor y sube la plantilla.")
                 
