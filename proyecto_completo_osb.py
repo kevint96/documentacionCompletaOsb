@@ -848,6 +848,8 @@ def explorar_complex_type(type_name, parent_element_name, complex_types, namespa
                 prefix, nested_type = element_type.split(':')
                 
                 #print_with_line_number(f"🔄 : {prefix} , {nested_type}")
+                print_with_line_number(f"nested_type={nested_type}")
+                print_with_line_number(f"complex_types keys={list(complex_types.keys())[:20]}")
                 if nested_type in complex_types:
                     #print_with_line_number(f"Buscando {nested_type} en el mismo XSD")
                     explorar_complex_type(nested_type, full_name, complex_types, namespaces, imports, extraccion_dir, 
