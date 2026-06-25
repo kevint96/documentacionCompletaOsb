@@ -76,13 +76,13 @@ def replace_text_in_paragraph(paragraph, replacements):
             if key in '{nombre_operacion_inicial}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Arial',18,True,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',16,True,0)  # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
                 
             if key in '{nombre_servicio_secundario}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Arial',18,True,0)    # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',16,True,0)    # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
             if key in '{nombre_servicio_titulo}':
