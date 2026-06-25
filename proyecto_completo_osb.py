@@ -70,100 +70,113 @@ def replace_text_in_paragraph(paragraph, replacements):
             if key in '{nombre_servicio_inicial}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman',10,True,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',10,True,0)  # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
                 
             if key in '{nombre_operacion_inicial}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman',18,True,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',18,True,0)  # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
                 
             if key in '{nombre_servicio_secundario}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman',18,True,0)    # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',18,True,0)    # Aplicar formato al texto del párrafo
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+
+            if key in '{nombre_servicio_titulo}':
+                paragraph.clear()  # Limpiar el párrafo
+                paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
+                apply_format(paragraph.runs[0],'Arial',10,True,0)    # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
             
             if key in '{nombre_operacion}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman ',10,False,0)    # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial ',10,False,0)    # Aplicar formato al texto del párrafo
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+            
+            if key in '{nombre_operacion_titulo}':
+                paragraph.clear()  # Limpiar el párrafo
+                paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
+                apply_format(paragraph.runs[0],'Arial ',10,True,0)    # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             
             if key in '{unique_operations}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman ',10,False,0)    # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial ',10,False,0)    # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
                 
             if key in '{informacion_legados}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman ',10,False,0)    # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial ',10,False,0)    # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             
             if key in '{nombre_servicio}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman',10,False,0)    # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',10,False,0)    # Aplicar formato al texto del párrafo
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             
             if key in '{nombre_servicio_contrato}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman ',10,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial ',10,False,0)  # Aplicar formato al texto del párrafo
             
             if key in '{nombre_servicio_wsdl}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman ',10,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial ',10,False,0)  # Aplicar formato al texto del párrafo
             
             if key in '{nombre_servicio_contrato2}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman',10,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',10,False,0)  # Aplicar formato al texto del párrafo
                 
             if key in '{nombre_servicio_tabla}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman MT',11,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial MT',11,False,0)  # Aplicar formato al texto del párrafo
             
             if key in '{fecha}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman MT',10,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial MT',10,False,0)  # Aplicar formato al texto del párrafo
             
             if key in '{autor_inicial}':
                 paragraph.clear()  # Limpiar el párrafo
+                full_text = full_text.replace(key, str(value).upper()) 
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman',9,True,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',9,True,0)  # Aplicar formato al texto del párrafo
             
             if key in '{autor}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman',10,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial',10,False,0)  # Aplicar formato al texto del párrafo
             
             if key in '{autor2}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman MT',10,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial MT',10,False,0)  # Aplicar formato al texto del párrafo
             
             if key in '{url}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman MT',10,False,255)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial MT',10,False,255)  # Aplicar formato al texto del párrafo
                 
             if key in '{operacion_legado}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman MT',10,False,255)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial MT',10,False,255)  # Aplicar formato al texto del párrafo
                 
             
             if key in '{proyecto_abc}':
                 paragraph.clear()  # Limpiar el párrafo
                 paragraph.add_run(full_text)  # Agregar el texto actualizado al párrafo
-                apply_format(paragraph.runs[0],'Times New Roman MT',10,False,0)  # Aplicar formato al texto del párrafo
+                apply_format(paragraph.runs[0],'Arial MT',10,False,0)  # Aplicar formato al texto del párrafo
 
 def print_element_content(element, element_name):
     #st.success(f"Contenido del {element_name}:")
@@ -3693,8 +3706,10 @@ def generar_documentacion(jar_path, plantilla_path,operacion_a_documentar,nombre
                         '{nombre_servicio_inicial}': service_name,
                         '{nombre_servicio_secundario}': service_name,
                         '{nombre_servicio}': service_name,
+                        '{nombre_servicio_titulo}': service_name,
                         '{nombre_operacion_inicial}' : operation,
                         '{nombre_operacion}': operation,
+                        '{nombre_operacion_titulo}': operation,
                         '{unique_operations}': operaciones_formateadas,
                         '{informacion_legados}': texto_legados,
                         '{nombre_servicio_contrato}': service_name,
